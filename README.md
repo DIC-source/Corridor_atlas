@@ -6,10 +6,10 @@ Atlas-based neuroanatomy viewer for teaching and pre-operative rehearsal: an ill
 
 ## Run it
 
-It is a static site: `site/index.html` plus one data file, `site/atlas-data.bin` (gzip-compressed binary, decompressed in the browser).
+It is a static site: `docs/index.html` plus one data file, `docs/atlas-data.bin` (gzip-compressed binary, decompressed in the browser).
 
 ```bash
-cd site
+cd docs
 python3 -m http.server 8000
 # open http://localhost:8000
 ```
@@ -20,8 +20,8 @@ Opening `index.html` straight from disk will not work, because browsers block `f
 
 | Path | What it is |
 | --- | --- |
-| `site/index.html` | The whole viewer (HTML, CSS, JS in one file) |
-| `site/atlas-data.bin` | Packed volumes, meshes, tracts, vessels, pathway geometry |
+| `docs/index.html` | The whole viewer (HTML, CSS, JS in one file) |
+| `docs/atlas-data.bin` | Packed volumes, meshes, tracts, vessels, pathway geometry |
 | `pipeline/` | Python scripts that build `atlas-data.bin` from the source atlases |
 | `data/SOURCES.md` | Where each input comes from and its licence |
 | `data/raw/` | Downloaded inputs (git-ignored; see SOURCES.md) |
@@ -38,7 +38,7 @@ python3 vreg2.py      # warp example TOF-MRA + vessel annotation to MNI (ANTs Sy
 python3 skel.py       # vessel mask / skeleton
 python3 build3.py     # vessel meshes and grouping
 python3 paths.py && python3 paths2.py   # long-pathway (CST / DCML / STT) geometry
-python3 pack.py       # writes ../site/atlas-data.bin
+python3 pack.py       # writes ../docs/atlas-data.bin
 ```
 
 Intermediate files go to `pipeline/out/` (git-ignored). The pathway geometry (`paths.json`) is currently embedded in `index.html` as `const PW=...`; regenerate and paste if you change it.
