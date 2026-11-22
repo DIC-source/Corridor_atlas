@@ -33,6 +33,7 @@ Inputs go in `data/raw/` (see `data/SOURCES.md`). From `pipeline/`:
 ```bash
 pip install nibabel scipy scikit-image fast-simplification antspyx skan
 python3 build.py      # composite label volume + T1/T2 backgrounds
+python3 fixlab.py     # split CerebrA ventral DC at the PC–mammillary plane (hypothalamus / crus / midbrain), STN at DISTAL centroid, SN grown 1 mm
 python3 build2.py     # structure meshes + HCP-1065 tract voxels/polylines
 python3 build3.py     # arterial-territory grouping helper (writes out/ter_raw.npy-based groups)
 python3 build4.py 25  # population vessel atlases: MRA volumes + vessel surfaces (probability >= 25%)
