@@ -36,6 +36,9 @@ python3 build.py      # composite label volume + T1/T2 backgrounds
 python3 build2.py     # structure meshes + HCP-1065 tract voxels/polylines
 python3 build3.py     # arterial-territory grouping helper (writes out/ter_raw.npy-based groups)
 python3 build4.py 25  # population vessel atlases: MRA volumes + vessel surfaces (probability >= 25%)
+python3 trace.py      # named artery centerlines (minimal-cost paths on the probability atlas)
+python3 veins.py      # dural sinuses / deep veins placed from template geometry (approximate)
+python3 build_named.py  # tube meshes + voxel masks for named vessels
 python3 paths.py && python3 paths2.py   # long-pathway (CST / DCML / STT) geometry
 python3 pack.py       # writes ../docs/atlas-data.bin
 ```

@@ -162,7 +162,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <div class="seg" id="cxmode">
         <button data-v="both">Both</button><button data-v="R" aria-pressed="true">Right only</button><button data-v="L">Left only</button><button data-v="none">Off</button>
       </div>
-      <label class="ck"><input type="checkbox" id="clip"> Cut at slice</label>
+      <label class="ck" title="Remove everything above (or in front of) the current MRI slice"><input type="checkbox" id="clip" checked> Cut at slice</label>
       <label class="ck"><input type="checkbox" id="plane3" checked> Slice plane</label>
       <label class="ck"><input type="checkbox" id="focus"> Focus</label>
       <label class="ck"><input type="checkbox" id="callo" checked> Callouts</label></span>
@@ -245,7 +245,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <div class="sec">How to use</div>
       <p class="note">Click any structure, tract or artery in either view to open its details at the top of this panel. Click the MRI to move the crosshair; scroll or use the slider to page slices. Click a structure in the illustration to jump the MRI there. Use the Lesion tab to drop a sphere and list everything within 5 or 10 mm; use the Corridor tab to set an entry and target and see what the trajectory crosses.</p>
       <div class="sec">Limits</div>
-      <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, and the STN is an ellipsoid at the ATAG centroid because the ATAG STN label is only a few voxels at 1 mm. The arteries and the MRA image are population averages (Mouches &amp; Forkert 2019), already in MNI space, covering the whole brain. Averaging across people keeps the large, consistent arteries sharp (ICA, circle of Willis, M1, A1–A2, pericallosal, P1–P2, basilar) but blurs distal branches whose course varies between people, so small cortical branches look faint or missing. The 3D vessel surface is drawn where at least 12% of subjects had a vessel. Branches are grouped by position: vessels outside the brain envelope (skull base, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. They are not named segment by segment (M1, M2, P1…).</p>
+      <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, and the STN is an ellipsoid at the ATAG centroid because the ATAG STN label is only a few voxels at 1 mm. The arteries and the MRA image are population averages (Mouches &amp; Forkert 2019), already in MNI space, covering the whole brain. Averaging across people keeps the large, consistent arteries sharp (ICA, circle of Willis, M1, A1–A2, pericallosal, P1–P2, basilar) but blurs distal branches whose course varies between people, so small cortical branches look faint or missing. The 3D vessel surface is drawn where at least 12% of subjects had a vessel. Branches are grouped by position: vessels outside the brain envelope (skull base, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. These grouped surfaces are now off by default. Named arteries (ICA, M1, M2, A1, A2–pericallosal, PComm, P1–P2, P3–P4, SCA, basilar, vertebral) are centerlines traced with a minimal-cost path along the highest vessel probability between anatomical landmarks, with calibre from the radius atlas. Veins and dural sinuses (superior and inferior sagittal, straight, transverse and sigmoid sinuses, vein of Galen, internal cerebral veins, basal veins of Rosenthal) are not in any reachable dataset: their courses are placed from the template's own geometry (inner brain surface, corpus callosum, third ventricle, midbrain) and are approximate. With “Cut at slice” on, the 3D model is cut at the current MRI level.</p>
       <div class="sec">Data and licences</div>
       <p class="note">Template: ICBM 2009b nonlinear symmetric T1/T2, © 1993–2009 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University (permissive licence; copyright notice retained).<br>
       Cortex, ventricles, deep grey: CerebrA atlas (Manera et al., 2020, Sci Data).<br>
@@ -287,7 +287,8 @@ for(const t of TR){
   t.X=x;t.Y=y;t.Z=z;
 }
 const TER=new Uint8Array(NX*NY*NZ);const MRA=sec(H.mra,Uint8Array);const MRAH=sec(H.mrah,Uint8Array);const [HX,HY,HZ]=H.mrahd;const HO=H.mraho;const TE=H.TE;const TB=[null];TE.forEach(t=>TB[t.id]=t);
-const CRIT_T=new Set(['Motor','Sensory','Language','Visual','Arteries']);
+const CRIT_T=new Set(['Motor','Sensory','Language','Visual','Arteries','Veins & sinuses']);
+const isVes=o=>o.group==='Arteries'||o.group==='Veins & sinuses';
 const isCritS=s=>s.note==='eloquent';
 const sideTxt=s=>s.side?(' ('+s.side+')'):'';
 const vi=(x,y,z)=>(z*NY+y)*NX+x;
@@ -298,10 +299,10 @@ const st={
   visS:{}, visT:{}, visV:{}, side:'B', vmip:false, slab:30, outl:true, view:'plate', labels:'key', plateLobes:false,
   lesion:{c:[-32,-18,30],r:9,on:true}, range:10,
   corr:{E:[-56,-4,50],P:[-32,-18,30],rad:4,on:true},
-  mode:'cross', cx:'R', clip:false, plane:true, focus:false, callouts:true
+  mode:'cross', cx:'R', clip:true, plane:true, focus:false, callouts:true
 };
 const defaultTracts=new Set(['cst_l','cst_r','af_l','af_r','or_l','or_r']);
-TR.forEach(t=>st.visT[t.id]=defaultTracts.has(t.id)||t.id.startsWith('v_'));TE.forEach(t=>st.visV[t.id]=false);
+TR.forEach(t=>st.visT[t.id]=defaultTracts.has(t.id)||isVes(t));TE.forEach(t=>st.visV[t.id]=false);
 S.forEach(s=>st.visS[s.id]=true);
 
 // ---------- layer UI
@@ -338,7 +339,7 @@ function buildLayerUI(){
   mk($('tgroups'),TR,'t');mk($('sgroups'),S,'s');
 }
 const syncers=[];const VIS=k=>k==='t'?st.visT:k==='v'?st.visV:st.visS;
-function preset(ids){TR.forEach(t=>{if(!t.id.startsWith('v_'))st.visT[t.id]=ids.some(p=>t.id.startsWith(p))});syncers.forEach(f=>f());refresh()}
+function preset(ids){TR.forEach(t=>{if(!/^(v_|a_|vn_)/.test(t.id))st.visT[t.id]=ids.some(p=>t.id.startsWith(p))});syncers.forEach(f=>f());refresh()}
 $('presetMotor').onclick=()=>preset(['cst','cbt','fat','str']);
 $('presetLang').onclick=()=>preset(['af','slf','ifof','unc','ilf','fat']);
 $('presetVis').onclick=()=>preset(['or','cn2','ilf','ifof']);
@@ -608,7 +609,11 @@ function updateClip(){const k=st.orient==='ax'?2:st.orient==='co'?1:0;const n=[0
   // keep the half below / behind / left-of the slice; for sagittal keep the side away from camera
   if(k===0){const camSide=cam.position.x-ctl.target.x;n[0]=camSide<0?1:-1}
   clipPlane.normal.set(...n);clipPlane.constant=-n[k]*st.cross[k];
-  meshes.forEach(m=>{if(m.userData.s.group.startsWith('Cortex')){m.material.clippingPlanes=st.clip?[clipPlane]:[];m.material.side=st.clip?THREE.DoubleSide:THREE.FrontSide;m.userData.o.material.clippingPlanes=st.clip?[clipPlane]:[];m.material.needsUpdate=true;m.userData.o.material.needsUpdate=true}})}
+  meshes.forEach(setClip);TR.forEach(t=>{if(t.mesh)setClip(t.mesh)})}
+// the 3D model follows the MRI level: every structure, tract and vessel is cut at the slice plane
+function setClip(m){const on=!!st.clip;if(m.userData.clipOn===on)return;m.userData.clipOn=on;const cp=on?[clipPlane]:[];
+  m.material.clippingPlanes=cp;m.material.side=on?THREE.DoubleSide:THREE.FrontSide;m.material.needsUpdate=true;
+  m.children.forEach(c=>{if(c.material){c.material.clippingPlanes=cp;c.material.needsUpdate=true}})}
 let near=new Map(); // id -> distance (for focus)
 function apply3DVis(){
   for(const m of meshes){const s=m.userData.s;let v=showS(s);
@@ -616,7 +621,7 @@ function apply3DVis(){
     m.visible=v;let op=1;if(st.focus&&st.lesion.on){op=near.has('s'+s.id)?1:.12}if(st.fade&&st.fade.has('s'+s.id))op=.15;
     m.material.opacity=op;m.material.depthWrite=op>.5;m.userData.o.material.uniforms.op.value=op>.5?1:.15}
   for(const t of TE)t.mesh.visible=showV(t);
-  for(const t of TR){const v=showT(t);if(v)ensureTube(t);if(t.mesh){t.mesh.visible=v;const op=(st.focus&&st.lesion.on&&!near.has('t'+t.id))||(st.fade&&st.fade.has('t'+t.id))?.15:1;t.mesh.material.opacity=op;t.mesh.material.depthWrite=op>.5}}
+  for(const t of TR){const v=showT(t);if(v){ensureTube(t);setClip(t.mesh)}if(t.mesh){t.mesh.visible=v;const op=(st.focus&&st.lesion.on&&!near.has('t'+t.id))||(st.fade&&st.fade.has('t'+t.id))?.15:1;t.mesh.material.opacity=op;t.mesh.material.depthWrite=op>.5}}
 }
 function update3DTools(){
   lesM.visible=haloM.visible=st.lesion.on;lesM.position.set(...st.lesion.c);lesM.scale.setScalar(st.lesion.r);
@@ -823,6 +828,25 @@ const DESC={
 'v_mca':'中大腦動脈 (MCA) 分支：從 M1 經 Sylvian 裂（M2 在腦島表面、M3 在蓋部、M4 在皮質表面）。供應外側大腦半球，包括手/臉運動區與語言區。',
 'v_pca':'後大腦動脈 (PCA) 分支：P1 起於基底動脈頂，P2 繞中腦，P3/P4 到枕葉（距狀溝支）與顳葉下內側。損傷：對側偏盲。',
 'v_skb':'顱底與顱外動脈：落在腦實質外的血管，包含 ICA 岩部/海綿竇段、顱外椎動脈與外頸動脈分支 (TOF-MRA 也會拍到)。依位置分組，並非逐段命名。',
+a_ica:'頸內動脈 (ICA)：岩部、海綿竇段到床突上段，於前穿質下方分成 MCA 與 ACA。旁邊有視神經、CN III、PComm 起點；動脈瘤好發於 PComm 與眼動脈起點。',
+a_m1:'MCA M1（蝶骨段）：ICA 分叉到 limen insulae，上方發出 lateral lenticulostriate arteries 供應內囊與基底核。M1 損傷：對側偏癱、優勢側失語。',
+a_m2:'MCA M2（腦島段）：沿腦島表面上行，之後經蓋部 (M3) 到皮質 (M4)。腦島手術時要逐支保留。',
+a_a1:'ACA A1：ICA 分叉到前交通動脈 (AComm)，穿過視神經／視交叉上方；發出 medial lenticulostriate 與 Heubner recurrent artery。',
+a_a2:'ACA A2–pericallosal：AComm 以後沿胼胝體上方走，供應內側額頂葉（下肢運動感覺區）。經縱裂手術時位於視野中央。',
+a_pcom:'後交通動脈 (PComm)：連接 ICA 與 PCA，CN III 走在其下外側；PComm 動脈瘤壓迫造成動眼神經麻痺。',
+a_p1p2:'PCA P1–P2：基底動脈頂向外繞大腦腳，P1 發出視丘穿通支；P2 在環池內與 basal vein、CN IV 並行。',
+a_p3:'PCA P3–P4：四疊體池以後到距狀溝與頂枕溝支。損傷：對側同側偏盲。',
+a_sca:'小腦上動脈 (SCA)：基底動脈頂下方發出，繞腦幹到小腦上面；常與 CN V 接觸（三叉神經痛 MVD）。',
+a_ba:'基底動脈 (BA)：兩側椎動脈在橋延交界匯合，沿橋腦前面上行到頂端分出 PCA。穿通支供應橋腦。',
+a_va:'椎動脈 V4（硬膜內段）：沿延腦前外側上行，發出 PICA、脊髓前動脈。',
+vn_sss:'上矢狀竇 (SSS)：沿大腦鐮上緣；前 1/3 結紮通常可耐受，中後段閉塞會造成靜脈梗塞。此處由模板幾何推定位置。',
+vn_iss:'下矢狀竇：大腦鐮下緣、胼胝體上方，向後匯入直竇。位置由模板幾何推定。',
+vn_straight:'直竇：Galen 靜脈與下矢狀竇匯流後，沿大腦鐮與天幕交界到竇匯。位置由模板幾何推定。',
+vn_galen:'Galen 大靜脈：兩側大腦內靜脈與基底靜脈匯合處，位於胼胝體壓部下方；松果體區手術的關鍵構造。',
+vn_icv:'大腦內靜脈 (ICV)：從 Monro 孔沿第三腦室頂（中間帆）向後到 Galen。經胼胝體進第三腦室時要保護。',
+vn_bvr:'Rosenthal 基底靜脈：從前穿質繞大腦腳，經環池到 Galen；與 PCA P2 並行。',
+vn_ts:'橫竇：沿天幕後外側附著緣，從竇匯到乙狀竇；乙狀竇後入路的上界。位置由模板幾何推定。',
+vn_sig:'乙狀竇：橫竇到頸靜脈孔，構成乙狀竇後入路的前界。位置由模板幾何推定。',
 'v_vb':'椎基底動脈與小腦動脈：椎動脈 (VA)、基底動脈 (BA) 及 PICA、AICA、SCA。BA 穿通支供應橋腦；損傷可造成 locked-in syndrome。'
 };
 const TDESC={
@@ -851,7 +875,7 @@ function lesionDist(k,o){const key=k+(k==='t'?o.id:o.id);const d=near.get(key);i
 function vesselAt(t,p){const v=m2v(p);let bi=-1,bd=1e9;for(let i=0;i<t.X.length;i++){const d=(t.X[i]-v[0])**2+(t.Y[i]-v[1])**2+(t.Z[i]-v[2])**2;if(d<bd){bd=d;bi=i}}return bi}
 function select(k,o,p,also){
   info.hidden=false;$('iSw').style.background=o.color;$('iName').textContent=o.name+sideTxt(o);
-  const kind=k==='s'?'Structure':k==='v'?'Arterial territory':o.group==='Arteries'?'Artery':'White-matter tract';
+  const kind=k==='s'?'Structure':k==='v'?'Arterial territory':o.group==='Arteries'?'Artery':o.group==='Veins & sinuses'?'Vein / dural sinus':o.group.startsWith('Arterial tree')?'Artery (population surface)':'White-matter tract';
   $('iGrp').textContent=kind+' · '+o.group;
   $('iDesc').textContent=descOf(k,o);
   const F=[];
@@ -859,13 +883,13 @@ function select(k,o,p,also){
   if(k==='s'&&o.vox)F.push(['Atlas volume',(o.vox/1000).toFixed(o.vox<1000?2:1)+' mL']);
   if(k==='s'&&o.note&&o.note!=='eloquent')F.push(['Note',o.note]);
   if(k==='t'&&o.group!=='Arteries'&&o.n)F.push(['Streamlines','HCP-1065 group atlas, '+o.n]);
-  if(k==='t'&&o.group==='Arteries'&&p&&o.RAD){const i=vesselAt(o,p);if(i>=0){
+  if(k==='t'&&(isVes(o)||o.group.startsWith('Arterial tree'))&&p&&o.RAD){const i=vesselAt(o,p);if(i>=0){
     const dia=o.RAD[i]/10*2;F.push(['Local calibre','≈ '+(dia>0?dia.toFixed(1):'<1')+' mm diameter (population radius atlas)']);
     const nb=o.NB[i];if(nb)F.push(['Runs beside',SB[nb].name+sideTxt(SB[nb])+(o.NBD[i]?' ('+o.NBD[i]+' mm)':' (on its surface)')]);
     const Tt=TER[vi(o.X[i],o.Y[i],o.Z[i])];if(Tt)F.push(['Territory here',TB[Tt].name.replace(' territory','')+sideTxt(TB[Tt])]);
-    F.push(['Source','Population vessel atlas (Mouches & Forkert 2019)']);}}
+    F.push(['Source',o.group==='Veins & sinuses'?'Placed from template geometry (approximate course)':o.id.startsWith('a_')?'Centerline traced on the population vessel atlas (Mouches & Forkert 2019)':'Population vessel atlas (Mouches & Forkert 2019)']);}}
   const ld=lesionDist(k,o);if(ld)F.push(['Lesion',ld]);
-  if(k!=='v'&&crit(o,k))F.push(['Flag',o.group==='Arteries'?'Critical: artery':'Critical: eloquent cortex or pathway']);
+  if(k!=='v'&&crit(o,k))F.push(['Flag',isVes(o)?'Critical: '+(o.group==='Arteries'?'artery':'vein / sinus'):'Critical: eloquent cortex or pathway']);
   const dl=$('iFacts');dl.innerHTML='';F.forEach(([a,b])=>{const dt=document.createElement('dt');dt.textContent=a;const dd=document.createElement('dd');dd.textContent=b;dl.append(dt,dd)});
   const al=$('iAlso');al.innerHTML='';
   if(also&&also.length){const h=document.createElement('div');h.className='igrp';h.textContent='Also at this point';al.append(h);
@@ -877,8 +901,8 @@ function select(k,o,p,also){
 }
 function selectAtCross(){
   const v=m2v(st.cross).map(Math.round);const i=vi(...v);const items=[];
-  for(const t of TR){if(t.group!=='Arteries'||!showT(t))continue;for(let j=0;j<t.X.length;j++){if(Math.abs(t.X[j]-v[0])<=2&&Math.abs(t.Y[j]-v[1])<=2&&Math.abs(t.Z[j]-v[2])<=2){items.push(['t',t]);break}}}
-  for(const t of TR){if(t.group==='Arteries'||!showT(t))continue;for(let j=0;j<t.X.length;j++){if(t.X[j]===v[0]&&t.Y[j]===v[1]&&t.Z[j]===v[2]){items.push(['t',t]);break}}}
+  for(const t of TR){if(!(isVes(t)||t.group.startsWith('Arterial tree'))||!showT(t))continue;for(let j=0;j<t.X.length;j++){if(Math.abs(t.X[j]-v[0])<=2&&Math.abs(t.Y[j]-v[1])<=2&&Math.abs(t.Z[j]-v[2])<=2){items.push(['t',t]);break}}}
+  for(const t of TR){if(isVes(t)||t.group.startsWith('Arterial tree')||!showT(t))continue;for(let j=0;j<t.X.length;j++){if(t.X[j]===v[0]&&t.Y[j]===v[1]&&t.Z[j]===v[2]){items.push(['t',t]);break}}}
   const L=LAB[i];if(L)items.push(['s',SB[L]]);
   const Tt=TER[i];if(Tt)items.push(['v',TB[Tt]]);
   if(!items.length){info.hidden=true;setHL(null);return}
@@ -915,7 +939,9 @@ function pathOf(ctx,polys,k,ox,oy){ctx.beginPath();for(const poly of polys)for(c
 function drawContoursMRI(k){if(!st.outl)return;const C=sliceContours();const dpr=window.devicePixelRatio||1;
   mx.save();mx.lineJoin='round';
   for(const R of C.regions){pathOf(mx,R.poly,k,0,0);mx.strokeStyle=R.o.color;mx.globalAlpha=.95;mx.lineWidth=1.3*dpr;mx.stroke()}
-  for(const T of C.tracts){if(T.o.group==='Arteries')continue;pathOf(mx,T.poly,k,0,0);mx.strokeStyle=T.o.color;mx.lineWidth=1.6*dpr;mx.setLineDash([5*dpr,3*dpr]);mx.stroke();mx.setLineDash([])}
+  for(const T of C.tracts){if(T.o.group.startsWith('Arterial tree'))continue;pathOf(mx,T.poly,k,0,0);
+    if(isVes(T.o)){mx.strokeStyle=T.o.group==='Arteries'?'#ff5a4a':'#5fa0ff';mx.lineWidth=1.7*dpr;mx.stroke()}
+    else{mx.strokeStyle=T.o.color;mx.lineWidth=1.6*dpr;mx.setLineDash([5*dpr,3*dpr]);mx.stroke();mx.setLineDash([])}}
   mx.restore()}
 // ---------- the illustrated plate
 const SHORTF={
@@ -927,7 +953,7 @@ const SHORTF={
 'Lateral ventricle':'CSF','Third ventricle':'CSF；底為下視丘','Fourth ventricle':'CSF；菱形窩','Vermis':'軀幹平衡','Cerebellar white matter / dentate region':'齒狀核：DRTT 起點','Cerebellum · Anterior lobe (I–V)':'肢體步態協調','Cerebellum · Posterior lobe (VI–VIII)':'肢體協調、認知','Cerebellum · Tonsil / IX':'扁桃；下疝壓延腦','Cerebellum · Flocculus (X)':'前庭小腦、眼動',
 cst:'對側肢體隨意運動',cbt:'對側下臉、構音吞嚥',fat:'言語起始 (SMA–Broca)',ml:'精細觸覺、本體感覺',str:'感覺運動視丘皮質',af:'復誦、語音迴路',slf:'額頂注意、語音',ifof:'語意處理',unc:'顳極–眶額',ilf:'視覺辨識、閱讀',or:'視放射：對側視野',cn2:'視覺',ar:'聽覺',cing:'邊緣聯絡',fx:'海馬→乳頭體、記憶',atr:'視丘–前額葉',
 cc_minor:'雙側額葉連結',cc_body:'雙側運動感覺連結',cc_tap:'顳角／三角區外壁',cc_major:'雙側枕葉連結',ac:'雙側顳葉連結',cpt:'皮質→橋腦→小腦',drtt:'小腦→Vim；顫抖',scp:'小腦輸出',mcp:'橋腦→小腦',icp:'脊髓前庭→小腦',cn3:'眼動、瞳孔',cn5:'臉部感覺、咀嚼',cn7:'顏面表情',cn8:'聽覺、平衡',
-dcml:'精細觸覺、本體感覺',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
+dcml:'精細觸覺、本體感覺',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；Heubner',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'延腦、PICA 起點',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
 const shortOf=(k,o)=>k==='s'?(SHORTF[o.name]||''):(SHORTF[o.id.replace(/_[lr]$/,'')]||'');
 const GM='#e7bca8';
 function plateFill(o){if(o.group.startsWith('Cortex'))return st.plateLobes?o.color:(o.note==='eloquent'?o.color:GM);return o.color}
@@ -974,7 +1000,9 @@ function drawPlate(){if(st.view!=='plate')return;const r=$('v3').getBoundingClie
     px.lineWidth=.9*dpr;px.strokeStyle=ink;px.globalAlpha=.85;px.stroke();px.globalAlpha=1}
   // tracts: hatched bundles; arteries: solid red cross-sections
   for(const T of C.tracts){if(st.lp&&/^(cst|ml)_/.test(T.o.id))continue;pathOf(px,T.poly,k,ox,oy);
+    if(T.o.group.startsWith('Arterial tree'))continue;
     if(T.o.group==='Arteries'){px.fillStyle='#c4362c';px.fill('evenodd');px.lineWidth=1*dpr;px.strokeStyle='#5e140e';px.stroke()}
+    else if(T.o.group==='Veins & sinuses'){px.fillStyle='#3f6fc2';px.fill('evenodd');px.lineWidth=1*dpr;px.strokeStyle='#17305e';px.stroke()}
     else{px.fillStyle=hatch(T.o.color);px.globalAlpha=.85;px.fill('evenodd');px.globalAlpha=1;px.lineWidth=1.3*dpr;px.strokeStyle=T.o.color;px.stroke()}}
   pathOf(px,C.brain,k,ox,oy);px.lineWidth=1.5*dpr;px.strokeStyle=ink;px.stroke();
   drawLP(k,ox,oy,dpr);
@@ -1000,7 +1028,7 @@ function plateLabels(C,k,ox,oy,dpr,W,Hh){
   const items=[];
   for(const R of C.regions)if(R.area>=8)items.push({...R,sc:pri(R.o)+Math.log(R.area)/3});
   if(st.lp)for(const R of lpRegions())items.push({k:'t',o:R.o,area:R.area,anchor:R.anchor,sc:7.5+Math.log(R.area)/3});
-  for(const T of C.tracts)if(T.area>=6&&!(st.lp&&/^(cst|ml)_/.test(T.o.id)))items.push({...T,sc:(T.o.group==='Arteries'?3.5:CRIT_T.has(T.o.group)?6:3.5)+Math.log(T.area)/3});
+  for(const T of C.tracts)if(T.area>=6&&!(st.lp&&/^(cst|ml)_/.test(T.o.id)))items.push({...T,sc:(T.o.group.startsWith('Arterial tree')?-9:isVes(T.o)?5.2:CRIT_T.has(T.o.group)?6:3.5)+Math.log(T.area)/3});
   const by=new Map();for(const it of items){const nm=it.k+it.o.name;const b=by.get(nm);if(!b||it.area>b.area)by.set(nm,it)}
   const cap=st.labels==='all'?40:20;const sel=[...by.values()].sort((a,b)=>b.sc-a.sc).slice(0,cap);
   const midX=ox+C.w*k/2;const L=[],R=[];for(const it of sel){it.ax=ox+it.anchor[0]*k;it.ay=oy+it.anchor[1]*k;(it.ax<midX?L:R).push(it)}
@@ -1211,10 +1239,10 @@ $('srch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase
     b.onclick=()=>{box.hidden=true;e.target.value='';if(!VIS(k)[o.id]){act(()=>{VIS(k)[o.id]=true})}select(k,o,centroidOf(k,o));frameTo(k,o)};box.append(b)}});
 // teaching modes
 const MODES={
-  overview:()=>{S.forEach(s=>st.visS[s.id]=true);TR.forEach(t=>st.visT[t.id]=['cst_l','cst_r','af_l','af_r','or_l','or_r'].includes(t.id)||t.group==='Arteries');st.cx='R'},
+  overview:()=>{S.forEach(s=>st.visS[s.id]=true);TR.forEach(t=>st.visT[t.id]=['cst_l','cst_r','af_l','af_r','or_l','or_r'].includes(t.id)||isVes(t));st.cx='R'},
   surface:()=>{S.forEach(s=>st.visS[s.id]=s.group.startsWith('Cortex')||s.group==='Cerebellum'||s.group==='Brainstem');TR.forEach(t=>st.visT[t.id]=false);st.cx='both'},
   deep:()=>{S.forEach(s=>st.visS[s.id]=['Basal ganglia','Thalamus','Brainstem nuclei','Limbic','Ventricles','Diencephalon','Brainstem'].includes(s.group));TR.forEach(t=>st.visT[t.id]=false);st.cx='none'},
-  arterial:()=>{S.forEach(s=>st.visS[s.id]=['Brainstem','Ventricles','Cerebellum'].includes(s.group));TR.forEach(t=>st.visT[t.id]=t.group==='Arteries');st.cx='none'},
+  arterial:()=>{S.forEach(s=>st.visS[s.id]=['Brainstem','Ventricles','Cerebellum'].includes(s.group));TR.forEach(t=>st.visT[t.id]=isVes(t));st.cx='none'},
   fibers:()=>{S.forEach(s=>st.visS[s.id]=['Brainstem','Thalamus','Basal ganglia','Ventricles'].includes(s.group));TR.forEach(t=>st.visT[t.id]=t.group!=='Arteries'&&t.group!=='Cranial nerves');st.cx='none'},
 };
 $('modes').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('modes').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
@@ -1222,7 +1250,7 @@ $('modes').addEventListener('click',e=>{const b=e.target.closest('button');if(!b
 updUndo();
 
 $('loading').remove();
-resize();setSliderFromCross();lesionChanged();corrChanged();refresh();setView('plate');
+resize();setSliderFromCross();lesionChanged();corrChanged();refresh();setView('plate');updateClip();
 let frame=0;
 (function loop(){requestAnimationFrame(loop);if(st.view==='path'){ctl.update();renderer.render(pScene,cam);if((frame++&1)===0)pwLabels();return}if(st.view!=='3d')return;ctl.update();renderer.render(scene,cam);if((frame++&1)===0)callouts()})();
 window.__ready=true;

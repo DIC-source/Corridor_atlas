@@ -26,6 +26,8 @@ for t in TR:
     L=[put(l) for l in t['lines']]
     tr.append(dict(id=t['id'],name=t['name'],group=t['group'],color=t['color'],side=t['side'],n=t['n'],vox=put(d),lines=L))
 VS,TE,terv=pickle.load(open(OUT+'vasc.pkl','rb'))
+for _t in VS: _t['group']='Arterial tree (population surface)'
+VS=pickle.load(open(OUT+'named_vessels.pkl','rb'))+VS
 from scipy import ndimage as ndi
 nd,ni=ndi.distance_transform_edt(lab==0,return_indices=True)
 for t in VS:
