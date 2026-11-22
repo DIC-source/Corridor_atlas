@@ -40,6 +40,7 @@ python3 build4.py 25  # population vessel atlases: MRA volumes + vessel surfaces
 python3 trace.py      # named artery centerlines (minimal-cost paths on the probability atlas)
 python3 veins.py      # dural sinuses / deep veins placed from template geometry (approximate)
 python3 build_named.py  # tube meshes + voxel masks for named vessels
+python3 schematic.py  # schematic surgical vessels (Heubner, LSA, AChA, Labbé, Trolard, bridging veins...) and CN I, IV, VI, IX-XII
 python3 paths.py && python3 paths2.py   # long-pathway (CST / DCML / STT) geometry
 python3 pack.py       # writes ../docs/atlas-data.bin
 ```

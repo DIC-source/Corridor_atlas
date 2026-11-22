@@ -27,7 +27,7 @@ for t in TR:
     tr.append(dict(id=t['id'],name=t['name'],group=t['group'],color=t['color'],side=t['side'],n=t['n'],vox=put(d),lines=L))
 VS,TE,terv=pickle.load(open(OUT+'vasc.pkl','rb'))
 for _t in VS: _t['group']='Arterial tree (population surface)'
-VS=pickle.load(open(OUT+'named_vessels.pkl','rb'))+VS
+VS=pickle.load(open(OUT+'named_vessels.pkl','rb'))+pickle.load(open(OUT+'schematic.pkl','rb'))+VS
 from scipy import ndimage as ndi
 nd,ni=ndi.distance_transform_edt(lab==0,return_indices=True)
 for t in VS:
@@ -38,6 +38,7 @@ for t in VS:
     nb=lab[ni[0][i2,j2,k2],ni[1][i2,j2,k2],ni[2][i2,j2,k2]].astype(np.uint8)
     nbd=np.minimum(nd[i2,j2,k2],25).astype(np.uint8)
     tr.append(dict(id=t['id'],name=t['name'],group=t['group'],color=t['color'],side=t['side'],n=0,vox=put(np.diff(np.r_[0,nv]).astype(np.uint32)),lines=[],v=put(np.round(v*20).astype(np.int16)),f=put(f.astype(np.uint16) if len(v)<65536 else f.astype(np.uint32)),f32=len(v)>=65536,rad=put(np.round(rad*10).astype(np.uint8)),nb=put(nb),nbd=put(nbd)))
+    if t.get('sch'): tr[-1]['sch']=1; tr[-1]['note']=t.get('note','')
 from scipy import ndimage as _ndi
 import grid as _g
 _fs=_g.res('FreeSurferSeg.nii.gz')>0
