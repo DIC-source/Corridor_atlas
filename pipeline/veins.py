@@ -8,9 +8,11 @@ def inside(p):
     v=np.round(np.array(p)-O).astype(int)
     return np.all(v>=0) and np.all(v<br.shape) and br[tuple(v)]
 def ray(c,d,off):
-    d=np.array(d,float);d/=np.linalg.norm(d);p=np.array(c,float);t=0
-    while t<150 and inside(p+d*t): t+=0.5
-    return p+d*(t+off)
+    d=np.array(d,float);d/=np.linalg.norm(d);p=np.array(c,float);last=None;t=0
+    while t<150:
+        if inside(p+d*t): last=t
+        t+=0.5
+    return p+d*((last if last is not None else 0)+off)
 def smooth(pts,step=1.0,s=None):
     p=np.array(pts,float);k=min(3,len(p)-1);tck,u=splprep(p.T,s=len(p)*1.5 if s is None else s,k=k)
     L=np.linalg.norm(np.diff(p,axis=0),axis=1).sum();uu=np.linspace(0,1,max(4,int(L/step)));return np.array(splev(uu,tck)).T
@@ -21,12 +23,15 @@ torc=None
 def inside_mid(p):
     return any(inside([x,p[1],p[2]]) for x in (-6,-3,0,3,6))
 def ray_mid(c,d,off):
-    d=np.array(d,float);d/=np.linalg.norm(d);p=np.array(c,float);t=0
-    while t<150 and inside_mid(p+d*t): t+=0.5
-    return p+d*(t+off)
+    # march outward; only stop at the LAST exit from the brain (skips CSF gaps near the start)
+    d=np.array(d,float);d/=np.linalg.norm(d);p=np.array(c,float);last=None;t=0
+    while t<150:
+        if inside_mid(p+d*t): last=t
+        t+=0.5
+    return p+d*((last if last is not None else 0)+off)
 torc=None
 c=np.array([0,-20,5.0]);sss=[]
-for th in np.radians(np.arange(25,196,5)):   # angle from +y (anterior) toward +z then posterior
+for th in np.radians(np.arange(8,196,5)):   # angle from +y (anterior) toward +z then posterior
     sss.append(ray_mid(c,[0,np.cos(th),np.sin(th)],4.0))
 torc=ray_mid([0,-70,-4],[0,-1,0.12],4.0)
 sss.append(torc);OUT['sss']=dict(name='Superior sagittal sinus',side='',r=(2.5,4.5),pts=smooth(sss))
