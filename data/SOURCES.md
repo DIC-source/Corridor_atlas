@@ -12,4 +12,6 @@
 | `HQA_Cerebrovasculature/...` (Subject0001 T1, TOF-MRA, vessel annotation) | github.com/YingChen7/HQA_Cerebrovasculature | Repository is Apache-2.0; original image source not stated — check before public release |
 | `Acute-stroke_Detection_Segmentation/data/template/ArterialAtlas_padding.nii.gz` | Arterial territory atlas (Liu et al., 2023), github.com/Chin-Fu-Liu/Acute-stroke_Detection_Segmentation | CC BY-SA 4.0; used only to group vessel branches |
 
-Planned: Mouches & Forkert (2019) TOF average, vessel probability and radius atlases (Calgary MIPLab / figshare) to replace the single-subject MRA.
+| `mouches/tofAverage.nii`, `vesselProbabilities.nii`, `vesselRadius.nii` | Mouches P, Forkert ND. A statistical atlas of cerebral arteries generated using multi-center MRA datasets from healthy subjects. Sci Data 2019;6:29 (Calgary MIPLab). Mirrored as release assets: github.com/DIC-source/Corridor_atlas/releases/tag/mri_data_v1 | Check the licence on the original figshare record; cite the paper |
+
+The single-subject HQA example MRA is no longer used in the packed data (replaced by the population atlases).

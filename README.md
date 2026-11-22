@@ -34,9 +34,8 @@ Inputs go in `data/raw/` (see `data/SOURCES.md`). From `pipeline/`:
 pip install nibabel scipy scikit-image fast-simplification antspyx skan
 python3 build.py      # composite label volume + T1/T2 backgrounds
 python3 build2.py     # structure meshes + HCP-1065 tract voxels/polylines
-python3 vreg2.py      # warp example TOF-MRA + vessel annotation to MNI (ANTs SyN)
-python3 skel.py       # vessel mask / skeleton
-python3 build3.py     # vessel meshes and grouping
+python3 build3.py     # arterial-territory grouping helper (writes out/ter_raw.npy-based groups)
+python3 build4.py 25  # population vessel atlases: MRA volumes + vessel surfaces (probability >= 25%)
 python3 paths.py && python3 paths2.py   # long-pathway (CST / DCML / STT) geometry
 python3 pack.py       # writes ../docs/atlas-data.bin
 ```
@@ -45,4 +44,4 @@ Intermediate files go to `pipeline/out/` (git-ignored). The pathway geometry (`p
 
 ## Data and licences
 
-See `data/SOURCES.md`. Short version: ICBM152 (copyright notice required), CerebrA, THOMAS (CC0), ATAG, SUIT (CC BY-NC 3.0), HCP-1065 tractography atlas (CC BY-SA 4.0 + HCP acknowledgment), example TOF-MRA from HQA_Cerebrovasculature (Apache-2.0 repository; image provenance not stated). Check these before making the repository or a hosted copy public.
+See `data/SOURCES.md`. Short version: ICBM152 (copyright notice required), CerebrA, THOMAS (CC0), ATAG, SUIT (CC BY-NC 3.0), HCP-1065 tractography atlas (CC BY-SA 4.0 + HCP acknowledgment), population vessel atlases of Mouches & Forkert 2019 (cite the paper). Check these before making the repository or a hosted copy public.

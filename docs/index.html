@@ -132,6 +132,13 @@ ul.rel{margin:0;padding-left:16px;font-size:12px;display:grid;gap:3px}
 .pwleg:not(.open) small,.pwleg:not(.open) p{display:none}
 .pwmore{margin-left:8px;font:500 11px var(--f-sans);border:1px solid #d8cfc2;background:#fff;color:#2b2622;border-radius:10px;padding:1px 8px;cursor:pointer;vertical-align:middle}
 .pwleg p{margin:2px 0 0;font-size:10.5px;color:#7a6f63;line-height:1.4}
+.plab{display:inline-block;width:52px;color:var(--muted)}
+details.res{border:1px solid var(--line);border-radius:6px;margin-top:8px}
+details.res>summary{display:flex;align-items:center;cursor:pointer;padding:6px 8px;font-weight:600;font-size:12px;letter-spacing:.04em}
+details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
+.appr{border:1px solid var(--line);border-radius:6px;padding:8px 8px 2px;margin-bottom:8px;background:color-mix(in srgb,var(--accent) 4%,var(--panel))}
+#appr{flex:1;min-width:0;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--panel)}
+#apDesc{margin:2px 0 8px;line-height:1.55}
 @media (max-width:1100px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr);height:auto}.rail{grid-column:1/-1;max-height:none}.pane.v{height:62vh;min-height:380px}}
 @media (max-width:720px){.app{grid-template-columns:minmax(0,1fr)}.pane.v{height:118vw;min-height:420px}.warnbar{flex-basis:100%}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -201,8 +208,7 @@ ul.rel{margin:0;padding-left:16px;font-size:12px;display:grid;gap:3px}
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" data-t="layers" aria-selected="true">Layers</button>
-      <button role="tab" data-t="lesion" aria-selected="false">Lesion</button>
-      <button role="tab" data-t="corr" aria-selected="false">Corridor</button>
+      <button role="tab" data-t="plan" aria-selected="false">Lesion &amp; corridor</button>
       <button role="tab" data-t="about" aria-selected="false">Sources</button>
     </div>
     <div class="tabbody" id="tb-layers">
@@ -213,29 +219,33 @@ ul.rel{margin:0;padding-left:16px;font-size:12px;display:grid;gap:3px}
       <div class="sec">Tracts (HCP-1065) and arteries</div><div id="tgroups"></div>
       <div class="sec">Structures</div><div id="sgroups"></div>
     </div>
-    <div class="tabbody" id="tb-lesion" hidden>
-      <div class="row"><button class="btn" id="placeL">Place lesion on MRI</button><label class="ck"><input type="checkbox" id="lesOn" checked> Show</label></div>
-      <div class="row mono"><span>Centre</span>x<input type="number" id="lx" step="1">y<input type="number" id="ly" step="1">z<input type="number" id="lz" step="1"></div>
-      <div class="row"><span>Radius</span><input type="range" id="lr" min="2" max="30" value="9" style="flex:1"><span class="mono" id="lrv">9 mm</span></div>
-      <div class="row"><span>Report within</span><div class="seg" id="lrange"><button data-v="5">5 mm</button><button data-v="10" aria-pressed="true">10 mm</button></div></div>
-      <p class="note" style="margin:4px 0 8px">Distance is from the lesion surface to the nearest atlas voxel of each structure, whether or not the layer is switched on. <span class="tag">critical</span> marks eloquent cortex and motor, sensory, language and visual pathways.</p>
-      <table class="prox" id="ptab"></table>
-    </div>
-    <div class="tabbody" id="tb-corr" hidden>
-      <div class="row"><button class="btn" id="setE">Set entry on MRI</button><button class="btn" id="setT">Set target on MRI</button><button class="btn" id="tToL">Target = lesion</button></div>
-      <div class="row mono"><span>Entry</span><span id="eTxt"></span></div>
-      <div class="row mono"><span>Target</span><span id="tTxt"></span></div>
-      <div class="row"><span>Corridor radius</span><input type="range" id="crad" min="1" max="12" value="4" style="flex:1"><span class="mono" id="cradv">4 mm</span></div>
+    <div class="tabbody" id="tb-plan" hidden>
+      <div class="sec">Lesion</div>
+      <div class="row"><button class="btn" id="placeL">Place lesion</button><label class="ck"><input type="checkbox" id="lesOn" checked> Show</label></div>
+      <div class="row mono"><span class="plab">Centre</span>x<input type="number" id="lx" step="1">y<input type="number" id="ly" step="1">z<input type="number" id="lz" step="1"></div>
+      <div class="row"><span class="plab">Radius</span><input type="range" id="lr" min="2" max="30" value="9" style="flex:1"><span class="mono" id="lrv">9 mm</span></div>
+      <div class="sec">Corridor</div>
+      <div class="appr">
+        <div class="row"><select id="appr" aria-label="Standard approach"><option value="">Standard approach…</option></select><div class="seg" id="apSide"><button data-v="L" aria-pressed="true">Left</button><button data-v="R">Right</button></div></div>
+        <div class="row"><label class="ck"><input type="checkbox" id="apLes"> Aim at the lesion instead of the usual target</label><button class="btn" id="apGo">Apply</button></div>
+        <p class="note" id="apDesc" hidden></p>
+      </div>
+      <div class="row"><button class="btn" id="setE">Set entry</button><button class="btn" id="setT">Set target</button><label class="ck" title="Keep the target at the lesion centre while you move the lesion"><input type="checkbox" id="lockT" checked> Target follows lesion</label></div>
+      <div class="row mono"><span class="plab">Entry</span>x<input type="number" id="ex" step="1">y<input type="number" id="ey" step="1">z<input type="number" id="ez" step="1"></div>
+      <div class="row mono"><span class="plab">Target</span>x<input type="number" id="tx" step="1">y<input type="number" id="ty" step="1">z<input type="number" id="tz" step="1"></div>
+      <div class="row"><span class="plab">Radius</span><input type="range" id="crad" min="1" max="12" value="4" style="flex:1"><span class="mono" id="cradv">4 mm</span></div>
       <div class="row"><label class="ck"><input type="checkbox" id="corrOn" checked> Show corridor</label><span class="note" id="clen"></span></div>
-      <p class="note" style="margin:2px 0 6px">“@” is depth in mm from the entry point.</p><div class="sec">Crossed along the trajectory</div><table class="prox" id="ctab1"></table>
-      <div class="sec">Within the corridor radius</div><table class="prox" id="ctab2"></table>
+      <p class="note" style="margin:4px 0 6px">The buttons arm a click on the MRI or the atlas plate. Distances run from the lesion surface to the nearest atlas voxel, whether or not the layer is on. “@” is depth from the entry point. <span class="tag">critical</span> marks eloquent cortex, motor, sensory, language and visual pathways, and arteries.</p>
+      <details class="res" open><summary>Near the lesion <div class="seg" id="lrange" style="margin-left:8px"><button data-v="5">5 mm</button><button data-v="10" aria-pressed="true">10 mm</button></div></summary><table class="prox" id="ptab"></table></details>
+      <details class="res" open><summary>Crossed along the trajectory</summary><table class="prox" id="ctab1"></table></details>
+      <details class="res"><summary>Within the corridor radius</summary><table class="prox" id="ctab2"></table></details>
     </div>
     <div class="tabbody" id="tb-about" hidden>
       <p class="note" style="margin-top:0">All layers live in MNI ICBM152 2009 space at 1 mm. Both panels draw from the same label volumes, so a colour block on the MRI and the matching shape in the illustration are the same voxels.</p>
       <div class="sec">How to use</div>
       <p class="note">Click any structure, tract or artery in either view to open its details at the top of this panel. Click the MRI to move the crosshair; scroll or use the slider to page slices. Click a structure in the illustration to jump the MRI there. Use the Lesion tab to drop a sphere and list everything within 5 or 10 mm; use the Corridor tab to set an entry and target and see what the trajectory crosses.</p>
       <div class="sec">Limits</div>
-      <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, and the STN is an ellipsoid at the ATAG centroid because the ATAG STN label is only a few voxels at 1 mm. The arteries come from one healthy person's TOF-MRA, not an average: the angiogram stops at about z = +21, so convexity branches above that are missing, and branches are grouped by position: vessels outside the brain envelope (skull base, scalp, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. They are not named segment by segment (M1, M2, P1…), because no labelled vessel dataset is reachable from here. Population vessel atlases (Mouches &amp; Forkert 2019, TopBrain) can replace it once their download sites are reachable from here.</p>
+      <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, and the STN is an ellipsoid at the ATAG centroid because the ATAG STN label is only a few voxels at 1 mm. The arteries and the MRA image are population averages (Mouches &amp; Forkert 2019), already in MNI space, covering the whole brain. Averaging across people keeps the large, consistent arteries sharp (ICA, circle of Willis, M1, A1–A2, pericallosal, P1–P2, basilar) but blurs distal branches whose course varies between people, so small cortical branches look faint or missing. The 3D vessel surface is drawn where at least 12% of subjects had a vessel. Branches are grouped by position: vessels outside the brain envelope (skull base, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. They are not named segment by segment (M1, M2, P1…).</p>
       <div class="sec">Data and licences</div>
       <p class="note">Template: ICBM 2009b nonlinear symmetric T1/T2, © 1993–2009 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University (permissive licence; copyright notice retained).<br>
       Cortex, ventricles, deep grey: CerebrA atlas (Manera et al., 2020, Sci Data).<br>
@@ -244,7 +254,7 @@ ul.rel{margin:0;padding-left:16px;font-size:12px;display:grid;gap:3px}
       Cerebellar lobules: SUIT (Diedrichsen et al., 2009), CC BY-NC 3.0, non-commercial.<br>
       Tracts: HCP-1065 population tractography atlas (Yeh, 2022, Nat Commun), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).<br>
       Atlas files via the DSI Studio atlas repository (github.com/frankyeh/DSI-Studio-atlas).<br>
-      Arteries and the MRA image: example TOF-MRA and its vessel annotation (Subject0001) from github.com/YingChen7/HQA_Cerebrovasculature (Apache-2.0), warped to MNI with ANTs SyN through the same subject's T1.</p>
+      Arteries and the MRA image: population TOF-MRA average, vessel probability and vessel radius atlases (Mouches P, Forkert ND. A statistical atlas of cerebral arteries generated using multi-center MRA datasets from healthy subjects. Sci Data 2019;6:29), Calgary Medical Image Processing and Analysis Lab.</p>
     </div>
   </aside>
 </div>
@@ -357,7 +367,7 @@ $('focus').onchange=e=>{st.focus=e.target.checked;apply3DVis()};
 $('callo').onchange=e=>{st.callouts=e.target.checked};
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
-  ['layers','lesion','corr','about'].forEach(t=>$('tb-'+t).hidden=t!==b.dataset.t);
+  ['layers','plan','about'].forEach(t=>$('tb-'+t).hidden=t!==b.dataset.t);
 });
 
 // ---------- MRI rendering
@@ -474,7 +484,7 @@ function canvasToVoxel(e,snap){const r=mc.getBoundingClientRect();const [w,h]=di
 mc.addEventListener('pointerdown',e=>{const v=canvasToVoxel(e,st.mode==='cross');if(!v)return;const p=v2m(v);
   if(st.mode==='lesion'){st.lesion.c=p;setMode('cross');lesionChanged();return}
   if(st.mode==='entry'){st.corr.E=p;setMode('cross');corrChanged();return}
-  if(st.mode==='target'){st.corr.P=p;setMode('cross');corrChanged();return}
+  if(st.mode==='target'){st.corr.P=p;st.corr.lock=false;$('lockT').checked=false;setMode('cross');corrChanged();return}
   st.cross=p;crossChanged();selectAtCross();
   const mv=ev=>{const v2=canvasToVoxel(ev);if(v2){st.cross=v2m(v2);crossChanged()}};
   const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up)};
@@ -487,7 +497,41 @@ function setMode(m){st.mode=m;$('mb').textContent=m==='lesion'?'Click the MRI to
 $('placeL').onclick=()=>setMode(st.mode==='lesion'?'cross':'lesion');
 $('setE').onclick=()=>setMode(st.mode==='entry'?'cross':'entry');
 $('setT').onclick=()=>setMode(st.mode==='target'?'cross':'target');
-$('tToL').onclick=()=>{st.corr.P=st.lesion.c.slice();corrChanged()};
+st.corr.lock=true;
+
+// ---------- standard neurosurgical approach corridors (left side; x is mirrored for right)
+// Entry = cortical / cisternal entry on the MNI template surface; target = usual surgical target. Straight-line approximations.
+const APPROACHES=[
+ {g:'Ventricular access',id:'kocher',name:'Kocher point (frontal EVD)',E:[-27,14,58],T:[-4,2,8],tn:'foramen of Monro',d:'冠狀縫前約 1 cm、中線旁 2.5–3 cm（瞳孔中線）。經額中回／額上回進入側腦室前角。注意：避開優勢側運動區與 SSS 外側的橋靜脈；路徑不應越過中線。'},
+ {g:'Ventricular access',id:'keen',name:'Keen point (posterior temporal)',E:[-56,-46,26],T:[-29,-42,14],tn:'trigone (atrium)',d:'耳殼上後方各約 2.5–3 cm。到側腦室三角區。優勢側會經過顳頂語言區與弓狀束，視放射在三角區外側壁。'},
+ {g:'Ventricular access',id:'frazier',name:'Frazier point (occipital)',E:[-28,-90,24],T:[-29,-42,14],tn:'trigone (atrium)',d:'枕外粗隆上 6 cm、中線旁 3–4 cm。沿枕角到三角區；路徑貼近視放射與距狀皮質。'},
+ {g:'Supratentorial',id:'transcort',name:'Transcortical transventricular (MFG)',E:[-34,26,44],T:[-4,2,8],tn:'foramen of Monro',d:'經額中回皮質切開進入前角／Monro 孔（腦室內腫瘤、膠樣囊腫）。非優勢側較安全；注意 FAT、SLF、尾狀核頭與 thalamostriate vein。'},
+ {g:'Supratentorial',id:'transcall',name:'Anterior interhemispheric transcallosal',E:[-7,12,66],T:[-4,2,8],tn:'foramen of Monro / 3rd ventricle',d:'沿大腦鐮進入，胼胝體體部切開 ≤2–2.5 cm。風險：橋靜脈、pericallosal／callosomarginal 動脈、穹窿（雙側損傷致失憶）、SMA。'},
+ {g:'Supratentorial',id:'sfs',name:'Trans-sulcal (superior frontal sulcus)',E:[-22,22,62],T:null,tn:'lesion',d:'沿上額溝進入深部（常配合管狀牽開器、parafascicular 路徑）。溝底即放射冠；路徑後方為 CST，外側為 SLF。'},
+ {g:'Skull base',id:'pterional',name:'Pterional transsylvian',E:[-46,10,-4],T:[-14,2,-12],tn:'ICA bifurcation',d:'額顳開顱、打開 Sylvian 裂沿 M1 到 ICA 分叉、A1、PComm。風險：M1/M2 與 lateral lenticulostriate、Sylvian 靜脈、優勢側額下回與顳上回。直線為示意，實際沿裂隙。'},
+ {g:'Skull base',id:'supraorb',name:'Supraorbital keyhole (eyebrow)',E:[-24,50,-12],T:[-6,6,-14],tn:'suprasellar cistern / AComm',d:'眉弓切口、額下入路沿前顱窩底到視神經、ICA、AComm。風險：嗅神經、額竇、眶額皮質、直回。'},
+ {g:'Skull base',id:'subtemp',name:'Subtemporal',E:[-60,-20,-22],T:[-2,-12,-18],tn:'tentorial incisura / basilar apex',d:'抬起顳葉底面到天幕切跡（基底動脈頂、P1/P2、CN III/IV）。風險：Labbé 靜脈、顳葉牽拉傷、優勢側語言區。'},
+ {g:'Skull base',id:'eea',name:'Endoscopic endonasal transsphenoidal',E:[-2,62,-38],T:[0,-1,-28],tn:'sella',d:'經鼻腔、蝶竇到鞍區。兩側為海綿竇與 ICA，上方為視交叉。直線路徑起點在鼻腔內（模板頭部影像）。'},
+ {g:'Posterior fossa',id:'retrosig',name:'Retrosigmoid',E:[-48,-64,-38],T:[-32,-32,-32],tn:'cerebellopontine angle',d:'乙狀竇後方開顱到 CPA（前庭神經鞘瘤、MVD）。路徑沿小腦外側面；風險：CN VII/VIII、AICA、CN V（上）、CN IX–XI（下）、岩靜脈。'},
+ {g:'Posterior fossa',id:'telovelar',name:'Midline suboccipital (telovelar)',E:[-3,-88,-42],T:[-2,-48,-32],tn:'4th ventricle',d:'枕下中線開顱，打開 tela choroidea 與下髓帆進第四腦室，不切蚓部。風險：第四腦室底（顏面丘、迷走三角）、PICA、齒狀核。'},
+ {g:'Posterior fossa',id:'sci',name:'Supracerebellar infratentorial',E:[-4,-90,-14],T:[-2,-32,0],tn:'pineal region',d:'天幕下、小腦上面往前到松果體區。風險：precentral cerebellar vein、Galen 靜脈系統、SCA、四疊體。'},
+ {g:'Posterior fossa',id:'oitt',name:'Occipital transtentorial',E:[-10,-100,8],T:[-2,-32,0],tn:'pineal region',d:'枕葉內側抬起、切開天幕到松果體區上方。風險：距狀皮質／視放射（對側偏盲）、Galen 靜脈、直竇。'},
+ {g:'Posterior fossa',id:'farlat',name:'Far lateral',E:[-40,-56,-62],T:[-10,-38,-58],tn:'ventrolateral foramen magnum',d:'經枕髁外側到延腦腹外側（椎動脈／PICA 動脈瘤、枕大孔腹側腫瘤）。風險：椎動脈 V3、CN IX–XII、延腦。'},
+];
+(()=>{const sel=$('appr');const groups={};for(const a of APPROACHES){if(!groups[a.g]){groups[a.g]=document.createElement('optgroup');groups[a.g].label=a.g;sel.append(groups[a.g])}const o=document.createElement('option');o.value=a.id;o.textContent=a.name;groups[a.g].append(o)}
+  let side='L';seg('apSide',v=>{side=v});
+  const show=()=>{const a=APPROACHES.find(q=>q.id===sel.value);$('apDesc').hidden=!a;if(a)$('apDesc').textContent=a.d+'（預設目標：'+a.tn+'）'};
+  sel.onchange=show;
+  $('apGo').onclick=()=>{const a=APPROACHES.find(q=>q.id===sel.value);if(!a)return;const m=side==='R'?-1:1;
+    st.corr.E=[a.E[0]*m,a.E[1],a.E[2]];
+    if($('apLes').checked||!a.T){st.corr.P=st.lesion.c.slice();st.corr.lock=true;$('lockT').checked=true}
+    else{st.corr.P=[a.T[0]*m,a.T[1],a.T[2]];st.corr.lock=false;$('lockT').checked=false}
+    st.corr.on=true;$('corrOn').checked=true;corrChanged();st.cross=st.corr.P.map(Math.round);crossChanged()};
+})();
+$('lrange').addEventListener('click',e=>e.preventDefault());
+$('lockT').onchange=e=>{st.corr.lock=e.target.checked;if(st.corr.lock){st.corr.P=st.lesion.c.slice();corrChanged()}};
+['ex','ey','ez'].forEach((id,i)=>$(id).onchange=e=>{st.corr.E[i]=+e.target.value;corrChanged()});
+['tx','ty','tz'].forEach((id,i)=>$(id).onchange=e=>{st.corr.P[i]=+e.target.value;$('lockT').checked=st.corr.lock=false;corrChanged()});
 
 // ---------- 3D
 const host=$('v3');
@@ -603,7 +647,7 @@ renderer.domElement.addEventListener('pointerup',e=>{if(st.view!=='3d')return;if
   const p=[h.point.x,h.point.y,h.point.z].map(Math.round);
   if(st.mode==='lesion'){st.lesion.c=p;setMode('cross');lesionChanged();return}
   if(st.mode==='entry'){st.corr.E=p;setMode('cross');corrChanged();return}
-  if(st.mode==='target'){st.corr.P=p;setMode('cross');corrChanged();return}
+  if(st.mode==='target'){st.corr.P=p;st.corr.lock=false;$('lockT').checked=false;setMode('cross');corrChanged();return}
   st.cross=p;crossChanged();const u=h.object.userData;select(u.kind==='s'?'s':'t',u.s||u.t,[h.point.x,h.point.y,h.point.z])});
 let tipT=0;renderer.domElement.addEventListener('pointermove',e=>{if(st.view!=='3d')return;const now=performance.now();if(now-tipT<60)return;tipT=now;const h=pick(e);const tip=$('tip');
   if(!h){tip.hidden=true;return}const o=h.object.userData.s||h.object.userData.t;const r=host.getBoundingClientRect();
@@ -642,7 +686,7 @@ function renderTable(tab,rows,dist){tab.innerHTML='';
 // ---------- corridor
 function corridor(){
   const E=st.corr.E,P=st.corr.P;const a=m2v(E),b=m2v(P);const d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]];const L=Math.hypot(...d);
-  $('eTxt').textContent=E.map(n=>n.toFixed(0)).join(', ');$('tTxt').textContent=P.map(n=>n.toFixed(0)).join(', ');
+  ['ex','ey','ez'].forEach((id,i)=>{if(document.activeElement!==$(id))$(id).value=Math.round(E[i])});['tx','ty','tz'].forEach((id,i)=>{if(document.activeElement!==$(id))$(id).value=Math.round(P[i])});
   $('clen').textContent=L?('Length '+L.toFixed(1)+' mm'):'';
   if(!L){renderTable($('ctab1'),[],()=>0);renderTable($('ctab2'),[],()=>0);return}
   const segs=[];let cur=null;
@@ -685,7 +729,7 @@ function callouts(){
 }
 // ---------- update plumbing
 function crossChanged(){setSliderFromCross();drawMRI();update3DPlane();update3DTools();if(st.clip)updateClip()}
-function lesionChanged(){$('lx').value=st.lesion.c[0];$('ly').value=st.lesion.c[1];$('lz').value=st.lesion.c[2];$('lrv').textContent=st.lesion.r+' mm';
+function lesionChanged(){if(st.corr.lock){st.corr.P=st.lesion.c.slice();corridor()}$('lx').value=st.lesion.c[0];$('ly').value=st.lesion.c[1];$('lz').value=st.lesion.c[2];$('lrv').textContent=st.lesion.r+' mm';
   proximity();drawMRI();update3DTools()}
 function corrChanged(){corridor();drawMRI();update3DTools()}
 function refresh(){CCver++;apply3DVis();drawMRI();update3DPlane();proximity()}
@@ -816,10 +860,10 @@ function select(k,o,p,also){
   if(k==='s'&&o.note&&o.note!=='eloquent')F.push(['Note',o.note]);
   if(k==='t'&&o.group!=='Arteries'&&o.n)F.push(['Streamlines','HCP-1065 group atlas, '+o.n]);
   if(k==='t'&&o.group==='Arteries'&&p&&o.RAD){const i=vesselAt(o,p);if(i>=0){
-    const dia=o.RAD[i]/10*2;F.push(['Local calibre','≈ '+(dia>0?dia.toFixed(1):'<1')+' mm diameter (segmentation width)']);
+    const dia=o.RAD[i]/10*2;F.push(['Local calibre','≈ '+(dia>0?dia.toFixed(1):'<1')+' mm diameter (population radius atlas)']);
     const nb=o.NB[i];if(nb)F.push(['Runs beside',SB[nb].name+sideTxt(SB[nb])+(o.NBD[i]?' ('+o.NBD[i]+' mm)':' (on its surface)')]);
     const Tt=TER[vi(o.X[i],o.Y[i],o.Z[i])];if(Tt)F.push(['Territory here',TB[Tt].name.replace(' territory','')+sideTxt(TB[Tt])]);
-    F.push(['Source','One healthy subject’s TOF-MRA, warped to MNI']);}}
+    F.push(['Source','Population vessel atlas (Mouches & Forkert 2019)']);}}
   const ld=lesionDist(k,o);if(ld)F.push(['Lesion',ld]);
   if(k!=='v'&&crit(o,k))F.push(['Flag',o.group==='Arteries'?'Critical: artery':'Critical: eloquent cortex or pathway']);
   const dl=$('iFacts');dl.innerHTML='';F.forEach(([a,b])=>{const dt=document.createElement('dt');dt.textContent=a;const dd=document.createElement('dd');dd.textContent=b;dl.append(dt,dd)});
@@ -978,7 +1022,7 @@ function plateToVoxel(e){if(!plateGeom)return null;const r=pc.getBoundingClientR
 pc.addEventListener('click',e=>{const v=plateToVoxel(e);if(!v)return;const p=v2m(v);
   if(st.mode==='lesion'){st.lesion.c=p;setMode('cross');lesionChanged();return}
   if(st.mode==='entry'){st.corr.E=p;setMode('cross');corrChanged();return}
-  if(st.mode==='target'){st.corr.P=p;setMode('cross');corrChanged();return}
+  if(st.mode==='target'){st.corr.P=p;st.corr.lock=false;$('lockT').checked=false;setMode('cross');corrChanged();return}
   st.cross=p;crossChanged();selectAtCross()});
 pc.addEventListener('wheel',e=>{e.preventDefault();const k=st.orient==='ax'?2:st.orient==='co'?1:0;st.cross[k]+=e.deltaY>0?-1:1;const lo=[OX,OY,OZ][k],hi=lo+[NX,NY,NZ][k]-1;st.cross[k]=Math.max(lo,Math.min(hi,st.cross[k]));crossChanged()},{passive:false});
 pc.addEventListener('pointermove',e=>{const v=plateToVoxel(e);const tip=$('tip');if(!v){tip.hidden=true;return}const L=LAB[vi(...v)];const tr=TR.find(t=>showT(t)&&(()=>{for(let i=0;i<t.X.length;i++)if(t.X[i]===v[0]&&t.Y[i]===v[1]&&t.Z[i]===v[2])return true;return false})());
