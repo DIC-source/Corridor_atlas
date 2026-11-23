@@ -43,6 +43,7 @@ python3 build_named.py  # tube meshes + voxel masks for named vessels
 python3 schematic.py  # schematic surgical vessels (Heubner, LSA, AChA, Labbé, Trolard, bridging veins...) and CN I, IV, VI, IX-XII
 python3 paths.py && python3 paths2.py   # long-pathway (CST / DCML / STT) geometry
 python3 pack.py       # writes ../docs/atlas-data.bin
+python3 plandata.py   # planning layers (vessel/sulcus distance, critical-tract directions, entry candidates) -> plan-data.wasm
 ```
 
 Intermediate files go to `pipeline/out/` (git-ignored). The pathway geometry (`paths.json`) is currently embedded in `index.html` as `const PW=...`; regenerate and paste if you change it.

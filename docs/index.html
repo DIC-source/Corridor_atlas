@@ -142,6 +142,10 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
 .appr{border:1px solid var(--line);border-radius:6px;padding:8px 8px 2px;margin-bottom:8px;background:color-mix(in srgb,var(--accent) 4%,var(--panel))}
 #appr{flex:1;min-width:0;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--panel)}
 #apDesc{margin:2px 0 8px;line-height:1.55}
+.assess{border:1px solid var(--line);border-radius:6px;padding:8px;display:grid;gap:6px}
+.asc{display:flex;align-items:center;gap:10px}.ascn{font:600 28px var(--f-mono);font-variant-numeric:tabular-nums}
+.warnn{border-left:3px solid var(--amber);padding-left:8px;margin:0}.warnh{border-left:3px solid var(--crit);padding-left:8px;margin:0;color:var(--crit)}
+.assess table.prox td{vertical-align:top}
 @media (max-width:1100px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr);height:auto}.rail{grid-column:1/-1;max-height:none}.pane.v{height:62vh;min-height:380px}}
 @media (max-width:720px){.app{grid-template-columns:minmax(0,1fr)}.pane.v{height:118vw;min-height:420px}.warnbar{flex-basis:100%}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -183,6 +187,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
   <section class="pane v" aria-label="MRI view">
     <div class="pane-h">
       <span class="ttl">MRI</span>
+      <div class="seg" id="pview" hidden><button data-v="std" aria-pressed="true">Slices</button><button data-v="probe">Probe’s eye</button><button data-v="inline">Inline</button></div>
       <div class="seg" id="orient"><button data-v="ax" aria-pressed="true">Axial</button><button data-v="co">Coronal</button><button data-v="sa">Sagittal</button></div>
       <div class="seg" id="bgsel"><button data-v="t1" aria-pressed="true">T1</button><button data-v="t2">T2</button><button data-v="mra" title="Background becomes a TOF-MRA maximum-intensity projection">MRA</button></div>
       <label class="ck" title="Overlay the TOF-MRA vessels as a maximum-intensity projection"><input type="checkbox" id="vmip"> Vessels (MIP)</label>
@@ -197,7 +202,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <span class="orient" id="oT" style="top:6px;left:50%">A</span>
       <div class="readout" id="ro"></div>
     </div>
-    <div class="slicebar"><span class="mono" id="slab" style="width:58px">z = 0</span><input type="range" id="slice" min="0" max="180" value="72" aria-label="Slice position"><span class="mode-banner" id="mb"></span></div>
+    <div class="slicebar"><span class="mono" id="slab" style="width:58px">z = 0</span><input type="range" id="slice" min="0" max="180" value="72" aria-label="Slice position"><span id="pdepthW" hidden class="ctlrow">Depth <input type="range" id="pdepth" min="0" max="100" value="0" aria-label="Depth along the trajectory"><span class="mono" id="pdv">0 mm</span></span><span id="protW" hidden class="ctlrow">Rotate <input type="range" id="prot" min="0" max="180" value="0" aria-label="Rotate the inline plane"><span class="mono" id="prv">0°</span></span><span class="mode-banner" id="mb"></span></div>
   </section>
 
   <aside class="pane rail" aria-label="Controls">
@@ -238,7 +243,12 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <div hidden><input type="number" id="tx"><input type="number" id="ty"><input type="number" id="tz"></div>
       <div class="row"><span class="plab">Radius</span><input type="range" id="crad" min="1" max="12" value="4" style="flex:1"><span class="mono" id="cradv">4 mm</span></div>
       <div class="row"><label class="ck"><input type="checkbox" id="corrOn" checked> Show corridor</label><span class="note" id="clen"></span></div>
-      <p class="note" style="margin:4px 0 6px">The buttons arm a click on the MRI or the atlas plate. Distances run from the lesion surface to the nearest atlas voxel, whether or not the layer is on. “@” is depth from the entry point. Lesion and target are the same point: the corridor runs from the entry to the lesion centre. <span class="tag">critical</span> marks eloquent cortex, motor, sensory, language and visual pathways, and arteries.</p>
+      <p class="note" style="margin:4px 0 6px">Entry points snap to the brain surface along the line from the lesion, except for approaches that follow a natural corridor. The buttons arm a click on the MRI or the atlas plate. Distances run from the lesion surface to the nearest atlas voxel, whether or not the layer is on. “@” is depth from the entry point. Lesion and target are the same point: the corridor runs from the entry to the lesion centre. <span class="tag">critical</span> marks eloquent cortex, motor, sensory, language and visual pathways, and arteries.</p>
+      <div class="sec">Trajectory assessment</div>
+      <div id="assess" class="assess"><span class="note">Loading…</span></div>
+      <div class="sec">Find an entry</div>
+      <div class="row"><button class="btn" id="sugBtn" title="Score entries on the brain surface within 100 mm and 30° of the surface normal (or inside the chosen approach's zone)">Suggest safest entries</button><button class="btn" id="twoBtn" title="Two-point method: lesion centre to its nearest pial or ependymal surface">Two-point direction</button></div>
+      <div id="twoTxt" class="row"></div><div id="sugList"></div>
       <details class="res" open><summary>Near the lesion <div class="seg" id="lrange" style="margin-left:8px"><button data-v="5">5 mm</button><button data-v="10" aria-pressed="true">10 mm</button></div></summary><table class="prox" id="ptab"></table></details>
       <details class="res" open><summary>Crossed along the trajectory</summary><table class="prox" id="ctab1"></table></details>
       <details class="res"><summary>Within the corridor radius</summary><table class="prox" id="ctab2"></table></details>
@@ -249,6 +259,8 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <p class="note">Click any structure, tract or artery in either view to open its details at the top of this panel. Click the MRI to move the crosshair; scroll or use the slider to page slices. Click a structure in the illustration to jump the MRI there. Use the Lesion tab to drop a sphere and list everything within 5 or 10 mm; use the Corridor tab to set an entry and target and see what the trajectory crosses.</p>
       <div class="sec">Limits</div>
       <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, the STN is an ellipsoid at the published DISTAL-atlas centroid (±12, −13, −5.5) because the ATAG STN label is only a few voxels at 1 mm, and the substantia nigra is the ATAG label grown by 1 mm. CerebrA's “ventral diencephalon” label also covers the cerebral peduncles and midbrain tegmentum; it is split at the plane from the posterior commissure to the mammillary bodies, so only the part in front of that plane is called hypothalamus / subthalamic region, the peduncle (where corticofugal fibres run) is labelled separately, and the rest joins the midbrain. The arteries and the MRA image are population averages (Mouches &amp; Forkert 2019), already in MNI space, covering the whole brain. Averaging across people keeps the large, consistent arteries sharp (ICA, circle of Willis, M1, A1–A2, pericallosal, P1–P2, basilar) but blurs distal branches whose course varies between people, so small cortical branches look faint or missing. The 3D vessel surface is drawn where at least 12% of subjects had a vessel. Branches are grouped by position: vessels outside the brain envelope (skull base, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. These grouped surfaces are now off by default. Named arteries (ICA, M1, M2, A1, A2–pericallosal, PComm, P1–P2, P3–P4, SCA, basilar, vertebral) are centerlines traced with a minimal-cost path along the highest vessel probability between anatomical landmarks, with calibre from the radius atlas. Veins and dural sinuses (superior and inferior sagittal, straight, transverse and sigmoid sinuses, vein of Galen, internal cerebral veins, basal veins of Rosenthal) are not in any reachable dataset: their courses are placed from the template's own geometry (inner brain surface, corpus callosum, third ventricle, midbrain) and are approximate. With “Cut at slice” on, the 3D model is cut at the current MRI level.</p>
+      <div class="sec">Planning mode</div>
+      <p class="note">The Lesion &amp; corridor tab is a separate planning mode; the lesion and corridor are hidden everywhere else. The lesion is the target. Transcortical entries snap to the brain surface along the line from the lesion. Each trajectory gets a heuristic risk score: vessel clearance (distance to atlas vessels minus the corridor radius), sulcal crossing (sulci as a surrogate for cortical vessels), ventricle entry, eloquent entry cortex, critical tracts crossed and the crossing angle (parallel is safer than perpendicular), deep nuclei, length and the angle to the surface normal. Hard limits of 100 mm and 30° follow published computer-assisted planning (Marcus et al., Oper Neurosurg 2019; Vakharia et al., J Neurosurg 2018). “Suggest safest entries” scores entries on the brain surface and shows the five lowest; “Two-point direction” follows the Barrow two-point method (lesion centre to its nearest pial or ependymal surface). Probe’s-eye and inline views follow the layout of commercial trajectory planners. All scores describe a population atlas, not a patient.</p>
       <div class="sec">Data and licences</div>
       <p class="note">Template: ICBM 2009b nonlinear symmetric T1/T2, © 1993–2009 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University (permissive licence; copyright notice retained).<br>
       Cortex, ventricles, deep grey: CerebrA atlas (Manera et al., 2020, Sci Data).<br>
@@ -304,6 +316,7 @@ const st={
   corr:{E:[-56,-4,50],P:[-32,-18,30],rad:4,on:true},
   mode:'cross', cx:'R', clip:true, plane:true, focus:false, callouts:true
 };
+const LON=()=>!!st.plan&&st.lesion.on,CON=()=>!!st.plan&&st.corr.on;
 const defaultTracts=new Set(['cst_l','cst_r','af_l','af_r','or_l','or_r']);
 TR.forEach(t=>st.visT[t.id]=defaultTracts.has(t.id)||isVes(t)||t.group==='Cranial nerves');TE.forEach(t=>st.visV[t.id]=false);
 S.forEach(s=>st.visS[s.id]=true);
@@ -372,6 +385,7 @@ $('callo').onchange=e=>{st.callouts=e.target.checked};
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
   ['layers','plan','about'].forEach(t=>$('tb-'+t).hidden=t!==b.dataset.t);
+  if(typeof setPlan==='function')setPlan(b.dataset.t==='plan');
 });
 
 // ---------- MRI rendering
@@ -432,6 +446,7 @@ function sliceImage(){ // returns {w,h,bg:Uint8ClampedArray rgba, ov rgba}
 const bgc=document.createElement('canvas'),ovc=document.createElement('canvas'),mic=document.createElement('canvas');
 let lastSlice=null;
 function drawMRI(){
+  if(st.plan&&st.pview&&st.pview!=='std'&&typeof drawOblique==='function'){drawOblique();if(typeof drawPlate==='function')drawPlate();return}
   const {w,h,img,ov,mi,mip,dep}=sliceImage();lastSlice={w,h,img,ov,mip,dep};
   mic.width=w*2;mic.height=h*2;mic.getContext('2d').putImageData(mi,0,0);
   bgc.width=w;bgc.height=h;bgc.getContext('2d').putImageData(img,0,0);
@@ -451,14 +466,14 @@ function drawMRI(){
   mx.strokeStyle='rgba(255,236,120,.75)';mx.lineWidth=1*dpr;mx.setLineDash([4*dpr,4*dpr]);
   mx.beginPath();mx.moveTo((q[0]+.5)*k,0);mx.lineTo((q[0]+.5)*k,mc.height);mx.moveTo(0,(q[1]+.5)*k);mx.lineTo(mc.width,(q[1]+.5)*k);mx.stroke();mx.setLineDash([]);
   // lesion
-  if(st.lesion.on){const lv=m2v(st.lesion.c);const lq=v2s(lv[0],lv[1],lv[2]);const d=Math.abs(lq[2]-q[2]);
+  if(LON()){const lv=m2v(st.lesion.c);const lq=v2s(lv[0],lv[1],lv[2]);const d=Math.abs(lq[2]-q[2]);
     if(d<st.lesion.r){const rr=Math.sqrt(st.lesion.r**2-d**2);mx.fillStyle='rgba(220,40,30,.28)';mx.strokeStyle='#ff4b3a';mx.lineWidth=2*dpr;
       mx.beginPath();mx.arc((lq[0]+.5)*k,(lq[1]+.5)*k,rr*k,0,7);mx.fill();mx.stroke();}
     // 5/10 mm halos
     [5,10].forEach((m,j)=>{const R=st.lesion.r+m;if(d<R){const rr=Math.sqrt(R*R-d*d);mx.strokeStyle=j?'rgba(255,190,60,.7)':'rgba(255,90,60,.8)';mx.setLineDash([3*dpr,3*dpr]);mx.lineWidth=1*dpr;mx.beginPath();mx.arc((lq[0]+.5)*k,(lq[1]+.5)*k,rr*k,0,7);mx.stroke();mx.setLineDash([])}});
   }
   // corridor projection
-  if(st.corr.on&&st.corr.E&&st.corr.P){const a=m2v(st.corr.E),b=m2v(st.corr.P);const qa=v2s(...a),qb=v2s(...b);
+  if(CON()&&st.corr.E&&st.corr.P){const a=m2v(st.corr.E),b=m2v(st.corr.P);const qa=v2s(...a),qb=v2s(...b);
     mx.strokeStyle='rgba(120,220,255,.55)';mx.lineWidth=1.5*dpr;mx.setLineDash([6*dpr,4*dpr]);mx.beginPath();mx.moveTo((qa[0]+.5)*k,(qa[1]+.5)*k);mx.lineTo((qb[0]+.5)*k,(qb[1]+.5)*k);mx.stroke();mx.setLineDash([]);
     // in-plane intersection
     const s=q[2];if((qa[2]-s)*(qb[2]-s)<=0&&qa[2]!==qb[2]){const t=(s-qa[2])/(qb[2]-qa[2]);const ix=qa[0]+(qb[0]-qa[0])*t,iy=qa[1]+(qb[1]-qa[1])*t;
@@ -485,16 +500,16 @@ function canvasToVoxel(e,snap){const r=mc.getBoundingClientRect();const [w,h]=di
   if(snap&&lastSlice&&(st.vmip||st.bg==='mra')){const C=Math.floor((e.clientX-r.left)/r.width*w*2),R=Math.floor((e.clientY-r.top)/r.height*h*2);const p=R*w*2+C;
     if(lastSlice.mip[p]>60){const d=lastSlice.dep[p];if(st.orient==='ax')v[2]=Math.round(d-OZ);else if(st.orient==='co')v[1]=Math.round(d-OY);else v[0]=Math.round(d-OX)}}
   return v}
-mc.addEventListener('pointerdown',e=>{const v=canvasToVoxel(e,st.mode==='cross');if(!v)return;const p=v2m(v);
+mc.addEventListener('pointerdown',e=>{if(st.plan&&st.pview!=='std')return;const v=canvasToVoxel(e,st.mode==='cross');if(!v)return;const p=v2m(v);
   if(st.mode==='lesion'){st.lesion.c=p;setMode('cross');lesionChanged();return}
-  if(st.mode==='entry'){st.corr.E=p;setMode('cross');corrChanged();return}
+  if(st.mode==='entry'){st.corr.E=snapE(p);st.corr.nat=false;st.corr.app=null;setMode('cross');corrChanged();return}
   if(st.mode==='target'){st.corr.P=p;st.corr.lock=false;$('lockT').checked=false;setMode('cross');corrChanged();return}
   st.cross=p;crossChanged();selectAtCross();
   const mv=ev=>{const v2=canvasToVoxel(ev);if(v2){st.cross=v2m(v2);crossChanged()}};
   const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up)};
   addEventListener('pointermove',mv);addEventListener('pointerup',up);
 });
-mc.addEventListener('wheel',e=>{e.preventDefault();const k=st.orient==='ax'?2:st.orient==='co'?1:0;st.cross[k]+=e.deltaY>0?-1:1;
+mc.addEventListener('wheel',e=>{e.preventDefault();if(st.plan&&st.pview!=='std'){st.pdepth=Math.max(0,Math.min(+$('pdepth').max,st.pdepth+(e.deltaY>0?1:-1)));$('pdepth').value=st.pdepth;$('pdv').textContent=st.pdepth+' mm';drawMRI();return}const k=st.orient==='ax'?2:st.orient==='co'?1:0;st.cross[k]+=e.deltaY>0?-1:1;
   const lo=[OX,OY,OZ][k],hi=lo+[NX,NY,NZ][k]-1;st.cross[k]=Math.max(lo,Math.min(hi,st.cross[k]));crossChanged()},{passive:false});
 function setMode(m){st.mode=m;$('mb').textContent=m==='lesion'?'Click the MRI to place the lesion centre':m==='entry'?'Click the MRI to set the entry point':m==='target'?'Click the MRI to set the target':'';
   $('placeL').setAttribute('aria-pressed',m==='lesion');$('setE').setAttribute('aria-pressed',m==='entry');$('setT').setAttribute('aria-pressed',m==='target')}
@@ -527,14 +542,15 @@ const APPROACHES=[
   const show=()=>{const a=APPROACHES.find(q=>q.id===sel.value);$('apDesc').hidden=!a;if(a)$('apDesc').textContent=a.d+'（常見目標：'+a.tn+'）'};
   sel.onchange=show;
   $('apGo').onclick=()=>{const a=APPROACHES.find(q=>q.id===sel.value);if(!a)return;const m=side==='R'?-1:1;
-    st.corr.E=[a.E[0]*m,a.E[1],a.E[2]];
     if($('apLes').checked&&a.T){st.lesion.c=[a.T[0]*m,a.T[1],a.T[2]]}
+    st.corr.app=a.id;st.corr.appSide=side;st.corr.nat=NAT.has(a.id);st.corr.vent=VENT.has(a.id);
+    const raw=[a.E[0]*m,a.E[1],a.E[2]];st.corr.E=st.corr.nat?raw:snapE(raw);
     st.corr.lock=true;st.corr.P=st.lesion.c.slice();
     st.corr.on=true;$('corrOn').checked=true;lesionChanged();corrChanged();st.cross=st.corr.P.map(Math.round);crossChanged()};
 })();
 $('lrange').addEventListener('click',e=>e.preventDefault());
 $('lockT').onchange=e=>{st.corr.lock=e.target.checked;if(st.corr.lock){st.corr.P=st.lesion.c.slice();corrChanged()}};
-['ex','ey','ez'].forEach((id,i)=>$(id).onchange=e=>{st.corr.E[i]=+e.target.value;corrChanged()});
+['ex','ey','ez'].forEach((id,i)=>$(id).onchange=e=>{const p=st.corr.E.slice();p[i]=+e.target.value;st.corr.E=st.corr.nat?p:snapE(p);corrChanged()});
 ['tx','ty','tz'].forEach((id,i)=>$(id).onchange=e=>{st.corr.P[i]=+e.target.value;$('lockT').checked=st.corr.lock=false;corrChanged()});
 
 // ---------- 3D
@@ -633,16 +649,16 @@ let near=new Map(); // id -> distance (for focus)
 function apply3DVis(){
   for(const m of meshes){const s=m.userData.s;let v=showS(s);
     if(s.group.startsWith('Cortex')){if(st.cx==='none'||(st.cx!=='both'&&s.side!==st.cx))v=false}
-    m.visible=v;let op=1;if(st.focus&&st.lesion.on){op=near.has('s'+s.id)?1:.12}if(st.fade&&st.fade.has('s'+s.id))op=.15;
+    m.visible=v;let op=1;if(st.focus&&LON()){op=near.has('s'+s.id)?1:.12}if(st.fade&&st.fade.has('s'+s.id))op=.15;
     m.material.opacity=op;m.material.depthWrite=op>.5;m.userData.o.material.uniforms.op.value=op>.5?1:.15}
   for(const t of TE)t.mesh.visible=showV(t);
-  for(const t of TR){const v=showT(t);if(v){ensureTube(t);setClip(t.mesh)}if(t.mesh){t.mesh.visible=v;const op=(st.focus&&st.lesion.on&&!near.has('t'+t.id))||(st.fade&&st.fade.has('t'+t.id))?.15:1;t.mesh.material.opacity=op;t.mesh.material.depthWrite=op>.5}}
+  for(const t of TR){const v=showT(t);if(v){ensureTube(t);setClip(t.mesh)}if(t.mesh){t.mesh.visible=v;const op=(st.focus&&LON()&&!near.has('t'+t.id))||(st.fade&&st.fade.has('t'+t.id))?.15:1;t.mesh.material.opacity=op;t.mesh.material.depthWrite=op>.5}}
 }
 function update3DTools(){
-  lesM.visible=haloM.visible=st.lesion.on;lesM.position.set(...st.lesion.c);lesM.scale.setScalar(st.lesion.r);
+  lesM.visible=haloM.visible=LON();lesM.position.set(...st.lesion.c);lesM.scale.setScalar(st.lesion.r);
   haloM.position.copy(lesM.position);haloM.scale.setScalar(st.lesion.r+st.range);
   const E=new THREE.Vector3(...st.corr.E),P=new THREE.Vector3(...st.corr.P);const d=P.clone().sub(E);const L=d.length();
-  corrM.visible=corrL.visible=st.corr.on&&L>0;
+  corrM.visible=corrL.visible=CON()&&L>0;
   if(L>0){corrM.position.copy(E.clone().add(P).multiplyScalar(.5));corrM.scale.set(st.corr.rad,L,st.corr.rad);
     corrM.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize());
     const ext=E.clone().sub(d.clone().normalize().multiplyScalar(25));corrL.geometry.setFromPoints([ext,P])}
@@ -666,7 +682,7 @@ renderer.domElement.addEventListener('pointerdown',e=>downAt=[e.clientX,e.client
 renderer.domElement.addEventListener('pointerup',e=>{if(st.view!=='3d')return;if(!downAt||Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>4)return;const h=pick(e);if(!h)return;
   const p=[h.point.x,h.point.y,h.point.z].map(Math.round);
   if(st.mode==='lesion'){st.lesion.c=p;setMode('cross');lesionChanged();return}
-  if(st.mode==='entry'){st.corr.E=p;setMode('cross');corrChanged();return}
+  if(st.mode==='entry'){st.corr.E=snapE(p);st.corr.nat=false;st.corr.app=null;setMode('cross');corrChanged();return}
   if(st.mode==='target'){st.corr.P=p;st.corr.lock=false;$('lockT').checked=false;setMode('cross');corrChanged();return}
   st.cross=p;crossChanged();const u=h.object.userData;select(u.kind==='s'?'s':'t',u.s||u.t,[h.point.x,h.point.y,h.point.z])});
 let tipT=0;renderer.domElement.addEventListener('pointermove',e=>{if(st.view!=='3d')return;const now=performance.now();if(now-tipT<60)return;tipT=now;const h=pick(e);const tip=$('tip');
@@ -731,7 +747,7 @@ function corridor(){
 const svg=$('callouts').querySelector('svg');const clDiv=$('callouts');
 function callouts(){
   clDiv.querySelectorAll('.cl').forEach(e=>e.remove());svg.innerHTML='';
-  if(!st.callouts||!st.lesion.on||!prox.length)return;
+  if(!st.callouts||!LON()||!prox.length)return;
   const r=host.getBoundingClientRect();const W=r.width,H=r.height;if(W<520)return;
   const items=prox.filter(p=>p.k[0]==='t'?showT(p.obj):p.k[0]==='s'?showS(p.obj):false).slice(0,9);
   const lc=new THREE.Vector3(...st.lesion.c).project(cam);const lx=(lc.x+1)/2*W;
@@ -751,7 +767,7 @@ function callouts(){
 function crossChanged(){setSliderFromCross();drawMRI();update3DPlane();update3DTools();if(st.clip)updateClip()}
 function lesionChanged(){if(st.corr.lock){st.corr.P=st.lesion.c.slice();corridor()}$('lx').value=st.lesion.c[0];$('ly').value=st.lesion.c[1];$('lz').value=st.lesion.c[2];$('lrv').textContent=st.lesion.r+' mm';
   proximity();drawMRI();update3DTools()}
-function corrChanged(){corridor();drawMRI();update3DTools()}
+function corrChanged(){corridor();drawMRI();update3DTools();if(st.plan&&typeof assessUI==='function'){assessUI();if(st.pview!=='std')setPview(st.pview)}}
 function refresh(){CCver++;apply3DVis();drawMRI();update3DPlane();proximity()}
 ['lx','ly','lz'].forEach((id,i)=>$(id).onchange=e=>{st.lesion.c[i]=+e.target.value;lesionChanged()});
 $('lr').oninput=e=>{st.lesion.r=+e.target.value;lesionChanged()};
@@ -913,7 +929,7 @@ function descOf(k,o){
 }
 const info=$('info');let selMesh=null;
 function setHL(m){if(selMesh&&selMesh.material.emissive)selMesh.material.emissive.setHex(0);selMesh=m;if(m&&m.material.emissive)m.material.emissive.setHex(0x3a2a00)}
-function lesionDist(k,o){const key=k+(k==='t'?o.id:o.id);const d=near.get(key);if(!st.lesion.on)return null;return d===undefined?'> '+st.range+' mm':d<=0?'Inside the lesion':d.toFixed(1)+' mm from the lesion surface'}
+function lesionDist(k,o){const key=k+(k==='t'?o.id:o.id);const d=near.get(key);if(!LON())return null;return d===undefined?'> '+st.range+' mm':d<=0?'Inside the lesion':d.toFixed(1)+' mm from the lesion surface'}
 function vesselAt(t,p){const v=m2v(p);let bi=-1,bd=1e9;for(let i=0;i<t.X.length;i++){const d=(t.X[i]-v[0])**2+(t.Y[i]-v[1])**2+(t.Z[i]-v[2])**2;if(d<bd){bd=d;bi=i}}return bi}
 function select(k,o,p,also){
   info.hidden=false;$('iSw').style.background=o.color;$('iName').textContent=o.name+sideTxt(o);
@@ -1072,8 +1088,8 @@ function drawPlate(){if(st.view!=='plate')return;const r=$('v3').getBoundingClie
   drawLP(k,ox,oy,dpr);
   // lesion and corridor
   const cv=m2v(st.cross),q=v2s(cv[0],cv[1],cv[2]);
-  if(st.lesion.on){const lv=m2v(st.lesion.c),lq=v2s(...lv),d=Math.abs(lq[2]-q[2]);if(d<st.lesion.r){const rr=Math.sqrt(st.lesion.r**2-d*d);px.beginPath();px.arc(ox+(lq[0]+.5)*k,oy+(lq[1]+.5)*k,rr*k,0,7);px.fillStyle='rgba(200,50,40,.30)';px.fill();px.lineWidth=2*dpr;px.strokeStyle='#a3241a';px.setLineDash([4*dpr,3*dpr]);px.stroke();px.setLineDash([])}}
-  if(st.corr.on){const a=v2s(...m2v(st.corr.E)),b=v2s(...m2v(st.corr.P));px.beginPath();px.moveTo(ox+(a[0]+.5)*k,oy+(a[1]+.5)*k);px.lineTo(ox+(b[0]+.5)*k,oy+(b[1]+.5)*k);px.strokeStyle='rgba(20,110,150,.6)';px.lineWidth=2*dpr;px.setLineDash([7*dpr,4*dpr]);px.stroke();px.setLineDash([])}
+  if(LON()){const lv=m2v(st.lesion.c),lq=v2s(...lv),d=Math.abs(lq[2]-q[2]);if(d<st.lesion.r){const rr=Math.sqrt(st.lesion.r**2-d*d);px.beginPath();px.arc(ox+(lq[0]+.5)*k,oy+(lq[1]+.5)*k,rr*k,0,7);px.fillStyle='rgba(200,50,40,.30)';px.fill();px.lineWidth=2*dpr;px.strokeStyle='#a3241a';px.setLineDash([4*dpr,3*dpr]);px.stroke();px.setLineDash([])}}
+  if(CON()){const a=v2s(...m2v(st.corr.E)),b=v2s(...m2v(st.corr.P));px.beginPath();px.moveTo(ox+(a[0]+.5)*k,oy+(a[1]+.5)*k);px.lineTo(ox+(b[0]+.5)*k,oy+(b[1]+.5)*k);px.strokeStyle='rgba(20,110,150,.6)';px.lineWidth=2*dpr;px.setLineDash([7*dpr,4*dpr]);px.stroke();px.setLineDash([])}
   // crosshair marker
   const cx=ox+(q[0]+.5)*k,cy=oy+(q[1]+.5)*k;px.strokeStyle='#b07d00';px.lineWidth=1.4*dpr;px.beginPath();px.moveTo(cx-9*dpr,cy);px.lineTo(cx-3*dpr,cy);px.moveTo(cx+3*dpr,cy);px.lineTo(cx+9*dpr,cy);px.moveTo(cx,cy-9*dpr);px.lineTo(cx,cy-3*dpr);px.moveTo(cx,cy+3*dpr);px.lineTo(cx,cy+9*dpr);px.stroke();
   // orientation + caption
@@ -1113,7 +1129,7 @@ function plateToVoxel(e){if(!plateGeom)return null;const r=pc.getBoundingClientR
   const [w,h]=dims();const c=Math.floor((X-ox)/k),rr=Math.floor((Y-oy)/k);if(c<0||rr<0||c>=w||rr>=h)return null;return s2v(c,rr)}
 pc.addEventListener('click',e=>{const v=plateToVoxel(e);if(!v)return;const p=v2m(v);
   if(st.mode==='lesion'){st.lesion.c=p;setMode('cross');lesionChanged();return}
-  if(st.mode==='entry'){st.corr.E=p;setMode('cross');corrChanged();return}
+  if(st.mode==='entry'){st.corr.E=snapE(p);st.corr.nat=false;st.corr.app=null;setMode('cross');corrChanged();return}
   if(st.mode==='target'){st.corr.P=p;st.corr.lock=false;$('lockT').checked=false;setMode('cross');corrChanged();return}
   st.cross=p;crossChanged();selectAtCross()});
 pc.addEventListener('wheel',e=>{e.preventDefault();const k=st.orient==='ax'?2:st.orient==='co'?1:0;st.cross[k]+=e.deltaY>0?-1:1;const lo=[OX,OY,OZ][k],hi=lo+[NX,NY,NZ][k]-1;st.cross[k]=Math.max(lo,Math.min(hi,st.cross[k]));crossChanged()},{passive:false});
@@ -1235,6 +1251,147 @@ function pwLabels(){plDiv.querySelectorAll('.cl').forEach(e=>e.remove());plSvg.i
       const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',q.x);c.setAttribute('cy',q.y);c.setAttribute('r','2.2');c.setAttribute('fill','#2b2622');plSvg.append(c)})};
   lay(L,true);lay(R,false)}
 function pathCam(){ctl.target.set(18,-40,-40);cam.position.set(-70,520,-25);ctl.update()}
+
+// ================= Pre-op planning mode =================
+// Principles (see Sources tab): target = lesion; entry restricted to the brain surface (transcortical) or to the
+// approach's natural corridor; trajectory scored for vessel clearance, sulcal crossing, ventricle, eloquent entry,
+// critical-tract crossing angle, deep nuclei, length and entry angle; probe's-eye and inline views along the path.
+const NAT=new Set(['pterional','supraorb','subtemp','eea','retrosig','telovelar','sci','oitt','farlat','transcall']);
+const VENT=new Set(['kocher','keen','frazier','transcort','transcall']);
+st.corr.nat=false;st.corr.vent=false;st.pview='std';st.pdepth=0;st.prot=0;
+let PD=null,PDp=null;
+function loadPlan(){if(PD)return Promise.resolve(PD);if(PDp)return PDp;
+  PDp=fetch('plan-data.wasm').then(r=>{if(!r.ok)throw new Error(r.status);return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()}).then(b=>{
+    const hl=new Uint32Array(b,0,1)[0];const h=JSON.parse(new TextDecoder().decode(new Uint8Array(b,4,hl)));const base=4+hl;const sc=(s,T)=>new T(b,base+s[0],s[1]/T.BYTES_PER_ELEMENT);
+    PD={crit:h.crit,dves:sc(h.dves,Uint8Array),dsul:sc(h.dsul,Uint8Array),ctid:sc(h.ctid,Uint8Array),cdir:sc(h.cdir,Int8Array),cand:sc(h.cand,Int16Array),cnrm:sc(h.cnrm,Int8Array)};
+    assessUI();return PD}).catch(e=>{$('assess').textContent='Could not load the planning layers ('+e.message+'). Reload the page to try again.';throw e});return PDp}
+const vidx=p=>{const x=Math.round(p[0]-OX),y=Math.round(p[1]-OY),z=Math.round(p[2]-OZ);if(x<0||y<0||z<0||x>=NX||y>=NY||z>=NZ)return -1;return vi(x,y,z)};
+const inB=p=>{const i=vidx(p);return i>=0&&BRAIN[i]>0};
+const add3=(a,b,s)=>[a[0]+b[0]*s,a[1]+b[1]*s,a[2]+b[2]*s],sub3=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],dot3=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],
+  len3=a=>Math.hypot(a[0],a[1],a[2]),nrm3=a=>{const l=len3(a)||1;return[a[0]/l,a[1]/l,a[2]/l]},crs3=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+// entry on the pial surface along the ray target -> clicked point
+function snapE(p){const T=st.lesion.c;const u=nrm3(sub3(p,T));let last=0;for(let t=0;t<=170;t+=.5)if(inB(add3(T,u,t)))last=t;return add3(T,u,last).map(v=>Math.round(v*2)/2)}
+// outward surface normal: from the local brain mass centroid to the point
+function surfN(p){let c=[0,0,0],n=0;for(let dz=-6;dz<=6;dz+=2)for(let dy=-6;dy<=6;dy+=2)for(let dx=-6;dx<=6;dx+=2){const q=[p[0]+dx,p[1]+dy,p[2]+dz];if(inB(q)){c[0]+=q[0];c[1]+=q[1];c[2]+=q[2];n++}}
+  if(!n)return[0,0,1];return nrm3(sub3(p,[c[0]/n,c[1]/n,c[2]/n]))}
+const DEEP=new Set(['Basal ganglia','Thalamus','Brainstem nuclei','Brainstem','Diencephalon']);
+function assess(E,T,rad,opt){opt=opt||{};const d=sub3(T,E),L=len3(d);if(L<1)return null;const u=[d[0]/L,d[1]/L,d[2]/L];const lesR=st.lesion.r;
+  const r={L,minVes:99,vesAt:0,minSul:99,sulCross:0,vent:0,deep:new Map(),tr:new Map(),eloq:null,ang:null};let inSul=false;
+  for(let s=0;s<=L;s+=opt.step||.5){if(L-s<lesR)break;const p=add3(E,u,s);const i=vidx(p);if(i<0)continue;
+    const dv=PD.dves[i]/8-rad;if(dv<r.minVes){r.minVes=dv;r.vesAt=s}
+    if(s>3){const ds=PD.dsul[i]/8;if(ds<r.minSul)r.minSul=ds;const nowIn=ds<1;if(nowIn&&!inSul)r.sulCross++;inSul=nowIn}
+    const Lb=LAB[i];if(Lb){const o=SB[Lb];if(o.group==='Ventricles')r.vent+=.5;else if(DEEP.has(o.group))r.deep.set(o.name+sideTxt(o),(r.deep.get(o.name+sideTxt(o))||0)+.5);
+      if(s<=4&&!r.eloq&&o.note==='eloquent')r.eloq=o.name+sideTxt(o)}
+    const ct=PD.ctid[i];if(ct){const f=[PD.cdir[i*3],PD.cdir[i*3+1],PD.cdir[i*3+2]];const fl=len3(f);if(fl>10){const sn=len3(crs3(u,[f[0]/fl,f[1]/fl,f[2]/fl]));const k=PD.crit[ct-1];const o=r.tr.get(k);if(!o||sn>o.sin)r.tr.set(k,{sin:sn,at:s})}}}
+  const n=opt.n||surfN(E);r.ang=Math.acos(Math.max(-1,Math.min(1,dot3([-u[0],-u[1],-u[2]],n))))*180/Math.PI;
+  const nat=!!opt.nat,cl=(x)=>Math.max(0,Math.min(1,x));const parts=[];
+  parts.push(['Vessel clearance',r.minVes<0?3:3*cl((3-r.minVes)/3),r.minVes<0?'corridor touches a vessel at '+r.vesAt.toFixed(0)+' mm':r.minVes.toFixed(1)+' mm from the corridor edge']);
+  if(!nat)parts.push(['Sulcal crossing',1.5*cl((4-r.minSul)/4),r.sulCross?r.sulCross+' sulcus crossing(s) below 3 mm depth':(r.minSul>=99?'—':'closest sulcus '+r.minSul.toFixed(1)+' mm')]);
+  parts.push(['Ventricle',r.vent>0&&!opt.vent?1.5:0,r.vent>0?(opt.vent?'enters the ventricle (intended for this approach)':'crosses '+r.vent.toFixed(0)+' mm of ventricle'):'not entered']);
+  if(!nat)parts.push(['Eloquent entry',r.eloq?2:0,r.eloq?'enters through '+r.eloq:'non-eloquent cortex']);
+  let ts=0;const tl=[];for(const [k,v] of r.tr){ts+=1.5*v.sin;tl.push(k+' '+(v.sin>.7?'⊥':v.sin>.35?'oblique':'∥')+' @'+v.at.toFixed(0))}
+  parts.push(['Critical tracts',Math.min(3,ts),tl.length?tl.join(' · '):'none crossed']);
+  parts.push(['Deep nuclei',r.deep.size?2:0,r.deep.size?[...r.deep.keys()].join(', '):'none crossed']);
+  parts.push(['Length',cl((L-70)/30),L.toFixed(0)+' mm'+(L>100?' (over 100 mm)':'')]);
+  if(!nat)parts.push(['Entry angle',cl((r.ang-20)/20),r.ang.toFixed(0)+'° from the surface normal'+(r.ang>30?' (over 30°)':'')]);
+  r.parts=parts;r.score=parts.reduce((a,p)=>a+p[1],0);r.hard=(L>100?['length > 100 mm']:[]).concat(!nat&&r.ang>30?['entry angle > 30°']:[]).concat(r.minVes<0?['vessel inside the corridor']:[]);
+  return r}
+const rband=s=>s<2?['low','#2f7a4d']:s<4?['moderate','#a96b00']:['high','#b42318'];
+function assessUI(){const box=$('assess');if(!PD){box.textContent='Loading the planning layers…';loadPlan();return}
+  const r=assess(st.corr.E,st.lesion.c,st.corr.rad,{nat:st.corr.nat,vent:st.corr.vent});box.innerHTML='';if(!r){box.textContent='Set an entry point.';return}
+  const [bn,col]=rband(r.score);
+  const h=document.createElement('div');h.className='asc';h.innerHTML='<span class="ascn" style="color:'+col+'">'+r.score.toFixed(1)+'</span><span><b style="color:'+col+'">'+bn+' risk</b><br><span class="note">heuristic score, lower is safer</span></span>';box.append(h);
+  if(st.corr.nat){const w=document.createElement('p');w.className='note warnn';w.textContent='This approach follows a natural corridor (fissure, cistern or skull base). The straight line is only its direction: tissue it “crosses” is normally retracted or bypassed, so sulcus, entry-cortex and angle checks are skipped.';box.append(w)}
+  if(r.hard.length){const w=document.createElement('p');w.className='note warnh';w.textContent='Outside usual limits: '+r.hard.join(', ')+'.';box.append(w)}
+  const t=document.createElement('table');t.className='prox';for(const [k,v,txt] of r.parts){const tr=t.insertRow();const a=tr.insertCell(),b=tr.insertCell(),c=tr.insertCell();a.textContent=k;a.style.whiteSpace='nowrap';b.textContent=txt;b.className='note';
+    const p=document.createElement('span');p.className='pill';p.textContent=v.toFixed(1);const vv=v/(k==='Vessel clearance'||k==='Critical tracts'?3:2);p.style.background=vv<.34?'color-mix(in srgb,var(--ok) 18%,transparent)':vv<.67?'color-mix(in srgb,var(--amber) 22%,transparent)':'color-mix(in srgb,var(--crit) 20%,transparent)';p.style.color=vv<.34?'var(--ok)':vv<.67?'var(--amber)':'var(--crit)';c.append(p);c.className='d'}
+  box.append(t)}
+// ---------- suggestions: sample entries on the brain surface and rank them
+let candPts=null,topLines=[];
+function clearSuggest(){if(candPts){scene.remove(candPts);candPts.geometry.dispose();candPts=null}topLines.forEach(l=>scene.remove(l));topLines=[];$('sugList').innerHTML=''}
+async function suggest(){await loadPlan();clearSuggest();const T=st.lesion.c;const ap=APPROACHES.find(q=>q.id===st.corr.app);const m=st.corr.appSide==='R'?-1:1;
+  const zone=ap&&!NAT.has(ap.id)?[ap.E[0]*m,ap.E[1],ap.E[2]]:null;
+  const C=PD.cand,N=PD.cnrm,res=[];
+  for(let i=0;i<C.length/3;i++){const E=[C[i*3]+OX,C[i*3+1]+OY,C[i*3+2]+OZ];if(zone&&len3(sub3(E,zone))>25)continue;
+    const d=sub3(T,E),L=len3(d);if(L>100||L<st.lesion.r+5)continue;const n=[N[i*3]/120,N[i*3+1]/120,N[i*3+2]/120];
+    const ang=Math.acos(Math.max(-1,Math.min(1,dot3(n,[-d[0]/L,-d[1]/L,-d[2]/L]))))*180/Math.PI;if(ang>30)continue;
+    const r=assess(E,T,st.corr.rad,{n,step:1,vent:st.corr.vent});res.push({E,s:r.score,r})}
+  if(!res.length){$('sugList').innerHTML='<p class="note">No entry within 100 mm and 30° of the surface normal'+(zone?' inside this approach’s entry zone':'')+'.</p>';return}
+  const P=new Float32Array(res.length*3),Cc=new Float32Array(res.length*3);const c=new THREE.Color();
+  res.forEach((q,i)=>{P.set(q.E,i*3);const t=Math.min(1,q.s/5);c.setHSL(.33*(1-t),.75,.45);Cc.set([c.r,c.g,c.b],i*3)});
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('color',new THREE.BufferAttribute(Cc,3));
+  candPts=new THREE.Points(g,new THREE.PointsMaterial({size:3.2,vertexColors:true,sizeAttenuation:true,depthTest:true}));candPts.renderOrder=6;scene.add(candPts);
+  res.sort((a,b)=>a.s-b.s);const top=[];for(const q of res){if(top.every(t=>len3(sub3(t.E,q.E))>12))top.push(q);if(top.length===5)break}
+  const ul=$('sugList');const tb=document.createElement('table');tb.className='prox';
+  top.forEach((q,k)=>{const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...q.E),new THREE.Vector3(...T)]),new THREE.LineDashedMaterial({color:0x2f7a4d,dashSize:3,gapSize:2,depthTest:false}));ln.computeLineDistances();ln.renderOrder=9;scene.add(ln);topLines.push(ln);
+    const tr=tb.insertRow();const a=tr.insertCell(),b=tr.insertCell(),cc=tr.insertCell();a.textContent='#'+(k+1);const lb=q.r.parts.filter(p=>p[1]>=.5).map(p=>p[0]).join(', ');
+    b.innerHTML='<span class="mono">'+q.E.map(v=>v.toFixed(0)).join(', ')+'</span><br><span class="note">'+(lb?'watch: '+lb:'no major flags')+'</span>';
+    const [bn,col]=rband(q.s);cc.className='d';const bt=document.createElement('button');bt.className='btn';bt.textContent='Use ('+q.s.toFixed(1)+')';bt.style.color=col;
+    bt.onclick=()=>{st.corr.E=q.E.slice();st.corr.nat=false;corrChanged()};cc.append(bt)});
+  ul.append(tb);const n=document.createElement('p');n.className='note';n.textContent=res.length+' candidate entries scored'+(zone?' inside the approach’s entry zone (25 mm)':' (length ≤ 100 mm, angle ≤ 30°)')+'. Green dots are lower risk, red higher.';ul.append(n)}
+// ---------- two-point method: lesion centre -> nearest pial or ependymal surface, extended to the cortex
+let twoLine=null;
+function twoPoint(){const c=st.lesion.c;let best=null,bd=1e9;const R=40;
+  for(let dz=-R;dz<=R;dz++)for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++){const d2=dx*dx+dy*dy+dz*dz;if(d2>=bd||d2>R*R)continue;const q=[c[0]+dx,c[1]+dy,c[2]+dz];const i=vidx(q);if(i<0)continue;
+    const Lb=LAB[i];if(!BRAIN[i]||(Lb&&SB[Lb].group==='Ventricles')){bd=d2;best=q}}
+  if(!best)return null;const u=nrm3(sub3(best,c));let last=0;for(let t=0;t<=170;t+=.5)if(inB(add3(c,u,t)))last=t;
+  const vent=LAB[vidx(best)]&&SB[LAB[vidx(best)]].group==='Ventricles';return{q:best,E:add3(c,u,last).map(v=>Math.round(v*2)/2),d:Math.sqrt(bd),vent}}
+function showTwo(){if(twoLine){scene.remove(twoLine);twoLine=null}const r=twoPoint();const box=$('twoTxt');if(!r){box.textContent='No surface within 40 mm.';return}
+  twoLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...st.lesion.c),new THREE.Vector3(...r.E)]),new THREE.LineDashedMaterial({color:0x7a3fb0,dashSize:2,gapSize:1.5,depthTest:false}));twoLine.computeLineDistances();twoLine.renderOrder=9;scene.add(twoLine);
+  box.innerHTML='';const t=document.createElement('span');t.className='note';t.textContent='Nearest '+(r.vent?'ventricular (ependymal)':'pial')+' surface is '+r.d.toFixed(0)+' mm from the lesion centre; the line exits the cortex at '+r.E.map(v=>v.toFixed(0)).join(', ')+'. ';box.append(t);
+  const b=document.createElement('button');b.className='btn';b.textContent='Use this entry';b.onclick=()=>{st.corr.E=r.E;st.corr.nat=false;st.corr.vent=r.vent;corrChanged()};box.append(b)}
+// ---------- probe's-eye and inline views
+let TIDV=null;
+function buildTIDV(){TIDV=new Uint8Array(NX*NY*NZ);const order=TR.map((t,i)=>[t,i]).sort((a,b)=>(isVes(a[0])?1:0)-(isVes(b[0])?1:0));
+  for(const [t,i] of order){if(t.group.startsWith('Arterial tree'))continue;for(let j=0;j<t.X.length;j++)TIDV[vi(t.X[j],t.Y[j],t.Z[j])]=i+1}}
+function trilin(V,p){const x=p[0]-OX,y=p[1]-OY,z=p[2]-OZ;const x0=Math.floor(x),y0=Math.floor(y),z0=Math.floor(z);if(x0<0||y0<0||z0<0||x0>=NX-1||y0>=NY-1||z0>=NZ-1)return 0;
+  const fx=x-x0,fy=y-y0,fz=z-z0;const i=vi(x0,y0,z0),sx=1,sy=NX,sz=NX*NY;
+  const c00=V[i]*(1-fx)+V[i+sx]*fx,c10=V[i+sy]*(1-fx)+V[i+sy+sx]*fx,c01=V[i+sz]*(1-fx)+V[i+sz+sx]*fx,c11=V[i+sz+sy]*(1-fx)+V[i+sz+sy+sx]*fx;
+  return (c00*(1-fy)+c10*fy)*(1-fz)+(c01*(1-fy)+c11*fy)*fz}
+function obliqueBasis(){const E=st.corr.E,T=st.lesion.c;const u=nrm3(sub3(T,E));const ref=Math.abs(u[2])<.9?[0,0,1]:[0,1,0];const e1=nrm3(crs3(u,ref)),e2=crs3(u,e1);return{E,T,u,e1,e2,L:len3(sub3(T,E))}}
+function drawOblique(){if(!TIDV)buildTIDV();const B=obliqueBasis();const probe=st.pview==='probe';const res=.5;
+  let W,H,P0,ax,ay;
+  if(probe){W=H=160;const c=add3(B.E,B.u,st.pdepth);ax=B.e1;ay=B.e2;P0=add3(add3(c,ax,-W/2*res),ay,H/2*res)}
+  else{const th=st.prot*Math.PI/180;const e=[B.e1[0]*Math.cos(th)+B.e2[0]*Math.sin(th),B.e1[1]*Math.cos(th)+B.e2[1]*Math.sin(th),B.e1[2]*Math.cos(th)+B.e2[2]*Math.sin(th)];
+    W=Math.round((B.L+40)/res);H=160;ax=B.u;ay=e;P0=add3(add3(B.E,ax,-20),ay,H/2*res)}
+  const V=st.bg==='t2'?T2:st.bg==='mra'?MRA:T1;const img=new ImageData(W,H),labs=new Uint8Array(W*H),tids=new Uint8Array(W*H);
+  for(let j=0;j<H;j++)for(let i=0;i<W;i++){const p=[P0[0]+ax[0]*i*res-ay[0]*j*res,P0[1]+ax[1]*i*res-ay[1]*j*res,P0[2]+ax[2]*i*res-ay[2]*j*res];const k=(j*W+i)*4;
+    const g=trilin(V,p);img.data[k]=img.data[k+1]=img.data[k+2]=g;img.data[k+3]=255;const vx=vidx(p);if(vx>=0){const Lb=LAB[vx];if(Lb&&showS(SB[Lb]))labs[j*W+i]=Lb;const t=TIDV[vx];if(t&&showT(TR[t-1]))tids[j*W+i]=t}}
+  const dpr=window.devicePixelRatio||1;const box=$('vm').getBoundingClientRect();const sc=Math.max(1,Math.min((box.width-8)/W,(box.height-8)/H));
+  mc.width=Math.round(W*sc*dpr);mc.height=Math.round(H*sc*dpr);mc.style.width=(W*sc)+'px';mc.style.height=(H*sc)+'px';const k=mc.width/W;
+  bgc.width=W;bgc.height=H;bgc.getContext('2d').putImageData(img,0,0);mx.imageSmoothingEnabled=true;mx.drawImage(bgc,0,0,mc.width,mc.height);
+  mx.save();mx.lineJoin='round';
+  if(st.outl){const seen=new Set(labs);seen.delete(0);for(const L of seen){const m=new Uint8Array(W*H);for(let p=0;p<W*H;p++)m[p]=labs[p]===L?1:0;pathOf(mx,contourOf(m,W,H),k,0,0);mx.strokeStyle=SB[L].color;mx.lineWidth=1.3*dpr;mx.stroke()}
+    const st2=new Set(tids);st2.delete(0);for(const t of st2){const o=TR[t-1];const m=new Uint8Array(W*H);for(let p=0;p<W*H;p++)m[p]=tids[p]===t?1:0;pathOf(mx,contourOf(m,W,H,.34),k,0,0);
+      if(isVes(o)){mx.strokeStyle=o.group==='Arteries'?'#ff5a4a':'#5fa0ff';mx.lineWidth=1.8*dpr;mx.setLineDash([])}else{mx.strokeStyle=o.color;mx.lineWidth=1.6*dpr;mx.setLineDash([5*dpr,3*dpr])}mx.stroke();mx.setLineDash([])}}
+  const toS=p=>{const d=sub3(p,P0);return[dot3(d,ax)/res*k,-dot3(d,ay)/res*k]};
+  const lc=st.lesion.c,rL=st.lesion.r,rr=st.corr.rad/res*k;
+  if(probe){const cx=W/2*k,cy=H/2*k;const dz=dot3(sub3(lc,add3(B.E,B.u,st.pdepth)),B.u);
+    if(Math.abs(dz)<rL){const q=toS(lc);mx.beginPath();mx.arc(q[0],q[1],Math.sqrt(rL*rL-dz*dz)/res*k,0,7);mx.fillStyle='rgba(220,40,30,.25)';mx.fill();mx.strokeStyle='#ff4b3a';mx.lineWidth=2*dpr;mx.stroke()}
+    mx.beginPath();mx.arc(cx,cy,rr,0,7);mx.strokeStyle='#7fe3ff';mx.lineWidth=2*dpr;mx.stroke();mx.beginPath();mx.moveTo(cx-6*dpr,cy);mx.lineTo(cx+6*dpr,cy);mx.moveTo(cx,cy-6*dpr);mx.lineTo(cx,cy+6*dpr);mx.stroke()}
+  else{const a=toS(B.E),b=toS(B.T);const ny=(b[1]+a[1])/2;mx.fillStyle='rgba(127,227,255,.16)';mx.fillRect(a[0],ny-rr,b[0]-a[0],2*rr);mx.strokeStyle='#7fe3ff';mx.lineWidth=1.5*dpr;mx.setLineDash([6*dpr,4*dpr]);
+    mx.beginPath();mx.moveTo(a[0],ny);mx.lineTo(b[0],ny);mx.stroke();mx.setLineDash([]);const q=toS(lc);mx.beginPath();mx.arc(q[0],q[1],rL/res*k,0,7);mx.fillStyle='rgba(220,40,30,.25)';mx.fill();mx.strokeStyle='#ff4b3a';mx.lineWidth=2*dpr;mx.stroke();
+    mx.fillStyle='#7fe3ff';mx.font=(11*dpr)+'px IBM Plex Mono, monospace';mx.textAlign='center';for(let s=0;s<=B.L;s+=10){const x=a[0]+s/res*k;mx.fillRect(x-.5*dpr,ny+rr,1*dpr,5*dpr);mx.fillText(s+'',x,ny+rr+16*dpr)}
+    const dx=a[0]+st.pdepth/res*k;mx.strokeStyle='#ffd24a';mx.lineWidth=1.5*dpr;mx.beginPath();mx.moveTo(dx,ny-rr-10*dpr);mx.lineTo(dx,ny+rr+10*dpr);mx.stroke();mx.fillStyle='#ffd24a';mx.fillText('E',a[0],ny-rr-8*dpr)}
+  mx.restore();
+  $('oL').textContent='';$('oR').textContent='';$('oT').textContent=probe?'probe’s-eye view':'inline view';
+  // readout: what sits inside the corridor at the current depth
+  const c=add3(B.E,B.u,st.pdepth);const names=new Set();for(let a=0;a<12;a++){const th=a/12*Math.PI*2;for(const rad of [0,st.corr.rad*.5,st.corr.rad]){const p=add3(add3(c,B.e1,Math.cos(th)*rad),B.e2,Math.sin(th)*rad);const i=vidx(p);if(i<0)continue;const Lb=LAB[i];if(Lb)names.add(SB[Lb].name+sideTxt(SB[Lb]));const t=TIDV[i];if(t)names.add(TR[t-1].name+sideTxt(TR[t-1]))}}
+  $('ro').innerHTML='';const s1=document.createElement('span');s1.textContent='Depth '+st.pdepth.toFixed(0)+' / '+B.L.toFixed(0)+' mm';const s2=document.createElement('span');s2.textContent=names.size?'In corridor: '+[...names].slice(0,6).join(' · '):'In corridor: white matter';$('ro').append(s1,s2)}
+function setPview(v){st.pview=v;$('pview').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v?'true':'false'));
+  const std=v==='std';$('slice').hidden=!std;$('slab').hidden=!std;$('orient').hidden=!std;$('pdepthW').hidden=std;$('protW').hidden=v!=='inline';
+  const L=len3(sub3(st.lesion.c,st.corr.E));$('pdepth').max=Math.ceil(L+10);if(st.pdepth>L+10)st.pdepth=L;drawMRI()}
+seg('pview',v=>setPview(v));
+$('pdepth').oninput=e=>{st.pdepth=+e.target.value;$('pdv').textContent=st.pdepth+' mm';drawMRI()};
+$('prot').oninput=e=>{st.prot=+e.target.value;$('prv').textContent=st.prot+'°';drawMRI()};
+$('sugBtn').onclick=()=>{$('sugList').innerHTML='<p class="note">Scoring candidate entries…</p>';setTimeout(suggest,20)};
+$('twoBtn').onclick=()=>showTwo();
+// ---------- entering / leaving planning mode
+let prevView='plate';
+function setPlan(on){if(st.plan===on)return;st.plan=on;$('pview').hidden=!on;
+  if(on){prevView=st.view;setView('3d');loadPlan().then(()=>assessUI()).catch(()=>{})}
+  else{setPview('std');clearSuggest();if(twoLine){scene.remove(twoLine);twoLine=null}setView(prevView)}
+  apply3DVis();update3DTools();drawMRI();drawPlate()}
 
 buildLayerUI();
 // ---------- selection tools, search, teaching modes, computed relationships
