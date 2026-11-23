@@ -599,12 +599,16 @@ function update3DPlane(){if(!lastSlice||typeof sliceContours!=='function')return
   const c=ptex.image;c.width=w*K;c.height=h*K;const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.lineJoin='round';
   const C=sliceContours();
   const cxOK=o=>!o.group.startsWith('Cortex')||st.cx==='both'||(st.cx!=='none'&&o.side===st.cx);
-  pathOf(x,C.brain,K,0,0);x.fillStyle='#efe3cf';x.fill('evenodd');
+  // white matter only on the side(s) whose cortex is shown in 3D
+  const wmClip=()=>{if(st.cx==='both')return true;if(st.cx==='none')return false;
+    if(st.orient==='sa')return (st.cross[0]>=0?'R':'L')===st.cx;
+    const mid=(NX-1-90)*K+K/2;const right=st.radio;x.beginPath();
+    if((st.cx==='R')===right)x.rect(0,0,mid,c.height);else x.rect(mid,0,c.width-mid,c.height);x.clip();return true};
+  x.save();if(wmClip()){pathOf(x,C.brain,K,0,0);x.fillStyle='#efe3cf';x.fill('evenodd');pathOf(x,C.brain,K,0,0);x.lineWidth=2;x.strokeStyle='#3b302a';x.stroke()}x.restore();
   const order=R=>R.o.group.startsWith('Cortex')?0:R.o.group==='Cerebellum'?1:R.o.group==='Brainstem'?2:R.o.group==='Ventricles'?4:3;
   for(const R of [...C.regions].sort((p,q)=>order(p)-order(q))){if(!cxOK(R.o))continue;pathOf(x,R.poly,K,0,0);x.fillStyle=R.o.color;x.fill('evenodd');x.lineWidth=1.2;x.strokeStyle='rgba(43,38,34,.75)';x.stroke()}
   for(const T of C.tracts){if(T.o.group.startsWith('Arterial tree'))continue;pathOf(x,T.poly,K,0,0);
     x.fillStyle=T.o.group==='Arteries'?'#c4362c':T.o.group==='Veins & sinuses'?'#3f6fc2':T.o.color;x.globalAlpha=isVes(T.o)?1:.8;x.fill('evenodd');x.globalAlpha=1;x.lineWidth=1;x.strokeStyle='rgba(43,38,34,.6)';x.stroke()}
-  pathOf(x,C.brain,K,0,0);x.lineWidth=2;x.strokeStyle='#3b302a';x.stroke();
   ptex.needsUpdate=true;
   const s=sliceIdx();plane.scale.set(w,h,1);plane.rotation.set(0,0,0);plane.position.set(0,0,0);
   const cx=OX+(NX-1)/2,cy=OY+(NY-1)/2,cz=OZ+(NZ-1)/2;
