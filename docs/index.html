@@ -163,7 +163,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
         <button data-v="both">Both</button><button data-v="R" aria-pressed="true">Right only</button><button data-v="L">Left only</button><button data-v="none">Off</button>
       </div>
       <label class="ck" title="Remove everything above (or in front of) the current MRI slice"><input type="checkbox" id="clip" checked> Cut at slice</label>
-      <label class="ck"><input type="checkbox" id="plane3" checked> Slice plane</label>
+      <label class="ck" title="Fill the cut surface with the atlas cross-section"><input type="checkbox" id="plane3" checked> Cut face</label>
       <label class="ck"><input type="checkbox" id="focus"> Focus</label>
       <label class="ck"><input type="checkbox" id="callo" checked> Callouts</label></span>
     </div>
@@ -354,7 +354,7 @@ function seg(id,cb){const el=$(id);el.addEventListener('click',e=>{const b=e.tar
 seg('orient',v=>{st.orient=v;setSliderFromCross();drawMRI();update3DPlane()});
 seg('bgsel',v=>{st.bg=v;drawMRI();update3DPlane()});
 seg('sidesel',v=>{st.side=v;refresh()});
-seg('cxmode',v=>{st.cx=v;apply3DVis()});
+seg('cxmode',v=>{st.cx=v;apply3DVis();update3DPlane()});
 seg('lrange',v=>{st.range=+v;proximity()});
 $('vmip').onchange=e=>{st.vmip=e.target.checked;drawMRI();update3DPlane()};
 $('slabw').oninput=e=>{st.slab=+e.target.value;$('slabv').textContent=st.slab+' mm';drawMRI();update3DPlane()};
@@ -362,8 +362,8 @@ $('alpha').oninput=e=>{st.alpha=e.target.value/100;drawMRI();update3DPlane()};
 $('outl').onchange=e=>{st.outl=e.target.checked;drawMRI()};
 $('outline').onchange=e=>{st.outline=e.target.checked;drawMRI();update3DPlane()};
 $('radio').onchange=e=>{st.radio=e.target.checked;drawMRI()};
-$('clip').onchange=e=>{st.clip=e.target.checked;updateClip()};
-$('plane3').onchange=e=>{st.plane=e.target.checked;plane.visible=st.plane};
+$('clip').onchange=e=>{st.clip=e.target.checked;updateClip();update3DPlane()};
+$('plane3').onchange=e=>{st.plane=e.target.checked;update3DPlane()};
 $('focus').onchange=e=>{st.focus=e.target.checked;apply3DVis()};
 $('callo').onchange=e=>{st.callouts=e.target.checked};
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
@@ -593,17 +593,25 @@ const corrM=new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,24,1,true),new THREE
 const corrL=new THREE.Line(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0x0f6a8f,depthTest:false}));corrL.renderOrder=9;scene.add(corrL);
 const crossM=new THREE.Mesh(new THREE.SphereGeometry(1.2,16,12),new THREE.MeshBasicMaterial({color:0xf2b400,depthTest:false}));crossM.renderOrder=10;scene.add(crossM);
 const ptex=new THREE.CanvasTexture(document.createElement('canvas'));
-const plane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:ptex,transparent:true,opacity:.9,side:THREE.DoubleSide,depthWrite:false}));scene.add(plane);
-function update3DPlane(){if(!lastSlice)return;const {w,h}=lastSlice;
-  const c=ptex.image;c.width=w*2;c.height=h*2;const x=c.getContext('2d');x.imageSmoothingEnabled=true;x.drawImage(bgc,0,0,w*2,h*2);x.imageSmoothingEnabled=false;x.drawImage(ovc,0,0,w*2,h*2);x.imageSmoothingEnabled=true;x.drawImage(mic,0,0,w*2,h*2);
-  const id=x.getImageData(0,0,w*2,h*2),src=lastSlice.img.data,ovd=lastSlice.ov.data;for(let r=0;r<h*2;r++)for(let q=0;q<w*2;q++){const k=((r>>1)*w+(q>>1))*4;if(src[k]<14&&ovd[k+3]===0)id.data[(r*w*2+q)*4+3]=0}x.putImageData(id,0,0);
-  // make outside-brain transparent-ish: keep as is
+const plane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:ptex,transparent:true,alphaTest:.5,side:THREE.DoubleSide}));scene.add(plane);
+// Cut face: the 3D model's own cross-section at the current level, drawn in atlas colours (no MRI)
+function update3DPlane(){if(!lastSlice||typeof sliceContours!=='function')return;const {w,h}=lastSlice;const K=4;
+  const c=ptex.image;c.width=w*K;c.height=h*K;const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.lineJoin='round';
+  const C=sliceContours();
+  const cxOK=o=>!o.group.startsWith('Cortex')||st.cx==='both'||(st.cx!=='none'&&o.side===st.cx);
+  pathOf(x,C.brain,K,0,0);x.fillStyle='#efe3cf';x.fill('evenodd');
+  const order=R=>R.o.group.startsWith('Cortex')?0:R.o.group==='Cerebellum'?1:R.o.group==='Brainstem'?2:R.o.group==='Ventricles'?4:3;
+  for(const R of [...C.regions].sort((p,q)=>order(p)-order(q))){if(!cxOK(R.o))continue;pathOf(x,R.poly,K,0,0);x.fillStyle=R.o.color;x.fill('evenodd');x.lineWidth=1.2;x.strokeStyle='rgba(43,38,34,.75)';x.stroke()}
+  for(const T of C.tracts){if(T.o.group.startsWith('Arterial tree'))continue;pathOf(x,T.poly,K,0,0);
+    x.fillStyle=T.o.group==='Arteries'?'#c4362c':T.o.group==='Veins & sinuses'?'#3f6fc2':T.o.color;x.globalAlpha=isVes(T.o)?1:.8;x.fill('evenodd');x.globalAlpha=1;x.lineWidth=1;x.strokeStyle='rgba(43,38,34,.6)';x.stroke()}
+  pathOf(x,C.brain,K,0,0);x.lineWidth=2;x.strokeStyle='#3b302a';x.stroke();
   ptex.needsUpdate=true;
   const s=sliceIdx();plane.scale.set(w,h,1);plane.rotation.set(0,0,0);plane.position.set(0,0,0);
   const cx=OX+(NX-1)/2,cy=OY+(NY-1)/2,cz=OZ+(NZ-1)/2;
   if(st.orient==='ax'){plane.position.set(cx,cy,OZ+s);if(st.radio)plane.scale.x=-w}
   else if(st.orient==='co'){plane.position.set(cx,OY+s,cz);plane.rotation.x=Math.PI/2;if(st.radio)plane.scale.x=-w}
   else{plane.position.set(OX+s,cy,cz);plane.rotation.set(Math.PI/2,-Math.PI/2,0)}
+  plane.visible=st.plane&&st.clip;
 }
 function updateClip(){const k=st.orient==='ax'?2:st.orient==='co'?1:0;const n=[0,0,0];n[k]=-1;
   // keep the half below / behind / left-of the slice; for sagittal keep the side away from camera
