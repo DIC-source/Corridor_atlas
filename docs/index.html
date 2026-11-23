@@ -230,15 +230,15 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <div class="sec">Corridor</div>
       <div class="appr">
         <div class="row"><select id="appr" aria-label="Standard approach"><option value="">Choose a surgical approach (15 presets)…</option></select><div class="seg" id="apSide"><button data-v="L" aria-pressed="true">Left</button><button data-v="R">Right</button></div></div>
-        <div class="row"><label class="ck"><input type="checkbox" id="apLes"> Aim at the lesion instead of the usual target</label><button class="btn" id="apGo">Apply</button></div>
+        <div class="row"><label class="ck" title="Moves the lesion (= target) to where this approach usually aims, e.g. the foramen of Monro"><input type="checkbox" id="apLes"> Also move the lesion to this approach's usual target</label><button class="btn" id="apGo">Apply</button></div>
         <p class="note" id="apDesc" hidden></p>
       </div>
-      <div class="row"><button class="btn" id="setE">Set entry</button><button class="btn" id="setT">Set target</button><label class="ck" title="Keep the target at the lesion centre while you move the lesion"><input type="checkbox" id="lockT" checked> Target follows lesion</label></div>
+      <div class="row"><button class="btn" id="setE">Set entry</button><span class="note">The corridor always ends at the lesion centre.</span><span hidden><button id="setT"></button><input type="checkbox" id="lockT" checked></span></div>
       <div class="row mono"><span class="plab">Entry</span>x<input type="number" id="ex" step="1">y<input type="number" id="ey" step="1">z<input type="number" id="ez" step="1"></div>
-      <div class="row mono"><span class="plab">Target</span>x<input type="number" id="tx" step="1">y<input type="number" id="ty" step="1">z<input type="number" id="tz" step="1"></div>
+      <div hidden><input type="number" id="tx"><input type="number" id="ty"><input type="number" id="tz"></div>
       <div class="row"><span class="plab">Radius</span><input type="range" id="crad" min="1" max="12" value="4" style="flex:1"><span class="mono" id="cradv">4 mm</span></div>
       <div class="row"><label class="ck"><input type="checkbox" id="corrOn" checked> Show corridor</label><span class="note" id="clen"></span></div>
-      <p class="note" style="margin:4px 0 6px">The buttons arm a click on the MRI or the atlas plate. Distances run from the lesion surface to the nearest atlas voxel, whether or not the layer is on. “@” is depth from the entry point. <span class="tag">critical</span> marks eloquent cortex, motor, sensory, language and visual pathways, and arteries.</p>
+      <p class="note" style="margin:4px 0 6px">The buttons arm a click on the MRI or the atlas plate. Distances run from the lesion surface to the nearest atlas voxel, whether or not the layer is on. “@” is depth from the entry point. Lesion and target are the same point: the corridor runs from the entry to the lesion centre. <span class="tag">critical</span> marks eloquent cortex, motor, sensory, language and visual pathways, and arteries.</p>
       <details class="res" open><summary>Near the lesion <div class="seg" id="lrange" style="margin-left:8px"><button data-v="5">5 mm</button><button data-v="10" aria-pressed="true">10 mm</button></div></summary><table class="prox" id="ptab"></table></details>
       <details class="res" open><summary>Crossed along the trajectory</summary><table class="prox" id="ctab1"></table></details>
       <details class="res"><summary>Within the corridor radius</summary><table class="prox" id="ctab2"></table></details>
@@ -524,13 +524,13 @@ const APPROACHES=[
 ];
 (()=>{const sel=$('appr');const groups={};for(const a of APPROACHES){if(!groups[a.g]){groups[a.g]=document.createElement('optgroup');groups[a.g].label=a.g;sel.append(groups[a.g])}const o=document.createElement('option');o.value=a.id;o.textContent=a.name;groups[a.g].append(o)}
   let side='L';seg('apSide',v=>{side=v});
-  const show=()=>{const a=APPROACHES.find(q=>q.id===sel.value);$('apDesc').hidden=!a;if(a)$('apDesc').textContent=a.d+'（預設目標：'+a.tn+'）'};
+  const show=()=>{const a=APPROACHES.find(q=>q.id===sel.value);$('apDesc').hidden=!a;if(a)$('apDesc').textContent=a.d+'（常見目標：'+a.tn+'）'};
   sel.onchange=show;
   $('apGo').onclick=()=>{const a=APPROACHES.find(q=>q.id===sel.value);if(!a)return;const m=side==='R'?-1:1;
     st.corr.E=[a.E[0]*m,a.E[1],a.E[2]];
-    if($('apLes').checked||!a.T){st.corr.P=st.lesion.c.slice();st.corr.lock=true;$('lockT').checked=true}
-    else{st.corr.P=[a.T[0]*m,a.T[1],a.T[2]];st.corr.lock=false;$('lockT').checked=false}
-    st.corr.on=true;$('corrOn').checked=true;corrChanged();st.cross=st.corr.P.map(Math.round);crossChanged()};
+    if($('apLes').checked&&a.T){st.lesion.c=[a.T[0]*m,a.T[1],a.T[2]]}
+    st.corr.lock=true;st.corr.P=st.lesion.c.slice();
+    st.corr.on=true;$('corrOn').checked=true;lesionChanged();corrChanged();st.cross=st.corr.P.map(Math.round);crossChanged()};
 })();
 $('lrange').addEventListener('click',e=>e.preventDefault());
 $('lockT').onchange=e=>{st.corr.lock=e.target.checked;if(st.corr.lock){st.corr.P=st.lesion.c.slice();corrChanged()}};
