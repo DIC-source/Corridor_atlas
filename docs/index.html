@@ -396,11 +396,11 @@ $('slice').oninput=e=>{const k=st.orient==='ax'?2:st.orient==='co'?1:0;const o=[
 function sliceImage(){ // returns {w,h,bg:Uint8ClampedArray rgba, ov rgba}
   const [w,h]=dims();const V=st.bg==='t2'?T2:T1;const useMip=st.bg==='mra'||st.vmip;
   const mip=new Uint8Array(w*h),dep=new Int16Array(w*h);
-  if(st.bg==='mra'){const s0=sliceIdx(),hh=Math.max(1,Math.round(st.slab/2));const n=st.orient==='ax'?NZ:st.orient==='co'?NY:NX;const a0=Math.max(0,s0-hh),a1=Math.min(n-1,s0+hh);
+  if(false){const s0=sliceIdx(),hh=Math.max(1,Math.round(st.slab/2));const n=st.orient==='ax'?NZ:st.orient==='co'?NY:NX;const a0=Math.max(0,s0-hh),a1=Math.min(n-1,s0+hh);
     for(let r=0;r<h;r++)for(let c=0;c<w;c++){const b=s2v(c,r);let m=0,md=s0;for(let a=a0;a<=a1;a++){const x=st.orient==='sa'?a:b[0],y=st.orient==='co'?a:b[1],z=st.orient==='ax'?a:b[2];const g=MRA[vi(x,y,z)];if(g>m){m=g;md=a}}mip[r*w+c]=m;dep[r*w+c]=md}}
   const img=new ImageData(w,h),ov=new ImageData(w,h),labs=new Uint8Array(w*h),tl=new Uint8Array(w*h);
   for(let r=0;r<h;r++)for(let c=0;c<w;c++){const [x,y,z]=s2v(c,r);const i=vi(x,y,z);const g=V[i];const k=(r*w+c)*4;
-    const gg=st.bg==='mra'?Math.min(255,mip[r*w+c]*1.15):g;img.data[k]=img.data[k+1]=img.data[k+2]=gg;img.data[k+3]=255;
+    const gg=st.bg==='mra'?Math.min(255,MRA[i]*0.85):g;img.data[k]=img.data[k+1]=img.data[k+2]=gg;img.data[k+3]=255;
     const L=LAB[i];if(L&&showS(SB[L]))labs[r*w+c]=L;const Tt=TER[i];if(Tt&&showV(TB[Tt]))tl[r*w+c]=Tt;}
   for(let p=0;p<w*h;p++){const L=labs[p];if(!L)continue;
     let a=st.alpha;
@@ -422,7 +422,7 @@ function sliceImage(){ // returns {w,h,bg:Uint8ClampedArray rgba, ov rgba}
       const ii=[0,1,2].map(q=>Math.round((mm[q]-HO[q])/.5));let ok=true;for(let q=0;q<3;q++){if(q===ak)continue;if(ii[q]<0||ii[q]>=[HX,HY,HZ][q]){ok=false;break}}if(!ok)continue;ii[ak]=0;
       const base=(ii[2]*HY+ii[1])*HX+ii[0];let m=0,md=a0;for(let a=a0;a<=a1;a++){const g=MRAH[base+a*stride];if(g>m){m=g;md=a}}
       const p=R*W2+C;mipH[p]=m;depH[p]=HO[ak]+md*.5;if(m<8)continue;const t=m/255,k=p*4;
-      if(bright){mi.data[k]=mi.data[k+1]=mi.data[k+2]=255;mi.data[k+3]=Math.min(255,40+235*t)}
+      if(bright){if(m<38)continue;const u=(m-38)/217;mi.data[k]=mi.data[k+1]=mi.data[k+2]=255;mi.data[k+3]=Math.min(255,70+185*Math.sqrt(u))}
       else if(m>=45){const u=(m-45)/210;mi.data[k]=255;mi.data[k+1]=80+160*u;mi.data[k+2]=50+160*u;mi.data[k+3]=Math.min(255,30+225*Math.pow(u,.6))}}}
   return{w,h,img,ov,mi,mip:mipH,dep:depH}
 }
@@ -967,10 +967,31 @@ function pathOf(ctx,polys,k,ox,oy){ctx.beginPath();for(const poly of polys)for(c
 function drawContoursMRI(k){if(!st.outl)return;const C=sliceContours();const dpr=window.devicePixelRatio||1;
   mx.save();mx.lineJoin='round';
   for(const R of C.regions){pathOf(mx,R.poly,k,0,0);mx.strokeStyle=R.o.color;mx.globalAlpha=.95;mx.lineWidth=1.3*dpr;mx.stroke()}
-  for(const T of C.tracts){if(T.o.group.startsWith('Arterial tree'))continue;pathOf(mx,T.poly,k,0,0);
+  const proj=st.bg==='mra'||st.vmip;
+  for(const T of C.tracts){if(T.o.group.startsWith('Arterial tree')||(proj&&isVes(T.o)))continue;pathOf(mx,T.poly,k,0,0);
     if(isVes(T.o)){mx.strokeStyle=T.o.group==='Arteries'?'#ff5a4a':'#5fa0ff';mx.lineWidth=1.7*dpr;mx.stroke()}
     else{mx.strokeStyle=T.o.color;mx.lineWidth=1.6*dpr;mx.setLineDash([5*dpr,3*dpr]);mx.stroke();mx.setLineDash([])}}
+  if(proj)drawVesselProj(k,dpr);
   mx.restore()}
+// When the MRI shows a maximum-intensity projection, vessels are annotated by their projection over the same slab
+const VABBR={a_ica:'ICA',a_m1:'M1',a_m2:'M2',a_a1:'A1',a_a2:'A2/pericallosal',a_pcom:'PComm',a_p1p2:'P1–P2',a_p3:'P3–P4',a_sca:'SCA',a_ba:'BA',a_va:'VA',
+  sa_heubner:'Heubner',sa_lsa1:'LSA',sa_lsa2:'LSA',sa_lsa3:'LSA',sa_acha:'AChA',sa_cma:'CMA',sa_aica:'AICA',sa_pica:'PICA',
+  vn_sss:'SSS',vn_iss:'ISS',vn_straight:'Straight s.',vn_galen:'Galen',vn_icv:'ICV',vn_bvr:'BVR',vn_ts:'Transverse s.',vn_sig:'Sigmoid s.',
+  sv_smcv:'Sylvian v.',sv_labbe:'Labbé',sv_trolard:'Trolard',sv_bridge1:'Bridging v.',sv_bridge2:'Bridging v.',sv_bridge3:'Bridging v.',sv_tsv:'Thalamostriate v.',sv_septal:'Septal v.',sv_dandy:'Petrosal v.',sv_sps:'SPS',sv_cav:'Cavernous s.',sv_occ:'Occipital s.'};
+let VP={key:null};
+function vesselProj(){const s=sliceIdx();const half=Math.max(.5,st.slab/2);const key=st.orient+'|'+s+'|'+half+'|'+st.radio+'|'+CCver;if(VP.key===key)return VP.out;
+  const [w,h]=dims();const out=[];
+  for(const t of TR){if(!isVes(t)||!showT(t))continue;const A=st.orient==='ax'?t.Z:st.orient==='co'?t.Y:t.X;const m=new Uint8Array(w*h);let n=0;
+    for(let i=0;i<A.length;i++){if(Math.abs(A[i]-s)>half)continue;const q=v2s(t.X[i],t.Y[i],t.Z[i]);m[q[1]*w+q[0]]=1;n++}
+    if(n<3)continue;out.push({o:t,poly:contourOf(m,w,h,0.34),anchor:anchorOf(m,w,h),n})}
+  VP={key,out};return out}
+function drawVesselProj(k,dpr){const L=vesselProj();const placed=[];
+  for(const P of L){pathOf(mx,P.poly,k,0,0);mx.strokeStyle=P.o.group==='Arteries'?'#ff6a5a':'#6aa8ff';mx.lineWidth=1.4*dpr;mx.globalAlpha=.95;
+    if(P.o.sch)mx.setLineDash([3*dpr,2.5*dpr]);mx.stroke();mx.setLineDash([])}
+  mx.font=`600 ${10.5*dpr}px "IBM Plex Sans", system-ui, sans-serif`;mx.textAlign='center';
+  for(const P of L.sort((a,b)=>b.n-a.n)){const base=P.o.id.replace(/_[lr]$/,'');const ab=VABBR[base];if(!ab)continue;
+    const x=P.anchor[0]*k,y=P.anchor[1]*k;if(placed.some(q=>Math.abs(q[0]-x)<34*dpr&&Math.abs(q[1]-y)<12*dpr))continue;placed.push([x,y]);
+    const t=ab+(P.o.side?' '+P.o.side:'');mx.lineWidth=3*dpr;mx.strokeStyle='rgba(0,0,0,.85)';mx.strokeText(t,x,y-4*dpr);mx.fillStyle=P.o.group==='Arteries'?'#ffb3a8':'#b8d6ff';mx.fillText(t,x,y-4*dpr)}}
 // ---------- the illustrated plate
 const SHORTF={
 'Precentral gyrus (M1)':'對側隨意運動','Postcentral gyrus (S1)':'對側體感覺','Paracentral lobule (leg M1/S1)':'下肢運動／感覺、排尿','Pars opercularis (Broca, BA44)':'語言產出（優勢側）','Pars triangularis (Broca, BA45)':'語言產出、語意選擇',
