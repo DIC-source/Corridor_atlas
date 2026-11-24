@@ -34,6 +34,7 @@ Inputs go in `data/raw/` (see `data/SOURCES.md`). From `pipeline/`:
 pip install nibabel scipy scikit-image fast-simplification antspyx skan
 python3 build.py      # composite label volume + T1/T2 backgrounds
 python3 fixlab.py     # split CerebrA ventral DC at the PC–mammillary plane (hypothalamus / crus / midbrain), STN at DISTAL centroid, SN grown 1 mm
+python3 cnnuclei.py   # schematic cranial nerve nuclei placed relative to the brainstem
 python3 build2.py     # structure meshes + HCP-1065 tract voxels/polylines
 python3 build3.py     # arterial-territory grouping helper (writes out/ter_raw.npy-based groups)
 python3 build4.py 25  # population vessel atlases: MRA volumes + vessel surfaces (probability >= 25%)
@@ -44,7 +45,7 @@ python3 tbreg.py 005 006 007 008 010 && python3 tbct.py 005 006 007 008 010   # 
 python3 tbbuild.py    # reference case 008: named arteries + deep veins
 python3 schematic.py  # schematic surgical vessels (Heubner, LSA, AChA, Labbé, Trolard, bridging veins...) and CN I, IV, VI, IX-XII
 python3 paths.py && python3 paths2.py   # long-pathway (CST / DCML / STT) geometry
-python3 assemble.py   # merge TopBrain + schematic vessels and enforce branch connections
+python3 connect.py    # snap every branch onto its parent vessel (generic, population-based vessels)
 python3 pack.py       # writes ../docs/atlas-data.bin
 python3 plandata.py   # planning layers (vessel/sulcus distance, critical-tract directions, entry candidates) -> plan-data.wasm
 ```
@@ -54,3 +55,7 @@ Intermediate files go to `pipeline/out/` (git-ignored). The pathway geometry (`p
 ## Data and licences
 
 See `data/SOURCES.md`. Short version: ICBM152 (copyright notice required), CerebrA, THOMAS (CC0), ATAG, SUIT (CC BY-NC 3.0), HCP-1065 tractography atlas (CC BY-SA 4.0 + HCP acknowledgment), population vessel atlases of Mouches & Forkert 2019 (cite the paper). Check these before making the repository or a hosted copy public.
+
+## Note on TopBrain
+
+The TopBrain cases (tbreg*.py, tbct.py, tbbuild.py, popbuild.py, assemble.py) are kept for reference but are not used in the packed data: the single-case MRA slabs did not register reliably to the whole-brain template, and the atlas deliberately shows generic (population) anatomy rather than one person's variants.
