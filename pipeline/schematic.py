@@ -17,6 +17,19 @@ def snap(p,c,off=1.5):
     return c+d*((last or 0)+off)
 near=lambda key,ax,val:np.array(min(((V if key in V else A)[key]['pts']),key=lambda q:abs(q[ax]-val)))
 def onpath(key,frac):p=np.array(A[key]['pts']);return p[int(frac*(len(p)-1))]
+
+LABV=np.load('out/lab.npy');SJ=json.load(open('out/S.json'))
+BS=np.isin(LABV,[q['id'] for q in SJ if q['name'] in ('Midbrain','Pons','Medulla','Cerebral peduncle (crus cerebri)')])
+def bsurf(z,th,side,off):
+    """point on the brainstem surface at level z; th = angle from the anterior midline (0) toward lateral (90) and posterior (180)"""
+    zi=int(round(z-O[2]));zi=max(0,min(180,zi));col=BS[88:93,:,zi].any(0);ys=np.nonzero(col)[0]
+    if not len(ys):
+        sl=BS[:,:,zi];ys=np.nonzero(sl.any(0))[0]
+    yc=(ys.min()+ys.max())/2+O[1];d=np.array([side*np.sin(np.radians(th)),np.cos(np.radians(th)),0.]);c=np.array([0,yc,z],float);last=0
+    for t in np.arange(0,40,0.25):
+        v=np.round(c+d*t-O).astype(int)
+        if np.all(v>=0) and np.all(v<SH) and BS[tuple(v)]:last=t
+    return (c+d*(last+off)).tolist()
 OUT=[]
 def put(id_,name,group,color,side,pts,r,note,kind):
     P=smooth(pts,s=0) if len(pts)<5 else smooth(pts,s=len(pts)*0.3)
@@ -28,13 +41,19 @@ AR,VE,NV='#e06a5c','#5b8fd8','#e2b928'
 for sd,m in [('L',1),('R',-1)]:
     s=sd.lower();k=lambda n:n+'_'+s
     # ---- cranial nerves (left coordinates, x mirrored for right)
+    sd_=-1  # left side in MNI = negative x; mir() flips for right
+    L_=lambda z,th,off=1.0:[*bsurf(z,th,-1,off)]
     CN={'cn1':('Olfactory nerve / tract (CN I)',[[-7,44,-21],[-8,32,-20],[-11,20,-19],[-16,9,-17]],[2.2,1.2,1.0,1.0]),
-        'cn4':('Trochlear nerve (CN IV)',[[-3,-40,-16],[-10,-38,-17],[-17,-30,-18],[-21,-17,-20],[-19,-6,-24],[-17,0,-27]],0.7),
-        'cn6':('Abducens nerve (CN VI)',[[-5,-20,-44],[-9,-14,-40],[-13,-8,-34],[-15,-3,-29],[-17,1,-27]],0.8),
-        'cn9':('Glossopharyngeal nerve (CN IX)',[[-11,-36,-50],[-20,-34,-51],[-28,-32,-52],[-33,-32,-53]],0.9),
-        'cn10':('Vagus nerve (CN X)',[[-11,-37,-53],[-20,-35,-54],[-28,-33,-54],[-33,-33,-55]],1.1),
-        'cn11':('Accessory nerve (CN XI)',[[-13,-42,-71],[-13,-41,-63],[-16,-38,-57],[-24,-35,-56.5],[-32,-33,-56.5]],0.9),
-        'cn12':('Hypoglossal nerve (CN XII)',[[-6,-34,-58],[-12,-32,-60],[-18,-30,-62],[-24,-29,-64]],1.0)}
+        'cn3':('Oculomotor nerve (CN III)',[[-4,-14,-14],[-8,-9,-17],[-12,-4,-21],[-14,0,-25]],1.1),
+        'cn4':('Trochlear nerve (CN IV)',[L_(-17,178,0.5),L_(-18,135,1),L_(-19,90,1.5),[-17,-14,-23],[-15,-5,-27]],0.5),
+        'cn5':('Trigeminal nerve (CN V)',[L_(-31,62,0),L_(-31,62,4),[-25,-15,-30],[-28,-10,-32]],[2.4,2.3,2.1,2.0]),
+        'cn6':('Abducens nerve (CN VI)',[L_(-48,12,0),L_(-44,10,2.5),[-8,-11,-38],[-11,-7,-32],[-14,-3,-28]],0.7),
+        'cn7':('Facial nerve (CN VII)',[L_(-45,78,0),L_(-44,80,4),[-28,-26,-41],[-34,-24,-38]],0.9),
+        'cn8':('Vestibulocochlear nerve (CN VIII)',[L_(-46,92,0),L_(-45,92,4),[-28,-29,-43],[-34,-28,-41]],1.3),
+        'cn9':('Glossopharyngeal nerve (CN IX)',[L_(-52,112,0),L_(-52,108,4),[-24,-33,-55],[-31,-31,-57]],0.8),
+        'cn10':('Vagus nerve (CN X)',[L_(-55,115,0),L_(-55,110,4),[-24,-34,-57],[-31,-32,-59]],1.0),
+        'cn11':('Accessory nerve (CN XI)',[[-9,-45,-86],[-10,-44,-76],L_(-66,112,2),L_(-59,112,3),[-24,-35,-59],[-31,-33,-60]],0.8),
+        'cn12':('Hypoglossal nerve (CN XII)',[L_(-61,38,0),L_(-62,40,3),[-14,-34,-66],[-19,-33,-70]],0.9)}
     for key,(nm,pts,r) in CN.items():put('cs_'+k(key),nm,'Cranial nerves',NV,sd,mir(pts,m),r,'schematic course','nerve')
     # ---- arteries
     a2=np.array(A['a2']['pts']);put('sa_'+k('heubner'),'Recurrent artery of Heubner','Arteries',AR,sd,mir([[-1,19,-9],[-6,16,-9],[-12,10,-11],[-17,6,-11],[-16,8,-5],[-14,10,2]],m),0.55,'schematic course','artery')
@@ -49,9 +68,12 @@ for sd,m in [('L',1),('R',-1)]:
         if q[1]<-25:break
         d=q-c0;d[0]=0;d/=np.linalg.norm(d);p=q+d*11;p[0]=-3*m;cm.append(p.tolist())
     put('sa_'+k('cma'),'Callosomarginal artery','Arteries',AR,sd,cm[::3],0.8,'schematic course','artery')
-    bq=near('ba',2,-42);put('sa_'+k('aica'),'Anterior inferior cerebellar artery (AICA)','Arteries',AR,sd,[bq.tolist()]+mir([[-8,-20,-40],[-18,-24,-36],[-27,-30,-33],[-30,-38,-37],[-34,-48,-40]],m),0.8,'schematic course','artery')
-    vq=np.array(min(A[k('va')]['pts'],key=lambda q:abs(q[2]+57)))
-    put('sa_'+k('pica'),'Posterior inferior cerebellar artery (PICA)','Arteries',AR,sd,[vq.tolist()]+mir([[-11,-34,-58],[-9,-46,-60],[-5,-52,-54],[-10,-62,-48],[-18,-72,-44]],m),0.8,'schematic course','artery')
+    bq=near('ba',2,-43)
+    put('sa_'+k('aica'),'Anterior inferior cerebellar artery (AICA)','Arteries',AR,sd,[bq.tolist()]+mir([L_(-43,35,2.2),L_(-43,75,3),[-24,-29,-44],[-29,-27,-42],[-26,-33,-45],[-31,-42,-48]],m),0.8,'schematic course: from the lower basilar, loops at the CN VII/VIII complex','artery')
+    va=np.array(A[k('va')]['pts']);vq=va[np.argmin(np.abs(va[:,2]+61))]
+    put('sa_'+k('pica'),'Posterior inferior cerebellar artery (PICA)','Arteries',AR,sd,[vq.tolist()]+mir([L_(-62,80,2.2),L_(-63,125,2.5),L_(-66,160,3),[-6,-55,-66],[-5,-60,-58],[-8,-66,-50]],m),0.8,'schematic course: lateral medullary, tonsillomedullary and telovelotonsillar segments','artery')
+    tip=np.array(A['ba']['pts'][-1])
+    put('sa_'+k('sca2'),'Superior cerebellar artery (SCA)','Arteries',AR,sd,[(tip+[0,0,-1.5]).tolist()]+mir([L_(-21,30,2),L_(-22,80,2.2),L_(-21,130,2.5),L_(-20,170,3),[-8,-58,-18],[-14,-64,-20]],m),1.0,'schematic course around the pontomesencephalic junction','artery')
     # ---- veins
     sylv=[snap([-50*m,y,z],[0,y,10]) for y,z in [(-28,16),(-16,8),(-4,0),(8,-8),(14,-14)]]
     put('sv_'+k('smcv'),'Superficial middle cerebral (Sylvian) vein','Veins & sinuses',VE,sd,[p.tolist() for p in sylv]+mir([[-32,16,-20],[-24,10,-26],[-17,2,-28]],m),[1.4,1.6,1.8,1.8],'schematic course','vein')

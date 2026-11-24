@@ -880,6 +880,11 @@ vn_icv:'大腦內靜脈 (ICV)：從 Monro 孔沿第三腦室頂（中間帆）�
 vn_bvr:'Rosenthal 基底靜脈：從前穿質繞大腦腳，經環池到 Galen；與 PCA P2 並行。',
 vn_ts:'橫竇：沿天幕後外側附著緣，從竇匯到乙狀竇；乙狀竇後入路的上界。位置由模板幾何推定。',
 vn_sig:'乙狀竇：橫竇到頸靜脈孔，構成乙狀竇後入路的前界。位置由模板幾何推定。',
+cs_cn3:'動眼神經 (CN III)：從中腦腳間窩、大腦腳內側出腦，走在 PCA (上) 與 SCA (下) 之間，經 PComm 外側進入海綿竇頂。PComm 動脈瘤壓迫：瞳孔放大的動眼神經麻痺。（示意路徑）',
+cs_cn5:'三叉神經 (CN V)：最粗的腦神經，從橋腦中段前外側（與小腦中腳交界）出腦，往前外上方越過岩骨尖進入 Meckel 腔的三叉神經節。SCA 常從上內側壓迫根部進入區（三叉神經痛 MVD）。（示意路徑）',
+cs_cn7:'顏面神經 (CN VII)：從橋延溝外側出腦，位於 CN VIII 的前上方，往外進入內耳道前上象限。前庭神經鞘瘤手術的保留重點。（示意路徑）',
+cs_cn8:'前庭耳蝸神經 (CN VIII)：在 CN VII 後下方、較粗，從橋延溝最外側（CPA）進入內耳道。AICA 常在 VII/VIII 之間或下方形成迴圈。（示意路徑）',
+sa_sca2:'小腦上動脈 (SCA)：基底動脈頂端下方發出，在 CN III 下方繞橋腦–中腦交界往後，到小腦上面與上蚓部。常與 CN V 根部接觸（三叉神經痛 MVD）。（示意路徑）',
 cs_cn1:'嗅神經／嗅徑 (CN I)：嗅球位於篩板上、直回下方，嗅徑沿嗅溝向後到前穿質。額下及眉弓入路最常傷到；損傷造成嗅覺喪失。（示意路徑）',
 cs_cn4:'滑車神經 (CN IV)：唯一從腦幹背側（下丘下方）出腦的腦神經，繞大腦腳在 PCA 與 SCA 之間，沿天幕游離緣進海綿竇。細長易傷，顳下與天幕切開時要注意。（示意路徑）',
 cs_cn6:'外旋神經 (CN VI)：橋延溝出腦，沿斜坡上行穿過 Dorello 管進海綿竇。顱內壓升高時易受牽拉，造成假性定位徵象。（示意路徑）',
@@ -1006,7 +1011,7 @@ function drawContoursMRI(k){if(!st.outl)return;const C=sliceContours();const dpr
   mx.restore()}
 // When the MRI shows a maximum-intensity projection, vessels are annotated by their projection over the same slab
 const VABBR={a_ica:'ICA',a_m1:'M1',a_m2:'M2',a_a1:'A1',a_a2:'A2/pericallosal',a_pcom:'PComm',a_p1p2:'P1–P2',a_p3:'P3–P4',a_sca:'SCA',a_ba:'BA',a_va:'VA',
-  sa_heubner:'Heubner',sa_lsa1:'LSA',sa_lsa2:'LSA',sa_lsa3:'LSA',sa_acha:'AChA',sa_cma:'CMA',sa_aica:'AICA',sa_pica:'PICA',
+  sa_heubner:'Heubner',sa_lsa1:'LSA',sa_lsa2:'LSA',sa_lsa3:'LSA',sa_acha:'AChA',sa_cma:'CMA',sa_aica:'AICA',sa_sca2:'SCA',sa_pica:'PICA',
   vn_sss:'SSS',vn_iss:'ISS',vn_straight:'Straight s.',vn_galen:'Galen',vn_icv:'ICV',vn_bvr:'BVR',vn_ts:'Transverse s.',vn_sig:'Sigmoid s.',
   sv_smcv:'Sylvian v.',sv_labbe:'Labbé',sv_trolard:'Trolard',sv_bridge1:'Bridging v.',sv_bridge2:'Bridging v.',sv_bridge3:'Bridging v.',sv_tsv:'Thalamostriate v.',sv_septal:'Septal v.',sv_dandy:'Petrosal v.',sv_sps:'SPS',sv_cav:'Cavernous s.',sv_occ:'Occipital s.'};
 let VP={key:null};
@@ -1033,7 +1038,7 @@ const SHORTF={
 'Lateral ventricle':'CSF','Third ventricle':'CSF；底為下視丘','Fourth ventricle':'CSF；菱形窩','Vermis':'軀幹平衡','Cerebellar white matter / dentate region':'齒狀核：DRTT 起點','Cerebellum · Anterior lobe (I–V)':'肢體步態協調','Cerebellum · Posterior lobe (VI–VIII)':'肢體協調、認知','Cerebellum · Tonsil / IX':'扁桃；下疝壓延腦','Cerebellum · Flocculus (X)':'前庭小腦、眼動',
 cst:'對側肢體隨意運動',cbt:'對側下臉、構音吞嚥',fat:'言語起始 (SMA–Broca)',ml:'精細觸覺、本體感覺',str:'感覺運動視丘皮質',af:'復誦、語音迴路',slf:'額頂注意、語音',ifof:'語意處理',unc:'顳極–眶額',ilf:'視覺辨識、閱讀',or:'視放射：對側視野',cn2:'視覺',ar:'聽覺',cing:'邊緣聯絡',fx:'海馬→乳頭體、記憶',atr:'視丘–前額葉',
 cc_minor:'雙側額葉連結',cc_body:'雙側運動感覺連結',cc_tap:'顳角／三角區外壁',cc_major:'雙側枕葉連結',ac:'雙側顳葉連結',cpt:'皮質→橋腦→小腦',drtt:'小腦→Vim；顫抖',scp:'小腦輸出',mcp:'橋腦→小腦',icp:'脊髓前庭→小腦',cn3:'眼動、瞳孔',cn5:'臉部感覺、咀嚼',cn7:'顏面表情',cn8:'聽覺、平衡',
-dcml:'精細觸覺、本體感覺',cs_cn1:'嗅覺',cs_cn4:'上斜肌；唯一背側出腦',cs_cn6:'外直肌；行程最長',cs_cn9:'咽部感覺、味覺後1/3',cs_cn10:'咽喉、副交感',cs_cn11:'胸鎖乳突肌、斜方肌',cs_cn12:'舌肌',sa_heubner:'尾狀核頭、內囊前肢',sa_lsa1:'內囊、基底核',sa_lsa2:'內囊、基底核',sa_lsa3:'內囊、基底核',sa_acha:'內囊後肢、視徑',sa_cma:'內側額葉、旁中央小葉',sa_aica:'CPA、CN VII/VIII 旁',sa_pica:'延腦外側、小腦下面',sv_smcv:'Sylvian 裂表面引流',sv_labbe:'顳葉→橫竇；顳下入路勿傷',sv_trolard:'Sylvian→SSS 吻合',sv_bridge1:'皮質→SSS',sv_bridge2:'皮質→SSS',sv_bridge3:'皮質→SSS',sv_tsv:'尾狀核視丘溝',sv_septal:'透明中隔',sv_dandy:'CPA 上方；MVD 常遇',sv_sps:'岩骨嵴',sv_cav:'CN III/IV/V1/V2/VI、ICA',sv_occ:'小腦鐮',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；Heubner',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'V3 繞 C1；V4 發出 PICA',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
+dcml:'精細觸覺、本體感覺',cs_cn1:'嗅覺',cs_cn3:'眼動、瞳孔收縮',cs_cn5:'臉部感覺、咀嚼肌',cs_cn7:'顏面表情肌',cs_cn8:'聽覺、平衡',sa_sca2:'小腦上面、齒狀核',cs_cn4:'上斜肌；唯一背側出腦',cs_cn6:'外直肌；行程最長',cs_cn9:'咽部感覺、味覺後1/3',cs_cn10:'咽喉、副交感',cs_cn11:'胸鎖乳突肌、斜方肌',cs_cn12:'舌肌',sa_heubner:'尾狀核頭、內囊前肢',sa_lsa1:'內囊、基底核',sa_lsa2:'內囊、基底核',sa_lsa3:'內囊、基底核',sa_acha:'內囊後肢、視徑',sa_cma:'內側額葉、旁中央小葉',sa_aica:'CPA、CN VII/VIII 旁',sa_pica:'延腦外側、小腦下面',sv_smcv:'Sylvian 裂表面引流',sv_labbe:'顳葉→橫竇；顳下入路勿傷',sv_trolard:'Sylvian→SSS 吻合',sv_bridge1:'皮質→SSS',sv_bridge2:'皮質→SSS',sv_bridge3:'皮質→SSS',sv_tsv:'尾狀核視丘溝',sv_septal:'透明中隔',sv_dandy:'CPA 上方；MVD 常遇',sv_sps:'岩骨嵴',sv_cav:'CN III/IV/V1/V2/VI、ICA',sv_occ:'小腦鐮',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；Heubner',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'V3 繞 C1；V4 發出 PICA',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
 const shortOf=(k,o)=>k==='s'?(SHORTF[o.name]||''):(SHORTF[o.id.replace(/_[lr]$/,'')]||'');
 const GM='#e7bca8';
 function plateFill(o){if(o.group.startsWith('Cortex'))return st.plateLobes?o.color:(o.note==='eloquent'?o.color:GM);return o.color}

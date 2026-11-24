@@ -18,6 +18,7 @@ for s,m in zip(S,MESH):
     v,f=m; f=orient(v,f); s['v']=put(np.round(v*20).astype(np.int16)); s['f']=put(f.astype(np.uint16 if len(v)<65536 else np.uint32)); s['f32']=len(v)>=65536
 H['S']=S
 tr=[]
+TR=[t for t in TR if t['id'] not in ('cn3_l','cn3_r','cn5_l','cn5_r','cn7_l','cn7_r','cn8_l','cn8_r')]  # replaced by schematic nerves
 sh=(181,217,181)
 for t in TR:
     # re-index voxels to z,y,x order

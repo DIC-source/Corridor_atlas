@@ -37,7 +37,9 @@ def voxels(P,r):
 AC={'ica':'#c0392b','m1':'#e2463a','m2':'#ee6a50','a1':'#e8742f','a2':'#f08b3c','pcom':'#d94b6e','p1p2':'#c43c7a','p3':'#b5487f','sca':'#a8493a','ba':'#9b2d20','va':'#8a3324'}
 OUT=[]
 for k,v in A.items():
-    base=k.split('_')[0];P=smooth(v['pts'])
+    base=k.split('_')[0]
+    if base=='sca': continue   # replaced by the schematic SCA anchored to the brainstem
+    P=smooth(v['pts'])
     idx=np.clip(((P-HO)/0.5).round().astype(int),0,np.array(R.shape)-1);r=np.clip(Rm[tuple(idx.T)],0.7,3.0)
     r=ndi.uniform_filter1d(r,9)
     if base=='va': r=np.full(len(P),1.8)
