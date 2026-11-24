@@ -32,10 +32,10 @@ def bsurf(z,th,side,off):
     return (c+d*(last+off)).tolist()
 OUT=[]
 def put(id_,name,group,color,side,pts,r,note,kind):
-    P=smooth(pts,s=0) if len(pts)<5 else smooth(pts,s=len(pts)*0.3)
+    P=smooth(pts,s=0)
     rr=np.interp(np.linspace(0,1,len(P)),np.linspace(0,1,len(r)),r) if np.ndim(r) else np.full(len(P),r)
     mv,mf=tube(P,rr,seg=10);vox,rv=voxels(P,np.maximum(rr,0.6))
-    OUT.append(dict(id=id_,name=name,group=group,color=color,side=side,vox=vox,radv=rv,mesh=(mv,mf),sch=True,note=note,kind=kind))
+    OUT.append(dict(id=id_,P=P,r=rr,name=name,group=group,color=color,side=side,vox=vox,radv=rv,mesh=(mv,mf),sch=True,note=note,kind=kind))
 mir=lambda pts,m:[[p[0]*m,p[1],p[2]] for p in pts]
 AR,VE,NV='#e06a5c','#5b8fd8','#e2b928'
 for sd,m in [('L',1),('R',-1)]:

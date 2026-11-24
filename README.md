@@ -40,8 +40,11 @@ python3 build4.py 25  # population vessel atlases: MRA volumes + vessel surfaces
 python3 trace.py      # named artery centerlines (minimal-cost paths on the probability atlas)
 python3 veins.py      # dural sinuses / deep veins placed from template geometry (approximate)
 python3 build_named.py  # tube meshes + voxel masks for named vessels
+python3 tbreg.py 005 006 007 008 010 && python3 tbct.py 005 006 007 008 010   # TopBrain MRA->MNI (SyN) and CTA->MRA (shared arterial labels)
+python3 tbbuild.py    # reference case 008: named arteries + deep veins
 python3 schematic.py  # schematic surgical vessels (Heubner, LSA, AChA, Labbé, Trolard, bridging veins...) and CN I, IV, VI, IX-XII
 python3 paths.py && python3 paths2.py   # long-pathway (CST / DCML / STT) geometry
+python3 assemble.py   # merge TopBrain + schematic vessels and enforce branch connections
 python3 pack.py       # writes ../docs/atlas-data.bin
 python3 plandata.py   # planning layers (vessel/sulcus distance, critical-tract directions, entry candidates) -> plan-data.wasm
 ```

@@ -15,3 +15,5 @@
 | `mouches/tofAverage.nii`, `vesselProbabilities.nii`, `vesselRadius.nii` | Mouches P, Forkert ND. A statistical atlas of cerebral arteries generated using multi-center MRA datasets from healthy subjects. Sci Data 2019;6:29 (Calgary MIPLab). Mirrored as release assets: github.com/DIC-source/Corridor_atlas/releases/tag/mri_data_v1 | Check the licence on the original figshare record; cite the paper |
 
 The single-subject HQA example MRA is no longer used in the packed data (replaced by the population atlases).
+
+| `topbrain/topcow_{mr,ct}_{005..010}*.nii` + label maps | TopBrain challenge data release v3 (Zenodo 10.5281/zenodo.16623495), mirrored at github.com/DIC-source/Corridor_atlas/releases/tag/topbrain_v1 | Open use, attribution required; commercial use requires the data owner's permission. Cite Yang et al., medRxiv 2026 (TopBrain) and NEJM AI 2026 (TopCoW) |

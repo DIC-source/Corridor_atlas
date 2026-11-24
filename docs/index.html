@@ -258,7 +258,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <div class="sec">How to use</div>
       <p class="note">Click any structure, tract or artery in either view to open its details at the top of this panel. Click the MRI to move the crosshair; scroll or use the slider to page slices. Click a structure in the illustration to jump the MRI there. Use the Lesion tab to drop a sphere and list everything within 5 or 10 mm; use the Corridor tab to set an entry and target and see what the trajectory crosses.</p>
       <div class="sec">Limits</div>
-      <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, the STN is an ellipsoid at the published DISTAL-atlas centroid (±12, −13, −5.5) because the ATAG STN label is only a few voxels at 1 mm, and the substantia nigra is the ATAG label grown by 1 mm. CerebrA's “ventral diencephalon” label also covers the cerebral peduncles and midbrain tegmentum; it is split at the plane from the posterior commissure to the mammillary bodies, so only the part in front of that plane is called hypothalamus / subthalamic region, the peduncle (where corticofugal fibres run) is labelled separately, and the rest joins the midbrain. The arteries and the MRA image are population averages (Mouches &amp; Forkert 2019), already in MNI space, covering the whole brain. Averaging across people keeps the large, consistent arteries sharp (ICA, circle of Willis, M1, A1–A2, pericallosal, P1–P2, basilar) but blurs distal branches whose course varies between people, so small cortical branches look faint or missing. The 3D vessel surface is drawn where at least 12% of subjects had a vessel. Branches are grouped by position: vessels outside the brain envelope (skull base, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. These grouped surfaces are now off by default. Named arteries (ICA, M1, M2, A1, A2–pericallosal, PComm, P1–P2, P3–P4, SCA, basilar, vertebral) are centerlines traced with a minimal-cost path along the highest vessel probability between anatomical landmarks, with calibre from the radius atlas. Veins and dural sinuses (superior and inferior sagittal, straight, transverse and sigmoid sinuses, vein of Galen, internal cerebral veins, basal veins of Rosenthal) are not in any reachable dataset: their courses are placed from the template's own geometry (inner brain surface, corpus callosum, third ventricle, midbrain) and are approximate. With “Cut at slice” on, the 3D model is cut at the current MRI level.</p>
+      <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, the STN is an ellipsoid at the published DISTAL-atlas centroid (±12, −13, −5.5) because the ATAG STN label is only a few voxels at 1 mm, and the substantia nigra is the ATAG label grown by 1 mm. CerebrA's “ventral diencephalon” label also covers the cerebral peduncles and midbrain tegmentum; it is split at the plane from the posterior commissure to the mammillary bodies, so only the part in front of that plane is called hypothalamus / subthalamic region, the peduncle (where corticofugal fibres run) is labelled separately, and the rest joins the midbrain. The arteries and the MRA image are population averages (Mouches &amp; Forkert 2019), already in MNI space, covering the whole brain. Averaging across people keeps the large, consistent arteries sharp (ICA, circle of Willis, M1, A1–A2, pericallosal, P1–P2, basilar) but blurs distal branches whose course varies between people, so small cortical branches look faint or missing. The 3D vessel surface is drawn where at least 12% of subjects had a vessel. Branches are grouped by position: vessels outside the brain envelope (skull base, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. These grouped surfaces are off by default. The named arteries and deep veins come from one real annotated case (TopBrain 008), so their branching and connections are genuine, but they show one person's anatomy (this case has a median A2/A3 and no left A3); the left AICA and right P3–P4 were mirrored from the other side because they are missing or incomplete in that case. Superficial and dural venous structures, the lenticulostriates, Heubner, callosomarginal and the extracranial vertebral artery remain schematic and are snapped onto their parent vessels. Named arteries (ICA, M1, M2, A1, A2–pericallosal, PComm, P1–P2, P3–P4, SCA, basilar, vertebral) are centerlines traced with a minimal-cost path along the highest vessel probability between anatomical landmarks, with calibre from the radius atlas. Veins and dural sinuses (superior and inferior sagittal, straight, transverse and sigmoid sinuses, vein of Galen, internal cerebral veins, basal veins of Rosenthal) are not in any reachable dataset: their courses are placed from the template's own geometry (inner brain surface, corpus callosum, third ventricle, midbrain) and are approximate. With “Cut at slice” on, the 3D model is cut at the current MRI level.</p>
       <div class="sec">Planning mode</div>
       <p class="note">The Lesion &amp; corridor tab is a separate planning mode; the lesion and corridor are hidden everywhere else. The lesion is the target. Transcortical entries snap to the brain surface along the line from the lesion. Each trajectory gets a heuristic risk score: vessel clearance (distance to atlas vessels minus the corridor radius), sulcal crossing (sulci as a surrogate for cortical vessels), ventricle entry, eloquent entry cortex, critical tracts crossed and the crossing angle (parallel is safer than perpendicular), deep nuclei, length and the angle to the surface normal. Hard limits of 100 mm and 30° follow published computer-assisted planning (Marcus et al., Oper Neurosurg 2019; Vakharia et al., J Neurosurg 2018). “Suggest safest entries” scores entries on the brain surface and shows the five lowest; “Two-point direction” follows the Barrow two-point method (lesion centre to its nearest pial or ependymal surface). Probe’s-eye and inline views follow the layout of commercial trajectory planners. All scores describe a population atlas, not a patient.</p>
       <div class="sec">Data and licences</div>
@@ -269,6 +269,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       Cerebellar lobules: SUIT (Diedrichsen et al., 2009), CC BY-NC 3.0, non-commercial.<br>
       Tracts: HCP-1065 population tractography atlas (Yeh, 2022, Nat Commun), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).<br>
       Atlas files via the DSI Studio atlas repository (github.com/frankyeh/DSI-Studio-atlas).<br>
+      Named arteries and deep veins (Galen, straight sinus, internal cerebral veins): TopBrain challenge data, case 008 MRA and CTA annotations, registered to MNI through the population TOF average (ANTs SyN; CTA aligned to its MRA on the shared arterial labels). Yang K et al., TopBrain segmentation challenge for whole brain vessel anatomy, medRxiv 2026; Yang K et al., The TopCoW Challenge, NEJM AI 2026. Licence: open use with attribution; commercial use requires the data owner's permission.<br>
       Arteries and the MRA image: population TOF-MRA average, vessel probability and vessel radius atlases (Mouches P, Forkert ND. A statistical atlas of cerebral arteries generated using multi-center MRA datasets from healthy subjects. Sci Data 2019;6:29), Calgary Medical Image Processing and Analysis Lab.</p>
     </div>
   </aside>
@@ -302,6 +303,8 @@ for(const t of TR){
   t.X=x;t.Y=y;t.Z=z;
 }
 const TER=new Uint8Array(NX*NY*NZ);const MRA=sec(H.mra,Uint8Array);const MRAH=sec(H.mrah,Uint8Array);const [HX,HY,HZ]=H.mrahd;const HO=H.mraho;const TE=H.TE;const TB=[null];TE.forEach(t=>TB[t.id]=t);
+const TBMAP={tb_ica:'a_ica',tb_m1:'a_m1',tb_m2:'a_m2',tb_a1a2:'a_a1',tb_pcom:'a_pcom',tb_p1p2:'a_p1p2',tb_p3p4:'a_p3',tb_sca:'sa_sca2',tb_ba:'a_ba',tb_va:'a_va',tb_aica:'sa_aica',tb_pica:'sa_pica',tb_acha:'sa_acha',tbv_vog:'vn_galen',tbv_sts:'vn_straight',tbv_icv:'vn_icv',sa_vaex:'a_va'};
+const vkey=id=>{const b=id.replace(/_[lr]$/,'');return TBMAP[b]||b};
 const CRIT_T=new Set(['Motor','Sensory','Language','Visual','Arteries','Veins & sinuses','Cranial nerves']);
 const isVes=o=>o.group==='Arteries'||o.group==='Veins & sinuses';
 const isCritS=s=>s.note==='eloquent';
@@ -473,12 +476,12 @@ function drawMRI(){
     [5,10].forEach((m,j)=>{const R=st.lesion.r+m;if(d<R){const rr=Math.sqrt(R*R-d*d);mx.strokeStyle=j?'rgba(255,190,60,.7)':'rgba(255,90,60,.8)';mx.setLineDash([3*dpr,3*dpr]);mx.lineWidth=1*dpr;mx.beginPath();mx.arc((lq[0]+.5)*k,(lq[1]+.5)*k,rr*k,0,7);mx.stroke();mx.setLineDash([])}});
   }
   // corridor projection
-  if(CON()&&st.corr.E&&st.corr.P){const a=m2v(st.corr.E),b=m2v(st.corr.P);const qa=v2s(...a),qb=v2s(...b);
+  if(CON()&&st.corr.E&&st.corr.P){const a=m2v(skinPt()),b=m2v(st.corr.P);const qe=v2s(...m2v(st.corr.E));const qa=v2s(...a),qb=v2s(...b);
     mx.strokeStyle='rgba(120,220,255,.55)';mx.lineWidth=1.5*dpr;mx.setLineDash([6*dpr,4*dpr]);mx.beginPath();mx.moveTo((qa[0]+.5)*k,(qa[1]+.5)*k);mx.lineTo((qb[0]+.5)*k,(qb[1]+.5)*k);mx.stroke();mx.setLineDash([]);
     // in-plane intersection
     const s=q[2];if((qa[2]-s)*(qb[2]-s)<=0&&qa[2]!==qb[2]){const t=(s-qa[2])/(qb[2]-qa[2]);const ix=qa[0]+(qb[0]-qa[0])*t,iy=qa[1]+(qb[1]-qa[1])*t;
       mx.strokeStyle='#7fe3ff';mx.lineWidth=2*dpr;mx.beginPath();mx.arc((ix+.5)*k,(iy+.5)*k,st.corr.rad*k,0,7);mx.stroke()}
-    [[qa,'E'],[qb,'T']].forEach(([p,l])=>{if(Math.abs(p[2]-q[2])<=2){mx.fillStyle='#7fe3ff';mx.font=(11*dpr)+'px IBM Plex Mono, monospace';mx.beginPath();mx.arc((p[0]+.5)*k,(p[1]+.5)*k,3*dpr,0,7);mx.fill();mx.fillText(l,(p[0]+2)*k,(p[1]-1)*k)}});
+    [[qa,'Skin'],[qe,'E'],[qb,'T']].forEach(([p,l])=>{if(Math.abs(p[2]-q[2])<=2){mx.fillStyle='#7fe3ff';mx.font=(11*dpr)+'px IBM Plex Mono, monospace';mx.beginPath();mx.arc((p[0]+.5)*k,(p[1]+.5)*k,3*dpr,0,7);mx.fill();mx.fillText(l,(p[0]+2)*k,(p[1]-1)*k)}});
   }
   // orientation letters
   const o=st.orient;
@@ -654,6 +657,14 @@ function apply3DVis(){
   for(const t of TE)t.mesh.visible=showV(t);
   for(const t of TR){const v=showT(t);if(v){ensureTube(t);setClip(t.mesh)}if(t.mesh){t.mesh.visible=v;const op=(st.focus&&LON()&&!near.has('t'+t.id))||(st.fade&&st.fade.has('t'+t.id))?.15:1;t.mesh.material.opacity=op;t.mesh.material.depthWrite=op>.5}}
 }
+const skinM=new THREE.Mesh(new THREE.TorusGeometry(5,0.7,10,32),new THREE.MeshBasicMaterial({color:0x0f6a8f,depthTest:false}));skinM.renderOrder=9;scene.add(skinM);
+const ctxM=new THREE.Mesh(new THREE.SphereGeometry(1.4,16,12),new THREE.MeshBasicMaterial({color:0x7fe3ff,depthTest:false}));ctxM.renderOrder=9;scene.add(ctxM);
+// skin point: extend the trajectory outward from the cortical entry to the outer scalp surface of the template
+function skinPt(){const E=st.corr.E,T=st.corr.P;let u=[E[0]-T[0],E[1]-T[1],E[2]-T[2]];const l=Math.hypot(...u)||1;u=u.map(v=>v/l);let last=0;
+  for(let t=0;t<=70;t+=.5){const p=[E[0]+u[0]*t,E[1]+u[1]*t,E[2]+u[2]*t];const x=Math.round(p[0]-OX),y=Math.round(p[1]-OY),z=Math.round(p[2]-OZ);
+    if(x<0||y<0||z<0||x>=NX||y>=NY||z>=NZ)break;if(T1[vi(x,y,z)]>8)last=t}
+  if(st.corr.nat)last=Math.max(last,0);
+  return [E[0]+u[0]*last,E[1]+u[1]*last,E[2]+u[2]*last]}
 function update3DTools(){
   lesM.visible=haloM.visible=LON();lesM.position.set(...st.lesion.c);lesM.scale.setScalar(st.lesion.r);
   haloM.position.copy(lesM.position);haloM.scale.setScalar(st.lesion.r+st.range);
@@ -661,7 +672,10 @@ function update3DTools(){
   corrM.visible=corrL.visible=CON()&&L>0;
   if(L>0){corrM.position.copy(E.clone().add(P).multiplyScalar(.5));corrM.scale.set(st.corr.rad,L,st.corr.rad);
     corrM.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize());
-    const ext=E.clone().sub(d.clone().normalize().multiplyScalar(25));corrL.geometry.setFromPoints([ext,P])}
+    const Sk=new THREE.Vector3(...skinPt());corrL.geometry.setFromPoints([Sk.clone().sub(d.clone().normalize().multiplyScalar(15)),P]);
+    const LS=P.clone().sub(Sk).length();corrM.position.copy(Sk.clone().add(P).multiplyScalar(.5));corrM.scale.set(st.corr.rad,LS,st.corr.rad);
+    skinM.position.copy(Sk);ctxM.position.copy(E)}
+  skinM.visible=ctxM.visible=CON()&&L>0;
   crossM.position.set(...st.cross);
 }
 function resize(){const r=host.getBoundingClientRect();renderer.setSize(r.width,r.height,false);renderer.domElement.style.width=r.width+'px';renderer.domElement.style.height=r.height+'px';cam.aspect=r.width/r.height;cam.updateProjectionMatrix();drawMRI()}
@@ -723,7 +737,7 @@ function renderTable(tab,rows,dist){tab.innerHTML='';
 function corridor(){
   const E=st.corr.E,P=st.corr.P;const a=m2v(E),b=m2v(P);const d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]];const L=Math.hypot(...d);
   ['ex','ey','ez'].forEach((id,i)=>{if(document.activeElement!==$(id))$(id).value=Math.round(E[i])});['tx','ty','tz'].forEach((id,i)=>{if(document.activeElement!==$(id))$(id).value=Math.round(P[i])});
-  $('clen').textContent=L?('Length '+L.toFixed(1)+' mm'):'';
+  {const Sk=skinPt();const sl=Math.hypot(Sk[0]-E[0],Sk[1]-E[1],Sk[2]-E[2]);$('clen').textContent=L?('Skin → cortex '+sl.toFixed(0)+' mm · cortex → target '+L.toFixed(0)+' mm · total '+(L+sl).toFixed(0)+' mm'):''}
   if(!L){renderTable($('ctab1'),[],()=>0);renderTable($('ctab2'),[],()=>0);return}
   const segs=[];let cur=null;
   for(let s=0;s<=L;s+=.5){const p=[0,1,2].map(i=>Math.round(a[i]+d[i]*s/L));const Lb=LAB[vi(...p)];
@@ -910,6 +924,12 @@ sv_dandy:'岩靜脈（Dandy 靜脈）：CPA 上方小腦–橋腦的靜脈匯流
 sv_sps:'岩上竇：沿岩骨嵴的天幕附著緣，連接海綿竇與橫竇–乙狀竇交界。（示意路徑）',
 sv_cav:'海綿竇：蝶鞍兩側，內有 ICA 與 CN VI，外側壁由上而下為 CN III、IV、V1、V2。經鼻蝶與外側顱底手術要注意。（示意位置）',
 sv_occ:'枕竇：沿小腦鐮從竇匯往下到枕大孔，常細小或缺如；兒童枕下開顱時可能較大。（示意路徑）',
+tb_m3:'MCA M3（蓋部段）：從腦島上緣環狀溝轉折，沿額、頂、顳蓋內面走到 Sylvian 裂表面，再成為皮質支 (M4)。打開 Sylvian 裂時最先遇到。',
+tb_a3:'ACA A3：繞胼胝體膝部的 pericallosal 段。縱裂入路時位於術野中央。',
+tb_acom:'前交通動脈 (AComm)：連接兩側 A1–A2 交界；最常見的動脈瘤位置，周圍有 Heubner 與下視丘穿通支。',
+tb_oa:'眼動脈：ICA 床突段發出，沿視神經下外側進入視神經管。床突旁動脈瘤與視神經減壓時的定位。',
+tb_3rda2:'正中 A2（第三 A2，median artery of the corpus callosum）：由 AComm 發出的解剖變異，此參考病例存在。',
+tb_3rda3:'正中 A3：正中 A2 的延續（解剖變異）。',
 'v_vb':'椎基底動脈與小腦動脈：椎動脈 (VA)、基底動脈 (BA) 及 PICA、AICA、SCA。BA 穿通支供應橋腦；損傷可造成 locked-in syndrome。'
 };
 const TDESC={
@@ -930,7 +950,7 @@ const TSPEC={
 function descOf(k,o){
   if(k==='s')return DESC[o.name]||o.group+'。';
   if(k==='v'){const base=o.name.replace(' territory','');for(const key in TSPEC)if(base===key)return TSPEC[key];return TDESC[o.group]||''}
-  const id=o.id.replace(/_[lr]$/,'');return DESC[id]||'';
+  const id=vkey(o.id);return DESC[id]||'';
 }
 const info=$('info');let selMesh=null;
 function setHL(m){if(selMesh&&selMesh.material.emissive)selMesh.material.emissive.setHex(0);selMesh=m;if(m&&m.material.emissive)m.material.emissive.setHex(0x3a2a00)}
@@ -950,7 +970,7 @@ function select(k,o,p,also){
     const dia=o.RAD[i]/10*2;F.push(['Local calibre','≈ '+(dia>0?dia.toFixed(1):'<1')+' mm diameter (population radius atlas)']);
     const nb=o.NB[i];if(nb)F.push(['Runs beside',SB[nb].name+sideTxt(SB[nb])+(o.NBD[i]?' ('+o.NBD[i]+' mm)':' (on its surface)')]);
     const Tt=TER[vi(o.X[i],o.Y[i],o.Z[i])];if(Tt)F.push(['Territory here',TB[Tt].name.replace(' territory','')+sideTxt(TB[Tt])]);
-    F.push(['Source',o.group==='Veins & sinuses'?'Placed from template geometry (approximate course)':o.id.startsWith('a_')?'Centerline traced on the population vessel atlas (Mouches & Forkert 2019)':'Population vessel atlas (Mouches & Forkert 2019)']);}}
+    F.push(['Source',o.tb?'TopBrain challenge data, case 008 '+(o.id.startsWith('tbv_')?'CTA':'MRA')+' annotation, warped to MNI'+(/mirrored/.test(o.tb)?' ('+o.tb+')':''):o.group==='Veins & sinuses'?'Placed from template geometry (approximate course)':o.id.startsWith('a_')?'Centerline traced on the population vessel atlas (Mouches & Forkert 2019)':'Population vessel atlas (Mouches & Forkert 2019)']);}}
   if(o.sch)F.push(['Accuracy','Schematic textbook course anchored to template landmarks, not traced from imaging'+(o.note&&o.note!=='schematic course'?' ('+o.note.replace(/^schematic[^;]*;?\s*/,'')+')':'')]);
   const ld=lesionDist(k,o);if(ld)F.push(['Lesion',ld]);
   if(k!=='v'&&crit(o,k))F.push(['Flag',isVes(o)?'Critical: '+(o.group==='Arteries'?'artery':'vein / sinus'):'Critical: eloquent cortex or pathway']);
@@ -1010,7 +1030,7 @@ function drawContoursMRI(k){if(!st.outl)return;const C=sliceContours();const dpr
   if(proj)drawVesselProj(k,dpr);
   mx.restore()}
 // When the MRI shows a maximum-intensity projection, vessels are annotated by their projection over the same slab
-const VABBR={a_ica:'ICA',a_m1:'M1',a_m2:'M2',a_a1:'A1',a_a2:'A2/pericallosal',a_pcom:'PComm',a_p1p2:'P1–P2',a_p3:'P3–P4',a_sca:'SCA',a_ba:'BA',a_va:'VA',
+const VABBR={a_ica:'ICA',tb_m3:'M3',tb_a3:'A3',tb_acom:'AComm',tb_oa:'OA',tb_3rda2:'Median A2',tb_3rda3:'Median A3',a_m1:'M1',a_m2:'M2',a_a1:'A1',a_a2:'A2/pericallosal',a_pcom:'PComm',a_p1p2:'P1–P2',a_p3:'P3–P4',a_sca:'SCA',a_ba:'BA',a_va:'VA',
   sa_heubner:'Heubner',sa_lsa1:'LSA',sa_lsa2:'LSA',sa_lsa3:'LSA',sa_acha:'AChA',sa_cma:'CMA',sa_aica:'AICA',sa_sca2:'SCA',sa_pica:'PICA',
   vn_sss:'SSS',vn_iss:'ISS',vn_straight:'Straight s.',vn_galen:'Galen',vn_icv:'ICV',vn_bvr:'BVR',vn_ts:'Transverse s.',vn_sig:'Sigmoid s.',
   sv_smcv:'Sylvian v.',sv_labbe:'Labbé',sv_trolard:'Trolard',sv_bridge1:'Bridging v.',sv_bridge2:'Bridging v.',sv_bridge3:'Bridging v.',sv_tsv:'Thalamostriate v.',sv_septal:'Septal v.',sv_dandy:'Petrosal v.',sv_sps:'SPS',sv_cav:'Cavernous s.',sv_occ:'Occipital s.'};
@@ -1025,7 +1045,7 @@ function drawVesselProj(k,dpr){const L=vesselProj();const placed=[];
   for(const P of L){pathOf(mx,P.poly,k,0,0);mx.strokeStyle=P.o.group==='Arteries'?'#ff6a5a':'#6aa8ff';mx.lineWidth=1.4*dpr;mx.globalAlpha=.95;
     if(P.o.sch)mx.setLineDash([3*dpr,2.5*dpr]);mx.stroke();mx.setLineDash([])}
   mx.font=`600 ${10.5*dpr}px "IBM Plex Sans", system-ui, sans-serif`;mx.textAlign='center';
-  for(const P of L.sort((a,b)=>b.n-a.n)){const base=P.o.id.replace(/_[lr]$/,'');const ab=VABBR[base];if(!ab)continue;
+  for(const P of L.sort((a,b)=>b.n-a.n)){const base=vkey(P.o.id);const ab=VABBR[base]||VABBR[P.o.id.replace(/_[lr]$/,'')];if(!ab)continue;
     const x=P.anchor[0]*k,y=P.anchor[1]*k;if(placed.some(q=>Math.abs(q[0]-x)<34*dpr&&Math.abs(q[1]-y)<12*dpr))continue;placed.push([x,y]);
     const t=ab+(P.o.side?' '+P.o.side:'');mx.lineWidth=3*dpr;mx.strokeStyle='rgba(0,0,0,.85)';mx.strokeText(t,x,y-4*dpr);mx.fillStyle=P.o.group==='Arteries'?'#ffb3a8':'#b8d6ff';mx.fillText(t,x,y-4*dpr)}}
 // ---------- the illustrated plate
@@ -1038,8 +1058,8 @@ const SHORTF={
 'Lateral ventricle':'CSF','Third ventricle':'CSF；底為下視丘','Fourth ventricle':'CSF；菱形窩','Vermis':'軀幹平衡','Cerebellar white matter / dentate region':'齒狀核：DRTT 起點','Cerebellum · Anterior lobe (I–V)':'肢體步態協調','Cerebellum · Posterior lobe (VI–VIII)':'肢體協調、認知','Cerebellum · Tonsil / IX':'扁桃；下疝壓延腦','Cerebellum · Flocculus (X)':'前庭小腦、眼動',
 cst:'對側肢體隨意運動',cbt:'對側下臉、構音吞嚥',fat:'言語起始 (SMA–Broca)',ml:'精細觸覺、本體感覺',str:'感覺運動視丘皮質',af:'復誦、語音迴路',slf:'額頂注意、語音',ifof:'語意處理',unc:'顳極–眶額',ilf:'視覺辨識、閱讀',or:'視放射：對側視野',cn2:'視覺',ar:'聽覺',cing:'邊緣聯絡',fx:'海馬→乳頭體、記憶',atr:'視丘–前額葉',
 cc_minor:'雙側額葉連結',cc_body:'雙側運動感覺連結',cc_tap:'顳角／三角區外壁',cc_major:'雙側枕葉連結',ac:'雙側顳葉連結',cpt:'皮質→橋腦→小腦',drtt:'小腦→Vim；顫抖',scp:'小腦輸出',mcp:'橋腦→小腦',icp:'脊髓前庭→小腦',cn3:'眼動、瞳孔',cn5:'臉部感覺、咀嚼',cn7:'顏面表情',cn8:'聽覺、平衡',
-dcml:'精細觸覺、本體感覺',cs_cn1:'嗅覺',cs_cn3:'眼動、瞳孔收縮',cs_cn5:'臉部感覺、咀嚼肌',cs_cn7:'顏面表情肌',cs_cn8:'聽覺、平衡',sa_sca2:'小腦上面、齒狀核',cs_cn4:'上斜肌；唯一背側出腦',cs_cn6:'外直肌；行程最長',cs_cn9:'咽部感覺、味覺後1/3',cs_cn10:'咽喉、副交感',cs_cn11:'胸鎖乳突肌、斜方肌',cs_cn12:'舌肌',sa_heubner:'尾狀核頭、內囊前肢',sa_lsa1:'內囊、基底核',sa_lsa2:'內囊、基底核',sa_lsa3:'內囊、基底核',sa_acha:'內囊後肢、視徑',sa_cma:'內側額葉、旁中央小葉',sa_aica:'CPA、CN VII/VIII 旁',sa_pica:'延腦外側、小腦下面',sv_smcv:'Sylvian 裂表面引流',sv_labbe:'顳葉→橫竇；顳下入路勿傷',sv_trolard:'Sylvian→SSS 吻合',sv_bridge1:'皮質→SSS',sv_bridge2:'皮質→SSS',sv_bridge3:'皮質→SSS',sv_tsv:'尾狀核視丘溝',sv_septal:'透明中隔',sv_dandy:'CPA 上方；MVD 常遇',sv_sps:'岩骨嵴',sv_cav:'CN III/IV/V1/V2/VI、ICA',sv_occ:'小腦鐮',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；Heubner',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'V3 繞 C1；V4 發出 PICA',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
-const shortOf=(k,o)=>k==='s'?(SHORTF[o.name]||''):(SHORTF[o.id.replace(/_[lr]$/,'')]||'');
+dcml:'精細觸覺、本體感覺',cs_cn1:'嗅覺',tb_m3:'蓋部；Sylvian 裂表面',tb_a3:'胼胝體膝部 pericallosal',tb_acom:'動脈瘤好發',tb_oa:'視神經旁',tb_3rda2:'正中 A2（變異）',tb_3rda3:'正中 A3（變異）',cs_cn3:'眼動、瞳孔收縮',cs_cn5:'臉部感覺、咀嚼肌',cs_cn7:'顏面表情肌',cs_cn8:'聽覺、平衡',sa_sca2:'小腦上面、齒狀核',cs_cn4:'上斜肌；唯一背側出腦',cs_cn6:'外直肌；行程最長',cs_cn9:'咽部感覺、味覺後1/3',cs_cn10:'咽喉、副交感',cs_cn11:'胸鎖乳突肌、斜方肌',cs_cn12:'舌肌',sa_heubner:'尾狀核頭、內囊前肢',sa_lsa1:'內囊、基底核',sa_lsa2:'內囊、基底核',sa_lsa3:'內囊、基底核',sa_acha:'內囊後肢、視徑',sa_cma:'內側額葉、旁中央小葉',sa_aica:'CPA、CN VII/VIII 旁',sa_pica:'延腦外側、小腦下面',sv_smcv:'Sylvian 裂表面引流',sv_labbe:'顳葉→橫竇；顳下入路勿傷',sv_trolard:'Sylvian→SSS 吻合',sv_bridge1:'皮質→SSS',sv_bridge2:'皮質→SSS',sv_bridge3:'皮質→SSS',sv_tsv:'尾狀核視丘溝',sv_septal:'透明中隔',sv_dandy:'CPA 上方；MVD 常遇',sv_sps:'岩骨嵴',sv_cav:'CN III/IV/V1/V2/VI、ICA',sv_occ:'小腦鐮',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；Heubner',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'V3 繞 C1；V4 發出 PICA',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
+const shortOf=(k,o)=>k==='s'?(SHORTF[o.name]||''):(SHORTF[vkey(o.id)]||'');
 const GM='#e7bca8';
 function plateFill(o){if(o.group.startsWith('Cortex'))return st.plateLobes?o.color:(o.note==='eloquent'?o.color:GM);return o.color}
 const pc=document.createElement('canvas');pc.id='plate';pc.setAttribute('aria-label','Illustrated atlas plate of the current slice');const px=pc.getContext('2d');$('v3').append(pc);
@@ -1094,7 +1114,7 @@ function drawPlate(){if(st.view!=='plate')return;const r=$('v3').getBoundingClie
   // lesion and corridor
   const cv=m2v(st.cross),q=v2s(cv[0],cv[1],cv[2]);
   if(LON()){const lv=m2v(st.lesion.c),lq=v2s(...lv),d=Math.abs(lq[2]-q[2]);if(d<st.lesion.r){const rr=Math.sqrt(st.lesion.r**2-d*d);px.beginPath();px.arc(ox+(lq[0]+.5)*k,oy+(lq[1]+.5)*k,rr*k,0,7);px.fillStyle='rgba(200,50,40,.30)';px.fill();px.lineWidth=2*dpr;px.strokeStyle='#a3241a';px.setLineDash([4*dpr,3*dpr]);px.stroke();px.setLineDash([])}}
-  if(CON()){const a=v2s(...m2v(st.corr.E)),b=v2s(...m2v(st.corr.P));px.beginPath();px.moveTo(ox+(a[0]+.5)*k,oy+(a[1]+.5)*k);px.lineTo(ox+(b[0]+.5)*k,oy+(b[1]+.5)*k);px.strokeStyle='rgba(20,110,150,.6)';px.lineWidth=2*dpr;px.setLineDash([7*dpr,4*dpr]);px.stroke();px.setLineDash([])}
+  if(CON()){const a=v2s(...m2v(skinPt())),b=v2s(...m2v(st.corr.P));px.beginPath();px.moveTo(ox+(a[0]+.5)*k,oy+(a[1]+.5)*k);px.lineTo(ox+(b[0]+.5)*k,oy+(b[1]+.5)*k);px.strokeStyle='rgba(20,110,150,.6)';px.lineWidth=2*dpr;px.setLineDash([7*dpr,4*dpr]);px.stroke();px.setLineDash([])}
   // crosshair marker
   const cx=ox+(q[0]+.5)*k,cy=oy+(q[1]+.5)*k;px.strokeStyle='#b07d00';px.lineWidth=1.4*dpr;px.beginPath();px.moveTo(cx-9*dpr,cy);px.lineTo(cx-3*dpr,cy);px.moveTo(cx+3*dpr,cy);px.lineTo(cx+9*dpr,cy);px.moveTo(cx,cy-9*dpr);px.lineTo(cx,cy-3*dpr);px.moveTo(cx,cy+3*dpr);px.lineTo(cx,cy+9*dpr);px.stroke();
   // orientation + caption
@@ -1358,7 +1378,7 @@ function drawOblique(){if(!TIDV)buildTIDV();const B=obliqueBasis();const probe=s
   let W,H,P0,ax,ay;
   if(probe){W=H=160;const c=add3(B.E,B.u,st.pdepth);ax=B.e1;ay=B.e2;P0=add3(add3(c,ax,-W/2*res),ay,H/2*res)}
   else{const th=st.prot*Math.PI/180;const e=[B.e1[0]*Math.cos(th)+B.e2[0]*Math.sin(th),B.e1[1]*Math.cos(th)+B.e2[1]*Math.sin(th),B.e1[2]*Math.cos(th)+B.e2[2]*Math.sin(th)];
-    W=Math.round((B.L+40)/res);H=160;ax=B.u;ay=e;P0=add3(add3(B.E,ax,-20),ay,H/2*res)}
+    const ext=len3(sub3(skinPt(),B.E))+10;W=Math.round((B.L+ext+20)/res);H=160;ax=B.u;ay=e;P0=add3(add3(B.E,ax,-ext),ay,H/2*res)}
   const V=st.bg==='t2'?T2:st.bg==='mra'?MRA:T1;const img=new ImageData(W,H),labs=new Uint8Array(W*H),tids=new Uint8Array(W*H);
   for(let j=0;j<H;j++)for(let i=0;i<W;i++){const p=[P0[0]+ax[0]*i*res-ay[0]*j*res,P0[1]+ax[1]*i*res-ay[1]*j*res,P0[2]+ax[2]*i*res-ay[2]*j*res];const k=(j*W+i)*4;
     const g=trilin(V,p);img.data[k]=img.data[k+1]=img.data[k+2]=g;img.data[k+3]=255;const vx=vidx(p);if(vx>=0){const Lb=LAB[vx];if(Lb&&showS(SB[Lb]))labs[j*W+i]=Lb;const t=TIDV[vx];if(t&&showT(TR[t-1]))tids[j*W+i]=t}}
@@ -1377,7 +1397,7 @@ function drawOblique(){if(!TIDV)buildTIDV();const B=obliqueBasis();const probe=s
   else{const a=toS(B.E),b=toS(B.T);const ny=(b[1]+a[1])/2;mx.fillStyle='rgba(127,227,255,.16)';mx.fillRect(a[0],ny-rr,b[0]-a[0],2*rr);mx.strokeStyle='#7fe3ff';mx.lineWidth=1.5*dpr;mx.setLineDash([6*dpr,4*dpr]);
     mx.beginPath();mx.moveTo(a[0],ny);mx.lineTo(b[0],ny);mx.stroke();mx.setLineDash([]);const q=toS(lc);mx.beginPath();mx.arc(q[0],q[1],rL/res*k,0,7);mx.fillStyle='rgba(220,40,30,.25)';mx.fill();mx.strokeStyle='#ff4b3a';mx.lineWidth=2*dpr;mx.stroke();
     mx.fillStyle='#7fe3ff';mx.font=(11*dpr)+'px IBM Plex Mono, monospace';mx.textAlign='center';for(let s=0;s<=B.L;s+=10){const x=a[0]+s/res*k;mx.fillRect(x-.5*dpr,ny+rr,1*dpr,5*dpr);mx.fillText(s+'',x,ny+rr+16*dpr)}
-    const dx=a[0]+st.pdepth/res*k;mx.strokeStyle='#ffd24a';mx.lineWidth=1.5*dpr;mx.beginPath();mx.moveTo(dx,ny-rr-10*dpr);mx.lineTo(dx,ny+rr+10*dpr);mx.stroke();mx.fillStyle='#ffd24a';mx.fillText('E',a[0],ny-rr-8*dpr)}
+    const dx=a[0]+st.pdepth/res*k;mx.strokeStyle='#ffd24a';mx.lineWidth=1.5*dpr;mx.beginPath();mx.moveTo(dx,ny-rr-10*dpr);mx.lineTo(dx,ny+rr+10*dpr);mx.stroke();mx.fillStyle='#ffd24a';mx.fillText('E',a[0],ny-rr-8*dpr);const sk=toS(skinPt());mx.fillStyle='#7fe3ff';mx.fillRect(sk[0]-1*dpr,ny-rr-6*dpr,2*dpr,2*rr+12*dpr);mx.fillText('Skin',sk[0],ny-rr-8*dpr);mx.fillStyle='rgba(127,227,255,.08)';mx.fillRect(sk[0],ny-rr,a[0]-sk[0],2*rr)}
   mx.restore();
   $('oL').textContent='';$('oR').textContent='';$('oT').textContent=probe?'probe’s-eye view':'inline view';
   // readout: what sits inside the corridor at the current depth

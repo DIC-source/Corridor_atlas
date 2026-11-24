@@ -44,11 +44,11 @@ for k,v in A.items():
     r=ndi.uniform_filter1d(r,9)
     if base=='va': r=np.full(len(P),1.8)
     mv,mf=tube(P,r);vox,rv=voxels(P,r)
-    OUT.append(dict(id='a_'+k,name=v['name'],group='Arteries',color=AC[base],side=v['side'],vox=vox,radv=rv,mesh=(mv,mf),**({'sch':True,'note':'schematic course: V2 in the transverse foramina, V3 over C1, V4 along the medulla'} if base=='va' else {})))
+    OUT.append(dict(id='a_'+k,P=P,r=r,name=v['name'],group='Arteries',color=AC[base],side=v['side'],vox=vox,radv=rv,mesh=(mv,mf),**({'sch':True,'note':'schematic course: V2 in the transverse foramina, V3 over C1, V4 along the medulla'} if base=='va' else {})))
     print(k,len(P),'r %.1f-%.1f'%(r.min(),r.max()),len(vox))
 for k,v in V.items():
     P=smooth(v['pts'],s=len(v['pts'])*0.6);t=np.linspace(0,1,len(P));r=v['r'][0]+(v['r'][1]-v['r'][0])*t
     mv,mf=tube(P,r);vox,rv=voxels(P,r)
-    OUT.append(dict(id='vn_'+k,name=v['name'],group='Veins & sinuses',color='#3566b8' if 'sinus' in v['name'] else '#4b86d4',side=v['side'],vox=vox,radv=rv,mesh=(mv,mf)))
+    OUT.append(dict(id='vn_'+k,P=P,r=r,name=v['name'],group='Veins & sinuses',color='#3566b8' if 'sinus' in v['name'] else '#4b86d4',side=v['side'],vox=vox,radv=rv,mesh=(mv,mf)))
     print(k,len(P),len(vox))
 pickle.dump(OUT,open('out/named_vessels.pkl','wb'))
