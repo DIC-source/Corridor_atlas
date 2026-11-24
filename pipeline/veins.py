@@ -33,13 +33,17 @@ torc=None
 c=np.array([0,-20,5.0]);sss=[]
 for th in np.radians(np.arange(8,196,5)):   # angle from +y (anterior) toward +z then posterior
     sss.append(ray_mid(c,[0,np.cos(th),np.sin(th)],4.0))
-torc=ray_mid([0,-70,-4],[0,-1,0.12],4.0)
+# torcula (confluence): internal occipital protuberance, posterior to the vermian notch and below the occipital poles;
+# placed on the template T1 (MNI ~ [0,-95,-18]), matching the low end of the tentorial/straight-sinus band
+torc=np.array([0,-95,-18.0])
+sss=[p for p in sss if p[2]>12]+[np.array(q,float) for q in ([0,-106.5,2],[0,-104,-7],[0,-100,-14])]
 sss.append(torc);OUT['sss']=dict(name='Superior sagittal sinus',side='',r=(2.5,4.5),pts=smooth(sss))
 # splenium & Galen from HCP corpus callosum streamlines
 tracks,cl,names=load_tt()
 cc=np.vstack([tracks[i] for i in np.nonzero(np.isin(cl,[85,86,88]))[0]]);cc=cc[(np.abs(cc[:,0])<1.5)&(cc[:,2]>-2)&(cc[:,2]<40)&(cc[:,1]>-55)&(cc[:,1]<40)]
 spl=cc[np.argmin(cc[:,1])];galen=np.array([0,spl[1]-5,spl[2]-5])
-OUT['straight']=dict(name='Straight sinus',side='',r=(2.5,2.8),pts=smooth([galen,(galen*0.6+torc*0.4)+[0,0,-2],torc],s=0))
+# straight sinus: along the falcotentorial junction (bright band on the midline T1), Galen -> torcula
+OUT['straight']=dict(name='Straight sinus',side='',r=(2.5,2.8),pts=smooth([galen,[0,-58,5],[0,-68,-2],[0,-78,-9.5],[0,-87,-15],torc],s=0))
 OUT['galen']=dict(name='Great cerebral vein (Galen)',side='',r=(3,3),pts=smooth([galen+[0,4,3],galen],s=0))
 # inferior sagittal sinus: ~7 mm above the top of the corpus callosum
 iss=[]
@@ -66,7 +70,7 @@ for sd,m in [('l',-1),('r',1)]:
 for sd,m in [('l',-1),('r',1)]:
     ts=[torc]
     for ph in np.radians(np.arange(10,71,6)):
-        z=torc[2]-0.3*np.degrees(ph);ts.append(ray([m*6,-62,z],[m*np.sin(ph),-np.cos(ph),0],4.0))
+        z=torc[2]-0.15*np.degrees(ph);ts.append(ray([m*6,-62,z],[m*np.sin(ph),-np.cos(ph),0],4.0))
     J=ts[-1];sg=[J]
     for f in np.linspace(0.2,0.75,4):
         z=J[2]+(-50-J[2])*f;y=J[1]+(-38-J[1])*f;sg.append(ray([m*22,y,z],[m,-0.25,0],3.5))

@@ -147,6 +147,13 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
 .warnn{border-left:3px solid var(--amber);padding-left:8px;margin:0}.warnh{border-left:3px solid var(--crit);padding-left:8px;margin:0;color:var(--crit)}
 .assess table.prox td{vertical-align:top}
 .zoomctl[hidden]{display:none}
+.method summary{font-weight:600;cursor:pointer}
+.mf{border-top:1px solid var(--line);padding:6px 0}
+.mfh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:2px}
+.mfh .pill{font-size:11px;white-space:nowrap}
+.mref{margin-top:2px;opacity:.85}
+.mlist{padding-left:18px;margin:4px 0}
+.mlist li{margin:3px 0}
 .zoomctl{position:absolute;right:8px;top:8px;display:flex;align-items:center;gap:4px;z-index:3;background:color-mix(in srgb,var(--panel) 85%,transparent);border-radius:6px;padding:3px}
 .zoomctl .btn{min-width:26px;padding:2px 6px}
 .zoomctl span{font-size:11px;min-width:38px;text-align:center}
@@ -251,6 +258,22 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <p class="note" style="margin:4px 0 6px">Entry points snap to the brain surface along the line from the lesion, except for approaches that follow a natural corridor. The buttons arm a click on the MRI or the atlas plate. Distances run from the lesion surface to the nearest atlas voxel, whether or not the layer is on. “@” is depth from the entry point. Lesion and target are the same point: the corridor runs from the entry to the lesion centre. <span class="tag">critical</span> marks eloquent cortex, motor, sensory, language and visual pathways, and arteries.</p>
       <div class="sec">Trajectory assessment</div>
       <div id="assess" class="assess"><span class="note">Loading…</span></div>
+      <details class="res method" id="riskHow"><summary>風險分數怎麼算、參考什麼</summary>
+       <p class="note">這是教學用的<b>啟發式分數</b>（heuristic score）：每個因子的<b>計分項目</b>取自已發表的自動化路徑規劃系統，但<b>權重、門檻和 low／moderate／high 分界（&lt;2、2–4、≥4）是本工具自訂</b>，沒有經過臨床驗證。分數越低越安全。</p>
+       <div class="mfac"><div class="mf"><div class="mfh"><b>Vessel clearance</b><span class="pill">最高 3</span></div><div class="note">沿路徑每 0.5 mm 取樣，量到最近血管的距離扣掉通道半徑；≥3 mm 計 0，越近越高，碰到血管直接標紅。血管層是本 atlas 的族群血管（具名＋示意＋Mouches 機率 ≥25%），<b>不是病人的血管</b></div><div class="note mref">依據：Liu 2014（DBS）：&lt;3 mm 罰分、穿過血管＝最大成本；EpiNav（Vakharia 2019）：至少 3 mm，最好遠到 10 mm</div></div><div class="mf"><div class="mfh"><b>Sulcal crossing</b><span class="pill">最高 1.5</span></div><div class="note">腦表 30 mm 內 T1 暗區（腦溝 CSF，不含腦室）距離 &lt;4 mm 開始計分</div><div class="note mref">依據：EpiNav 把腦溝設為禁入區；Liu 2014 罰穿過溝底的路徑（血管走在溝裡）</div></div><div class="mf"><div class="mfh"><b>Ventricle</b><span class="pill">最高 1.5</span></div><div class="note">穿過腦室就計分；經腦室入路（Kocher、Keen、Frazier、transcortical、transcallosal）不計</div><div class="note mref">依據：Liu 2014：離腦室 &lt;2 mm 為硬限制（DBS）</div></div><div class="mf"><div class="mfh"><b>Eloquent entry</b><span class="pill">最高 2</span></div><div class="note">入口前 4 mm 落在 M1、S1、旁中央小葉、Broca、Wernicke、supramarginal、Heschl、V1</div><div class="note mref">依據：一般神外原則（皮質切開避開功能區）；清單為本工具選定</div></div><div class="mf"><div class="mfh"><b>Critical tracts</b><span class="pill">最高 3</span></div><div class="note">10 條族群 tract（HCP-1065：CST、corticobulbar、AF、SLF、IFOF、視放射、ML、FAT、UF、ILF）；每條計 1.5 × sin(路徑與纖維夾角)：垂直穿過最差，平行（parafascicular）最輕</div><div class="note mref">依據：沿纖維走向、不橫切纖維的原則；角度計分是本工具自訂</div></div><div class="mf"><div class="mfh"><b>Deep nuclei</b><span class="pill">最高 2</span></div><div class="note">穿過基底核、視丘、腦幹或腦神經核就計分</div><div class="note mref">依據：Liu 2014 罰穿過視丘；其餘為本工具延伸</div></div><div class="mf"><div class="mfh"><b>Length</b><span class="pill">最高 1</span></div><div class="note">70 mm 以下計 0，100 mm 計滿；&gt;100 mm 標警告</div><div class="note mref">依據：EpiNav（SEEG）上限 90 mm；本工具考慮開放／tubular 入路放寬到 100 mm</div></div><div class="mf"><div class="mfh"><b>Entry angle</b><span class="pill">最高 1</span></div><div class="note">路徑與腦表法線夾角，20° 以下計 0，40° 計滿；&gt;30° 標警告</div><div class="note mref">依據：EpiNav：鑽骨角度與骨面法線 &lt;30°（本工具量的是<b>腦表</b>法線，不是顱骨）</div></div></div>
+       <p class="note">走自然通道（Sylvian 裂、腦池、顱底）的入路：sulcus、eloquent entry、angle 三項不計，因為直線只代表方向，沿途組織實際上是被撥開或繞過的。</p>
+       <div class="sec">Target 和 entry 怎麼決定</div>
+       <ul class="note mlist">
+        <li><b>Target＝lesion 中心</b>。你放的病灶球心就是終點；取樣到病灶表面停止。選 approach 並勾「Also move the lesion to this approach's usual target」時，改用該入路常見目標（例如 Kocher→Monro 孔、pterional→ICA 分叉）。</li>
+        <li><b>手動 entry</b>：在 MRI／plate 點一下，程式從 lesion 往你點的方向射線，停在<b>最外層腦表面</b>當入口。</li>
+        <li><b>Approach 預設</b>：入口和目標點是依教科書定位（例如 Kocher 為冠狀縫前 1 cm、中線旁 2.5–3 cm）手動放在 MNI 模板上的近似點；經皮質入路會再貼到腦表面。</li>
+        <li><b>Suggest safest entries</b>：腦表每約 3 mm 一個候選點（z &gt; −35，排除顱底），先篩掉長度 &gt;100 mm、角度 &gt;30°，選了 approach 時只留入口 25 mm 內的點，再用上面的分數排序，取彼此相距 ≥12 mm 的前 5 名。</li>
+        <li><b>Two-point direction</b>：Brown、Thompson、Spetzler（Barrow Quarterly 1996）的 two-point method：lesion 中心連到最靠近的軟腦膜或室管膜表面，延長到皮質就是入口。原法是為腦幹病灶設計的。</li>
+        <li><b>腦外段</b>：入口之後沿同一直線延伸到頭皮（模板 T1 訊號降到背景處），所以顯示的是皮膚到病灶的完整路徑。</li>
+       </ul>
+       <p class="note">與已驗證系統的差別：EpiNav 和 Liu 2014 用的是<b>病人自己的</b> CTA／MRV／顯影 MRI 血管與腦溝分割，而且是針對 SEEG、DBS 這類細針路徑設計的；這裡是族群 atlas 加上開顱通道的直線近似。</p>
+       <p class="note">參考：Vakharia VN et al. Computer-assisted planning for SEEG. <i>Neurotherapeutics</i> 2019;16:1183–97 · Liu Y et al. Multi-surgeon, multi-site validation of a trajectory planning algorithm for DBS. <i>IEEE TBME</i> 2014;61:2479–87 · Brown AP, Thompson BG, Spetzler RF. The two-point method: evaluating brain stem lesions. <i>BNI Quarterly</i> 1996;12(1).</p>
+      </details>
       <div class="sec">Find an entry</div>
       <div class="row"><button class="btn" id="sugBtn" title="Score entries on the brain surface within 100 mm and 30° of the surface normal (or inside the chosen approach's zone)">Suggest safest entries</button><button class="btn" id="twoBtn" title="Two-point method: lesion centre to its nearest pial or ependymal surface">Two-point direction</button></div>
       <div id="twoTxt" class="row"></div><div id="sugList"></div>
