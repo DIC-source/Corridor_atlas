@@ -146,6 +146,11 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
 .asc{display:flex;align-items:center;gap:10px}.ascn{font:600 28px var(--f-mono);font-variant-numeric:tabular-nums}
 .warnn{border-left:3px solid var(--amber);padding-left:8px;margin:0}.warnh{border-left:3px solid var(--crit);padding-left:8px;margin:0;color:var(--crit)}
 .assess table.prox td{vertical-align:top}
+.zoomctl[hidden]{display:none}
+.zoomctl{position:absolute;right:8px;top:8px;display:flex;align-items:center;gap:4px;z-index:3;background:color-mix(in srgb,var(--panel) 85%,transparent);border-radius:6px;padding:3px}
+.zoomctl .btn{min-width:26px;padding:2px 6px}
+.zoomctl span{font-size:11px;min-width:38px;text-align:center}
+#v3 .zoomctl{top:auto;bottom:8px}
 @media (max-width:1100px){.app{grid-template-columns:minmax(0,1fr) minmax(0,1fr);height:auto}.rail{grid-column:1/-1;max-height:none}.pane.v{height:62vh;min-height:380px}}
 @media (max-width:720px){.app{grid-template-columns:minmax(0,1fr)}.pane.v{height:118vw;min-height:420px}.warnbar{flex-basis:100%}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -256,7 +261,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
     <div class="tabbody" id="tb-about" hidden>
       <p class="note" style="margin-top:0">All layers live in MNI ICBM152 2009 space at 1 mm. Both panels draw from the same label volumes, so a colour block on the MRI and the matching shape in the illustration are the same voxels.</p>
       <div class="sec">How to use</div>
-      <p class="note">Click any structure, tract or artery in either view to open its details at the top of this panel. Click the MRI to move the crosshair; scroll or use the slider to page slices. Click a structure in the illustration to jump the MRI there. Use the Lesion tab to drop a sphere and list everything within 5 or 10 mm; use the Corridor tab to set an entry and target and see what the trajectory crosses.</p>
+      <p class="note">The mouse wheel pages through slices; Ctrl + wheel (or pinch) zooms the atlas plate and MRI, right-drag or Shift-drag pans, and double-click fits. Click any structure, tract or artery in either view to open its details at the top of this panel. Click the MRI to move the crosshair; scroll or use the slider to page slices. Click a structure in the illustration to jump the MRI there. Use the Lesion tab to drop a sphere and list everything within 5 or 10 mm; use the Corridor tab to set an entry and target and see what the trajectory crosses.</p>
       <div class="sec">Limits</div>
       <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, the STN is an ellipsoid at the published DISTAL-atlas centroid (±12, −13, −5.5) because the ATAG STN label is only a few voxels at 1 mm, and the substantia nigra is the ATAG label grown by 1 mm. CerebrA's “ventral diencephalon” label also covers the cerebral peduncles and midbrain tegmentum; it is split at the plane from the posterior commissure to the mammillary bodies, so only the part in front of that plane is called hypothalamus / subthalamic region, the peduncle (where corticofugal fibres run) is labelled separately, and the rest joins the midbrain. The arteries and the MRA image are population averages (Mouches &amp; Forkert 2019), already in MNI space, covering the whole brain. Averaging across people keeps the large, consistent arteries sharp (ICA, circle of Willis, M1, A1–A2, pericallosal, P1–P2, basilar) but blurs distal branches whose course varies between people, so small cortical branches look faint or missing. The 3D vessel surface is drawn where at least 12% of subjects had a vessel. Branches are grouped by position: vessels outside the brain envelope (skull base, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. These grouped surfaces are off by default. All named vessels are generic: arteries are centerlines traced on the population vessel-probability atlas, small branches and veins are textbook courses, and every branch is joined to its parent vessel. Individual variants are deliberately left out. Named arteries (ICA, M1, M2, A1, A2–pericallosal, PComm, P1–P2, P3–P4, SCA, basilar, vertebral) are centerlines traced with a minimal-cost path along the highest vessel probability between anatomical landmarks, with calibre from the radius atlas. Veins and dural sinuses (superior and inferior sagittal, straight, transverse and sigmoid sinuses, vein of Galen, internal cerebral veins, basal veins of Rosenthal) are not in any reachable dataset: their courses are placed from the template's own geometry (inner brain surface, corpus callosum, third ventricle, midbrain) and are approximate. With “Cut at slice” on, the 3D model is cut at the current MRI level.</p>
       <div class="sec">Planning mode</div>
@@ -454,19 +459,19 @@ function drawMRI(){
   bgc.width=w;bgc.height=h;bgc.getContext('2d').putImageData(img,0,0);
   ovc.width=w;ovc.height=h;ovc.getContext('2d').putImageData(ov,0,0);
   // fit canvas
-  const box=$('vm').getBoundingClientRect();const sc=Math.max(1,Math.min((box.width-8)/w,(box.height-8)/h));
-  const dpr=window.devicePixelRatio||1;
-  mc.width=Math.round(w*sc*dpr);mc.height=Math.round(h*sc*dpr);mc.style.width=(w*sc)+'px';mc.style.height=(h*sc)+'px';
-  const k=mc.width/w;
-  mx.imageSmoothingEnabled=true;mx.drawImage(bgc,0,0,mc.width,mc.height);
-  mx.imageSmoothingEnabled=false;mx.drawImage(ovc,0,0,mc.width,mc.height);
-  mx.imageSmoothingEnabled=true;mx.imageSmoothingQuality='high';mx.drawImage(mic,0,0,mc.width,mc.height);
+  const box=$('vm').getBoundingClientRect();const dpr=window.devicePixelRatio||1;
+  mc.width=Math.round(box.width*dpr);mc.height=Math.round(box.height*dpr);mc.style.width=box.width+'px';mc.style.height=box.height+'px';
+  const Z=st.zm,k=Math.min((box.width-8)/w,(box.height-8)/h)*dpr*Z.s;const gx=(mc.width-w*k)/2+Z.x*dpr,gy=(mc.height-h*k)/2+Z.y*dpr;MG={k,ox:gx,oy:gy,dpr,w,h};
+  mx.setTransform(1,0,0,1,0,0);mx.fillStyle='#07090b';mx.fillRect(0,0,mc.width,mc.height);mx.setTransform(1,0,0,1,gx,gy);
+  mx.imageSmoothingEnabled=true;mx.drawImage(bgc,0,0,w*k,h*k);
+  mx.imageSmoothingEnabled=false;mx.drawImage(ovc,0,0,w*k,h*k);
+  mx.imageSmoothingEnabled=true;mx.imageSmoothingQuality='high';mx.drawImage(mic,0,0,w*k,h*k);
   drawContoursMRI(k);
   if(typeof drawPlate==='function')drawPlate();
   // crosshair
   const cv=m2v(st.cross);const q=v2s(cv[0],cv[1],cv[2]);
   mx.strokeStyle='rgba(255,236,120,.75)';mx.lineWidth=1*dpr;mx.setLineDash([4*dpr,4*dpr]);
-  mx.beginPath();mx.moveTo((q[0]+.5)*k,0);mx.lineTo((q[0]+.5)*k,mc.height);mx.moveTo(0,(q[1]+.5)*k);mx.lineTo(mc.width,(q[1]+.5)*k);mx.stroke();mx.setLineDash([]);
+  mx.beginPath();mx.moveTo((q[0]+.5)*k,-gy);mx.lineTo((q[0]+.5)*k,mc.height-gy);mx.moveTo(-gx,(q[1]+.5)*k);mx.lineTo(mc.width-gx,(q[1]+.5)*k);mx.stroke();mx.setLineDash([]);
   // lesion
   if(LON()){const lv=m2v(st.lesion.c);const lq=v2s(lv[0],lv[1],lv[2]);const d=Math.abs(lq[2]-q[2]);
     if(d<st.lesion.r){const rr=Math.sqrt(st.lesion.r**2-d**2);mx.fillStyle='rgba(220,40,30,.28)';mx.strokeStyle='#ff4b3a';mx.lineWidth=2*dpr;
@@ -496,13 +501,13 @@ function readout(){
   const Tt=TER[vi(...v)];const d=document.createElement('span');d.textContent=Tt?'Territory: '+TB[Tt].name.replace(' territory','')+sideTxt(TB[Tt]):'';
   $('ro').append(a,b,c,d);
 }
-function canvasToVoxel(e,snap){const r=mc.getBoundingClientRect();const [w,h]=dims();const c=Math.floor((e.clientX-r.left)/r.width*w),rr=Math.floor((e.clientY-r.top)/r.height*h);
+function canvasToVoxel(e,snap){const r=mc.getBoundingClientRect();const [w,h]=dims();const X=(e.clientX-r.left)*MG.dpr-MG.ox,Y=(e.clientY-r.top)*MG.dpr-MG.oy;const c=Math.floor(X/MG.k),rr=Math.floor(Y/MG.k);
   if(c<0||rr<0||c>=w||rr>=h)return null;const v=s2v(c,rr);
   // clicking a bright vessel in the MIP jumps to the depth where that vessel actually is
-  if(snap&&lastSlice&&(st.vmip||st.bg==='mra')){const C=Math.floor((e.clientX-r.left)/r.width*w*2),R=Math.floor((e.clientY-r.top)/r.height*h*2);const p=R*w*2+C;
+  if(snap&&lastSlice&&(st.vmip||st.bg==='mra')){const C=Math.floor(X/MG.k*2),R=Math.floor(Y/MG.k*2);const p=R*w*2+C;
     if(lastSlice.mip[p]>60){const d=lastSlice.dep[p];if(st.orient==='ax')v[2]=Math.round(d-OZ);else if(st.orient==='co')v[1]=Math.round(d-OY);else v[0]=Math.round(d-OX)}}
   return v}
-mc.addEventListener('pointerdown',e=>{if(st.plan&&st.pview!=='std')return;const v=canvasToVoxel(e,st.mode==='cross');if(!v)return;const p=v2m(v);
+mc.addEventListener('pointerdown',e=>{if(e.shiftKey||e.button!==0)return;if(st.plan&&st.pview!=='std')return;const v=canvasToVoxel(e,st.mode==='cross');if(!v)return;const p=v2m(v);
   if(st.mode==='lesion'){st.lesion.c=p;setMode('cross');lesionChanged();return}
   if(st.mode==='entry'){st.corr.E=snapE(p);st.corr.nat=false;st.corr.app=null;setMode('cross');corrChanged();return}
   if(st.mode==='target'){st.corr.P=p;st.corr.lock=false;$('lockT').checked=false;setMode('cross');corrChanged();return}
@@ -511,7 +516,7 @@ mc.addEventListener('pointerdown',e=>{if(st.plan&&st.pview!=='std')return;const 
   const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up)};
   addEventListener('pointermove',mv);addEventListener('pointerup',up);
 });
-mc.addEventListener('wheel',e=>{e.preventDefault();if(st.plan&&st.pview!=='std'){st.pdepth=Math.max(0,Math.min(+$('pdepth').max,st.pdepth+(e.deltaY>0?1:-1)));$('pdepth').value=st.pdepth;$('pdv').textContent=st.pdepth+' mm';drawMRI();return}const k=st.orient==='ax'?2:st.orient==='co'?1:0;st.cross[k]+=e.deltaY>0?-1:1;
+mc.addEventListener('wheel',e=>{e.preventDefault();if(e.ctrlKey||e.metaKey){if(!(st.plan&&st.pview!=='std'))zoomAt('m',e);return}if(st.plan&&st.pview!=='std'){st.pdepth=Math.max(0,Math.min(+$('pdepth').max,st.pdepth+(e.deltaY>0?1:-1)));$('pdepth').value=st.pdepth;$('pdv').textContent=st.pdepth+' mm';drawMRI();return}const k=st.orient==='ax'?2:st.orient==='co'?1:0;st.cross[k]+=e.deltaY>0?-1:1;
   const lo=[OX,OY,OZ][k],hi=lo+[NX,NY,NZ][k]-1;st.cross[k]=Math.max(lo,Math.min(hi,st.cross[k]));crossChanged()},{passive:false});
 function setMode(m){st.mode=m;$('mb').textContent=m==='lesion'?'Click the MRI to place the lesion centre':m==='entry'?'Click the MRI to set the entry point':m==='target'?'Click the MRI to set the target':'';
   $('placeL').setAttribute('aria-pressed',m==='lesion');$('setE').setAttribute('aria-pressed',m==='entry');$('setT').setAttribute('aria-pressed',m==='target')}
@@ -1108,7 +1113,7 @@ function drawLP(k,ox,oy,dpr){if(!st.lp)return;for(const R of lpRegions()){px.beg
 function drawPlate(){if(st.view!=='plate')return;const r=$('v3').getBoundingClientRect();if(!r.width)return;const dpr=window.devicePixelRatio||1;
   pc.width=Math.round(r.width*dpr);pc.height=Math.round(r.height*dpr);pc.style.width=r.width+'px';pc.style.height=r.height+'px';
   const W=pc.width,Hh=pc.height,C=sliceContours();const {w,h}=C;const lab=st.labels!=='off';
-  const k=Math.min(W*(lab?0.56:0.92)/w,Hh*0.93/h);const ox=(W-w*k)/2,oy=(Hh-h*k)/2+(st.labels!=='off'?6*dpr:0);plateGeom={k,ox,oy,dpr};
+  const ZP=st.zp;const k=Math.min(W*(lab?0.56:0.92)/w,Hh*0.93/h)*ZP.s;const ox=(W-w*k)/2+ZP.x*dpr,oy=(Hh-h*k)/2+(st.labels!=='off'?6*dpr:0)+ZP.y*dpr;plateGeom={k,ox,oy,dpr,w,h};
   px.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--paper')||'#f2efe9';px.fillRect(0,0,W,Hh);
   px.lineJoin='round';px.lineCap='round';const ink='#3b302a';
   // brain (white matter ground)
@@ -1153,14 +1158,14 @@ function plateLabels(C,k,ox,oy,dpr,W,Hh){
   for(const T of C.tracts)if(T.area>=6&&!(st.lp&&/^(cst|ml)_/.test(T.o.id)))items.push({...T,sc:(T.o.group.startsWith('Arterial tree')?-9:isVes(T.o)?5.2:CRIT_T.has(T.o.group)?6:3.5)+Math.log(T.area)/3});
   const by=new Map();for(const it of items){const nm=it.k+it.o.name;const b=by.get(nm);if(!b||it.area>b.area)by.set(nm,it)}
   const cap=st.labels==='all'?40:20;const sel=[...by.values()].sort((a,b)=>b.sc-a.sc).slice(0,cap);
-  const midX=ox+C.w*k/2;const L=[],R=[];for(const it of sel){it.ax=ox+it.anchor[0]*k;it.ay=oy+it.anchor[1]*k;(it.ax<midX?L:R).push(it)}
+  const colL=Math.max(ox-14*dpr,150*dpr),colR=Math.min(ox+C.w*k+14*dpr,W-150*dpr);const midX=Math.max(colL+1,Math.min(colR-1,ox+C.w*k/2));const L=[],R=[];for(const it of sel){it.ax=ox+it.anchor[0]*k;it.ay=oy+it.anchor[1]*k;if(it.ax<colL+8*dpr||it.ax>colR-8*dpr||it.ay<0||it.ay>Hh)continue;(it.ax<midX?L:R).push(it)}
   const gap=29*dpr,top=18*dpr,bot=Hh-24*dpr;
   const lay=arr=>{arr.sort((a,b)=>a.ay-b.ay);let y=top;for(const it of arr){it.ly=Math.max(it.ay,y);y=it.ly+gap}
     let over=arr.length?arr[arr.length-1].ly-bot:0;if(over>0)for(let i=arr.length-1;i>=0;i--){arr[i].ly-=over;if(i>0){const need=arr[i].ly-gap-arr[i-1].ly;over=need<0?-need:0;if(!over)break}}};
   lay(L);lay(R);
-  const draw=(it,left)=>{const tx=left?ox-14*dpr:ox+C.w*k+14*dpr;const crit=(it.k==='t'?CRIT_T.has(it.o.group):it.o.note==='eloquent');
+  const draw=(it,left)=>{const tx=left?colL:colR;const crit=(it.k==='t'?CRIT_T.has(it.o.group):it.o.note==='eloquent');
     px.textAlign=left?'right':'left';px.font=`600 ${11.5*dpr}px "Source Serif 4", Georgia, serif`;px.fillStyle=crit?'#8f1d12':'#2b2622';
-    const maxw=(left?ox:W-(ox+C.w*k))-22*dpr;let nm=labelName(it.o);while(px.measureText(nm).width>maxw&&nm.length>4)nm=nm.slice(0,-2).trimEnd()+'…';px.fillText(nm,tx,it.ly);
+    const maxw=(left?tx:W-tx)-8*dpr;if(st.zp.s>1.05){px.save();px.globalAlpha=.82;px.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--paper')||'#f2efe9';px.fillRect(left?tx-maxw-4*dpr:tx-4*dpr,it.ly-12*dpr,maxw+8*dpr,28*dpr);px.restore()}let nm=labelName(it.o);while(px.measureText(nm).width>maxw&&nm.length>4)nm=nm.slice(0,-2).trimEnd()+'…';px.fillText(nm,tx,it.ly);
     let f=shortOf(it.k,it.o);if(f){px.font=`${10*dpr}px "IBM Plex Sans", system-ui, sans-serif`;px.fillStyle='#6b5d50';while(px.measureText(f).width>maxw&&f.length>2)f=f.slice(0,-2)+'…';px.fillText(f,tx,it.ly+12.5*dpr)}
     const lx=left?tx+5*dpr:tx-5*dpr;const ly=it.ly-4*dpr;
     px.strokeStyle='#3a322b';px.lineWidth=.8*dpr;px.beginPath();px.moveTo(lx,ly);const ex=left?Math.max(lx+8*dpr,Math.min(it.ax-12*dpr,lx+40*dpr)):Math.min(lx-8*dpr,Math.max(it.ax+12*dpr,lx-40*dpr));px.lineTo(ex,ly);px.lineTo(it.ax,it.ay);px.stroke();
@@ -1169,16 +1174,16 @@ function plateLabels(C,k,ox,oy,dpr,W,Hh){
 }
 function plateToVoxel(e){if(!plateGeom)return null;const r=pc.getBoundingClientRect();const {k,ox,oy,dpr}=plateGeom;const X=(e.clientX-r.left)*dpr,Y=(e.clientY-r.top)*dpr;
   const [w,h]=dims();const c=Math.floor((X-ox)/k),rr=Math.floor((Y-oy)/k);if(c<0||rr<0||c>=w||rr>=h)return null;return s2v(c,rr)}
-pc.addEventListener('click',e=>{const v=plateToVoxel(e);if(!v)return;const p=v2m(v);
+pc.addEventListener('click',e=>{if(e.shiftKey||pc._panned){pc._panned=false;return}const v=plateToVoxel(e);if(!v)return;const p=v2m(v);
   if(st.mode==='lesion'){st.lesion.c=p;setMode('cross');lesionChanged();return}
   if(st.mode==='entry'){st.corr.E=snapE(p);st.corr.nat=false;st.corr.app=null;setMode('cross');corrChanged();return}
   if(st.mode==='target'){st.corr.P=p;st.corr.lock=false;$('lockT').checked=false;setMode('cross');corrChanged();return}
   st.cross=p;crossChanged();selectAtCross()});
-pc.addEventListener('wheel',e=>{e.preventDefault();const k=st.orient==='ax'?2:st.orient==='co'?1:0;st.cross[k]+=e.deltaY>0?-1:1;const lo=[OX,OY,OZ][k],hi=lo+[NX,NY,NZ][k]-1;st.cross[k]=Math.max(lo,Math.min(hi,st.cross[k]));crossChanged()},{passive:false});
+pc.addEventListener('wheel',e=>{e.preventDefault();if(e.ctrlKey||e.metaKey){zoomAt('p',e);return}const k=st.orient==='ax'?2:st.orient==='co'?1:0;st.cross[k]+=e.deltaY>0?-1:1;const lo=[OX,OY,OZ][k],hi=lo+[NX,NY,NZ][k]-1;st.cross[k]=Math.max(lo,Math.min(hi,st.cross[k]));crossChanged()},{passive:false});
 pc.addEventListener('pointermove',e=>{const v=plateToVoxel(e);const tip=$('tip');if(!v){tip.hidden=true;return}const L=LAB[vi(...v)];const tr=TR.find(t=>showT(t)&&(()=>{for(let i=0;i<t.X.length;i++)if(t.X[i]===v[0]&&t.Y[i]===v[1]&&t.Z[i]===v[2])return true;return false})());
   const o=tr||(L&&showS(SB[L])?SB[L]:null);if(!o){tip.hidden=true;return}const r=$('v3').getBoundingClientRect();tip.hidden=false;tip.textContent=o.name+sideTxt(o);tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px'});
 pc.addEventListener('pointerleave',()=>$('tip').hidden=true);
-function setView(v){const was=st.view;st.view=v;const p=v==='plate',pa=v==='path';pc.hidden=!p;renderer.domElement.style.visibility=p?'hidden':'visible';$('callouts').hidden=v!=='3d';$('views3').hidden=v!=='3d';$('ctl3d').hidden=v!=='3d';$('ctlp').hidden=!p;$('pwleg').hidden=!pa;$('pwlabels').hidden=!pa;
+function setView(v){const was=st.view;st.view=v;const p=v==='plate',pa=v==='path';pc.hidden=!p;renderer.domElement.style.visibility=p?'hidden':'visible';$('callouts').hidden=v!=='3d';$('views3').hidden=v!=='3d';$('ctl3d').hidden=v!=='3d';$('ctlp').hidden=!p;if($('zoomP'))$('zoomP').hidden=!p;$('pwleg').hidden=!pa;$('pwlabels').hidden=!pa;
   if(pa){if(!pScene)buildPathScene();pathCam()}else if(was==='path'){cam.position.set(-330,170,190);ctl.target.set(0,-18,10);ctl.update()}
   $('lview').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v?'true':'false'));if(p)drawPlate()}
 seg('lview',v=>setView(v));$('lpOn').onchange=e=>{st.lp=e.target.checked;drawPlate()};seg('plabels',v=>{st.labels=v;drawPlate()});seg('pcortex',v=>{st.plateLobes=v==='lobes';drawPlate()});
@@ -1434,6 +1439,29 @@ function setPlan(on){if(st.plan===on)return;st.plan=on;$('pview').hidden=!on;
   if(on){prevView=st.view;setView('3d');loadPlan().then(()=>assessUI()).catch(()=>{})}
   else{setPview('std');clearSuggest();if(twoLine){scene.remove(twoLine);twoLine=null}setView(prevView)}
   apply3DVis();update3DTools();drawMRI();drawPlate()}
+
+
+// ---------- zoom and pan for the MRI and the atlas plate (wheel = zoom at cursor, Shift+wheel = page slices,
+// right- or Shift-drag = pan, double-click = fit), matching the 3D view
+st.zm={s:1,x:0,y:0};st.zp={s:1,x:0,y:0};var MG={k:1,ox:0,oy:0,dpr:1,w:1,h:1};
+function zoomAt(which,e,f){const Z=which==='m'?st.zm:st.zp;const el=which==='m'?mc:pc;const G=which==='m'?MG:plateGeom;if(!G)return;
+  const r=el.getBoundingClientRect();const fac=f||Math.exp(-Math.max(-120,Math.min(120,e.deltaY))*0.0022);const ns=Math.max(1,Math.min(12,Z.s*fac));const g=ns/Z.s;if(g===1)return;
+  const X=e?(e.clientX-r.left):r.width/2,Y=e?(e.clientY-r.top):r.height/2;const ox=G.ox/G.dpr,oy=G.oy/G.dpr;
+  const nox=X-(X-ox)*g,noy=Y-(Y-oy)*g;Z.x+=nox-ox;Z.y+=noy-oy;
+  // keep the fitted centring term consistent: (W - w*k)/2 shrinks by (g-1)*w*k/2
+  const wk=(which==='m'?MG.w*MG.k:plateGeom.w*plateGeom.k)/G.dpr,hk=(which==='m'?MG.h*MG.k:plateGeom.h*plateGeom.k)/G.dpr;Z.x+=(g-1)*wk/2;Z.y+=(g-1)*hk/2;
+  Z.s=ns;if(ns===1){Z.x=0;Z.y=0}which==='m'?drawMRI():drawPlate();zoomLbl()}
+function zoomReset(which){const Z=which==='m'?st.zm:st.zp;Z.s=1;Z.x=0;Z.y=0;which==='m'?drawMRI():drawPlate();zoomLbl()}
+function zoomLbl(){const a=$('zmM'),b=$('zmP');if(a)a.textContent=Math.round(st.zm.s*100)+'%';if(b)b.textContent=Math.round(st.zp.s*100)+'%'}
+function panner(el,which){let p=null;el.addEventListener('contextmenu',e=>e.preventDefault());
+  el.addEventListener('pointerdown',e=>{if(e.button===2||e.button===1||e.shiftKey){e.stopImmediatePropagation();e.preventDefault();p=[e.clientX,e.clientY];el.setPointerCapture(e.pointerId);el.style.cursor='grabbing'}},true);
+  el.addEventListener('pointermove',e=>{if(!p)return;const Z=which==='m'?st.zm:st.zp;Z.x+=e.clientX-p[0];Z.y+=e.clientY-p[1];el._panned=true;p=[e.clientX,e.clientY];which==='m'?drawMRI():drawPlate()});
+  el.addEventListener('pointerup',e=>{if(p){p=null;el.style.cursor=''}});
+  el.addEventListener('dblclick',e=>{e.preventDefault();zoomReset(which)})}
+panner(mc,"m");panner(pc,"p");window.__z={st,c2v:(x,y)=>canvasToVoxel({clientX:x,clientY:y},false)};
+(()=>{const mk=(host,which,id)=>{const d=document.createElement('div');d.className='zoomctl';d.innerHTML='<button class="btn" aria-label="Zoom in">+</button><span class="mono" id="'+id+'">100%</span><button class="btn" aria-label="Zoom out">−</button><button class="btn" title="Fit (double-click)">Fit</button>';
+  const b=d.querySelectorAll('button');b[0].onclick=()=>zoomAt(which,null,1.4);b[1].onclick=()=>zoomAt(which,null,1/1.4);b[2].onclick=()=>zoomReset(which);host.append(d)};
+  mk($('vm'),'m','zmM');mk($('v3'),'p','zmP');$('zmP').parentNode.id='zoomP';$('zoomP').hidden=st.view!=='plate'})();
 
 buildLayerUI();
 // ---------- selection tools, search, teaching modes, computed relationships
