@@ -1,6 +1,6 @@
 # Corridor Atlas
 
-Atlas-based neuroanatomy viewer for teaching and pre-operative rehearsal: an illustrated atlas plate / 3D model / long-pathway view on the left, MRI or MRA with outline annotations on the right, and a Lesion & corridor planning mode (standard neurosurgical approaches, entry suggestions, a heuristic trajectory risk score, corridor drawn from scalp to lesion).
+Atlas-based neuroanatomy viewer for teaching and pre-operative rehearsal: an illustrated atlas plate / 3D model / long-pathway view on the left, MRI or MRA with outline annotations on the right, and a Lesion & corridor planning mode: place the lesion and the routes to it are ranked automatically (31 standard neurosurgical approaches, the best direct cortical entry and the two-point line), each with the reasons for it (indication, why this approach, what it risks, how it compares), a heuristic trajectory risk score, and the corridor drawn from scalp to lesion. Selecting a structure shows its afferent and efferent pathways (textbook) and the atlas tracts that run through it.
 
 > **Teaching and rehearsal only.** Everything is built from population atlases in MNI ICBM152 space, not from any patient. Real planning needs the patient's own MRI, DTI tractography, functional mapping and navigation.
 
@@ -57,7 +57,7 @@ See `data/SOURCES.md`. Short version: ICBM152 (copyright notice required), Cereb
 
 ## Trajectory risk score
 
-The score in Lesion & corridor is a teaching heuristic. The factors it checks come from published automated trajectory planners: vessel clearance of at least 3 mm, avoiding sulci, ventricles, path length and entry angle (Vakharia et al., Neurotherapeutics 2019, EpiNav; Liu et al., IEEE TBME 2014, DBS planning). The entry search also offers the two-point method (Brown, Thompson & Spetzler, BNI Quarterly 1996). The weights, the thresholds and the low / moderate / high bands are this project's own and have not been validated. The viewer explains each factor under "風險分數怎麼算、參考什麼".
+The score in Lesion & corridor is a teaching heuristic. The factors it checks come from published automated trajectory planners: vessel clearance of at least 3 mm, avoiding sulci, ventricles, path length and entry angle (Vakharia et al., Neurotherapeutics 2019, EpiNav; Liu et al., IEEE TBME 2014, DBS planning). Two factors follow general neurosurgical principles: the length of brain crossed before the lesion, and an approach-related cost (for example, translabyrinthine sacrifices hearing). Natural-corridor approaches skip the sulcus, entry-cortex, angle and transgression checks, and their vessel cost is capped. The entry search also offers the two-point method (Brown, Thompson & Spetzler, BNI Quarterly 1996). The weights, the thresholds, the approach costs and the low / moderate / high bands are this project's own and have not been validated. The viewer explains each factor under "風險分數怎麼算、參考什麼".
 
 ## Note on TopBrain
 
