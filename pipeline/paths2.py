@@ -24,13 +24,23 @@ def centre(ts,z0,z1,step=2):
 def smooth(p,s=1.5):
     p=np.array(p,float);return np.c_[gaussian_filter1d(p[:,0],s,mode='nearest'),gaussian_filter1d(p[:,1],s,mode='nearest'),gaussian_filter1d(p[:,2],s,mode='nearest')]
 cst=tr(62);ml=tr(72);strr=tr(46)
-m1hand=[t for t in cst if top(t)[0]<-28 and top(t)[2]>45 and -30<top(t)[1]<-8]
-s1hand=[t for t in strr if top(t)[0]<-28 and top(t)[2]>40 and top(t)[1]<-22]
+from scipy import ndimage as _ndi
+def _near(p,lid,r=3):
+    v=np.round(np.array(p)-O).astype(int);sl=tuple(slice(max(0,c-r),c+r+1) for c in v);return (lab[sl]==lid).any()
+_PRE,_POST=ids['Precentral gyrus (M1)|L'],ids['Postcentral gyrus (S1)|L']
+# hand-area streamlines whose cortical end actually reaches the named gyrus (not the neighbouring sulcus/supramarginal)
+m1hand=[t for t in cst if top(t)[0]<-28 and top(t)[2]>45 and -30<top(t)[1]<-8 and _near(top(t),_PRE)]
+s1hand=[t for t in strr if top(t)[0]<-28 and top(t)[2]>40 and top(t)[1]<-22 and _near(top(t),_POST,6)]
+def _snap(p,lid):
+    # middle of the gyrus near p: mean of the label's voxels within 8 mm, then the label voxel closest to that mean
+    w=np.argwhere(lab==lid)+O;d=np.linalg.norm(w-np.array(p),axis=1);loc=w[d<8] if (d<8).sum()>10 else w[np.argsort(d)[:30]]
+    m=loc.mean(0);return list(loc[np.argmin(np.linalg.norm(loc-m,axis=1))].astype(float))
 print(len(m1hand),len(s1hand))
-cstc=np.vstack([centre(cst,-70,24),centre(m1hand,26,60),[np.median([top(t) for t in m1hand],0)]])[::-1]  # top -> down
+_m1t=np.median([top(t) for t in m1hand],0)
+cstc=np.vstack([centre(cst,-70,24),centre(m1hand,26,_m1t[2]-4),[_m1t],[_snap(_m1t,_PRE)]])[::-1]  # top -> down; first point sits in precentral grey
 mlc=centre(ml,-52,4)
 _s1t=np.median([top(t) for t in s1hand],0)
-s1c=np.vstack([centre(s1hand,10,_s1t[2]-4),[_s1t]])
+s1c=np.vstack([centre(s1hand,10,_s1t[2]-4),[_s1t],[_snap(_s1t,_POST)]])   # last point sits in postcentral grey
 vpl=np.array(R['vpl'])
 print('M1 end',cstc[0],'S1 end',s1c[-1],'cst low',cstc[-1])
 # ---- CST (motor, descending): left M1 -> crosses -> right lateral column -> right anterior horn -> ventral root
@@ -47,6 +57,8 @@ for z in range(-50,1,4):
     x,y=mlx(z);off=np.interp(z,[-50,-20,0],[5.5,4.5,2.5]);ST.append([x-off,y-1.0,z])
 ST+= [list(vpl+[-0.8,-1.2,1.5])]+[list(p+[0,-1.6,0]) for p in s1c]
 paths=dict(cst=smooth(CST,1.2).tolist(),dcml=smooth(DCML,1.2).tolist(),stt=smooth(ST,1.2).tolist())
+# smoothing pulls the cortical end back into white matter: pin it to the gyrus again
+paths['cst'][0]=list(cstc[0]);paths['dcml'][-1]=list(s1c[-1]);paths['stt'][-1]=list(np.array(s1c[-1])+[0,-1.0,0])
 # cord axis for schematic spinal cord
 cord=[C(z,0,0) for z in range(-72,-161,-4)]
 # cross sections (real brainstem outlines; schematic cord)

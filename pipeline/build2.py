@@ -37,7 +37,7 @@ T=[ # id,name,group,color,cluster ids
 ('ifof_l','Inferior fronto-occipital fasciculus','Language','#c2389b',[20],'L'),('ifof_r','Inferior fronto-occipital fasciculus','Language','#c2389b',[21],'R'),
 ('unc_l','Uncinate fasciculus','Language','#e6b422',[32],'L'),('unc_r','Uncinate fasciculus','Language','#e6b422',[33],'R'),
 ('ilf_l','Inferior longitudinal fasciculus','Language','#8fae2c',[22],'L'),('ilf_r','Inferior longitudinal fasciculus','Language','#8fae2c',[23],'R'),
-('or_l','Optic radiation (Meyer loop)','Visual','#1d7fd1',[50],'L'),('or_r','Optic radiation (Meyer loop)','Visual','#1d7fd1',[51],'R'),
+('or_l','Optic radiation (geniculocalcarine)','Visual','#1d7fd1',[50],'L'),('or_r','Optic radiation (geniculocalcarine)','Visual','#1d7fd1',[51],'R'),
 ('cn2_l','Optic nerve / tract (CN II)','Visual','#f2c230',[96],'L'),('cn2_r','Optic nerve / tract (CN II)','Visual','#f2c230',[97],'R'),
 ('ar_l','Acoustic radiation','Auditory','#22a37a',[36],'L'),('ar_r','Acoustic radiation','Auditory','#22a37a',[37],'R'),
 ('cing_l','Cingulum','Limbic','#a855c7',[2,3,4,5,6],'L'),('cing_r','Cingulum','Limbic','#a855c7',[8,9,10,11,12],'R'),

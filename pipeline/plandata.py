@@ -29,6 +29,15 @@ for k,(nm,ids) in enumerate(CRIT):
         comp=np.stack([d[:,0]*d[:,0],d[:,1]*d[:,1],d[:,2]*d[:,2],d[:,0]*d[:,1],d[:,0]*d[:,2],d[:,1]*d[:,2]],1)
         np.add.at(T,(v[:,0],v[:,1],v[:,2]),comp)
         tid[v[:,0],v[:,1],v[:,2]]=np.where(tid[v[:,0],v[:,1],v[:,2]]==0,k+1,tid[v[:,0],v[:,1],v[:,2]])
+# schematic Meyer and Baum loops (oloops.py) count as optic radiation: the HCP bundle truncates Meyer's loop
+_ko=[c[0] for c in CRIT].index('Optic radiation')
+for d in pickle.load(open('out/oloops.pkl','rb')):
+    for p in d['lines']:
+        dd=np.diff(p,axis=0);n=np.linalg.norm(dd,axis=1,keepdims=True)+1e-9;dd/=n;m=(p[:-1]+p[1:])/2
+        v=np.round(m-O).astype(int);ok=np.all((v>=0)&(v<SH),1);v=v[ok];dd=dd[ok]
+        comp=np.stack([dd[:,0]*dd[:,0],dd[:,1]*dd[:,1],dd[:,2]*dd[:,2],dd[:,0]*dd[:,1],dd[:,0]*dd[:,2],dd[:,1]*dd[:,2]],1)
+        np.add.at(T,(v[:,0],v[:,1],v[:,2]),comp)
+        tid[v[:,0],v[:,1],v[:,2]]=np.where(tid[v[:,0],v[:,1],v[:,2]]==0,_ko+1,tid[v[:,0],v[:,1],v[:,2]])
 has=tid>0
 _,ind=ndi.distance_transform_edt(~has,return_indices=True);dist=ndi.distance_transform_edt(~has)
 near=dist<=2.0
@@ -60,4 +69,4 @@ H['cdir']=put(np.ascontiguousarray(dirv.transpose(2,1,0,3)))
 H['cand']=put(idx.astype(np.int16));H['cnrm']=put(np.round(nrm*120).astype(np.int8))
 hj=json.dumps(H).encode();hj+=b' '*((-len(hj))%4)
 blob=np.uint32(len(hj)).tobytes()+hj+b''.join(secs)
-g2=gzip.compress(blob,9);open('../docs/plan-data.wasm','wb').write(g2);print('plan data MB',len(g2)/1e6)
+g2=gzip.compress(blob,9);open('site/plan-data.wasm','wb').write(g2);print('plan data MB',len(g2)/1e6)

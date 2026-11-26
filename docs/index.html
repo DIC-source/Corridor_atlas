@@ -39,7 +39,7 @@ header.top .sub{color:var(--muted);font-size:12px}
 .app{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 330px;gap:10px;height:calc(100% - 52px);min-height:560px}
 .pane{background:var(--panel);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
 .pane-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:7px 10px;border-bottom:1px solid var(--line)}
-.pane-h .ttl{font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:auto}
+.pane-h .ttl{font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--fg);margin-right:auto}
 .view{position:relative;flex:1;min-height:0}
 #v3{background:var(--paper)}
 #v3 canvas{display:block;width:100%;height:100%}
@@ -47,6 +47,10 @@ header.top .sub{color:var(--muted);font-size:12px}
 #mc{image-rendering:auto;touch-action:none;cursor:crosshair;max-width:100%;max-height:100%}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .seg button{border:0;background:transparent;padding:3px 8px;cursor:pointer;font-size:12px}
+.seg.big{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}.seg.big button{font-size:13px;font-weight:600;padding:5px 12px}
+.hint.gl{font-size:12px;font-weight:600;color:var(--fg)}
+.legend3 .camlab{font-family:var(--f-sans);font-size:12px;font-weight:600;color:#3b302a;margin-right:6px;pointer-events:none}
+.legend3 .cams{background:var(--panel);font-family:var(--f-sans)}.legend3 .cams button{font-family:var(--f-sans);font-size:12px;color:var(--fg)}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
@@ -61,9 +65,12 @@ label.ck{display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size
 .slicebar{display:flex;align-items:center;gap:8px;padding:6px 10px;border-top:1px solid var(--line)}
 .slicebar input[type=range]{flex:1;min-width:0}
 .rail{display:flex;flex-direction:column;min-height:0}
-.tabs{display:flex;border-bottom:1px solid var(--line)}
-.tabs button{flex:1;border:0;background:transparent;padding:8px 4px;cursor:pointer;font-weight:500;font-size:12px;color:var(--muted);border-bottom:2px solid transparent}
-.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tabs{display:flex;gap:4px;padding:6px 6px 0;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--accent) 6%,var(--panel))}
+.tabs button{flex:1 1 auto;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid transparent;border-bottom:0;margin-bottom:-1px;border-radius:7px 7px 0 0;background:transparent;padding:9px 6px 8px;cursor:pointer;font-weight:600;font-size:13px;color:var(--muted)}
+.tabs button svg{width:15px;height:15px;flex:none}
+@media (max-width:1400px){.tabs button svg{display:none}}
+.tabs button:hover{color:var(--fg)}
+.tabs button[aria-selected="true"]{color:var(--accent);background:var(--panel);border-color:var(--line);box-shadow:inset 0 3px 0 var(--accent)}
 .tabbody{overflow:auto;flex:1;min-height:0;padding:10px}
 .grp{border:1px solid var(--line);border-radius:6px;margin-bottom:6px}
 .grp>summary{display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;list-style:none;font-weight:500}
@@ -75,7 +82,9 @@ label.ck{display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size
 .it{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;min-width:0}
 .it span.nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sw{width:11px;height:11px;border-radius:2px;flex:none;border:1px solid rgba(0,0,0,.25)}
-.sec{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px;font-weight:600}
+.sec{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--fg);margin:18px 0 8px;padding-bottom:5px;border-bottom:1.5px solid var(--line);font-weight:700}
+.tabbody>.sec:first-child{margin-top:2px}
+.sec .step{flex:none;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:11.5px;font-weight:700}
 .sec:first-child{margin-top:0}
 .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:6px}
 .row input[type=number]{width:54px;padding:2px 4px;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
@@ -109,6 +118,14 @@ table.prox td.d{text-align:right;white-space:nowrap}
 .ifacts{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:0;font-size:12px}
 .ifacts dt{color:var(--muted)}.ifacts dd{margin:0;min-width:0}
 .ialso{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}.ialso .igrp{width:100%}
+.cdirn{font-size:12.5px;line-height:1.45;margin:2px 0 6px}.cdirn b{font-weight:600}
+ol.course{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;counter-reset:cs}
+ol.course li{display:flex;align-items:center;gap:5px;min-width:0;counter-increment:cs}
+ol.course li::before{content:counter(cs);flex:none;font-size:10.5px;font-weight:700;color:var(--accent-ink);background:var(--accent);border-radius:50%;width:16px;height:16px;display:inline-grid;place-items:center}
+ol.course.alt{flex-direction:row;flex-wrap:wrap;gap:4px}ol.course.alt li::before{display:none}
+.crow .chipb{white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:inline-block}.crow .chipb .sw{display:inline-block;vertical-align:-1px;margin-right:5px}
+.crow{display:grid;grid-template-columns:72px minmax(0,1fr);gap:6px;align-items:start;margin:4px 0}.crl{font-size:11.5px;font-weight:700;color:var(--muted);padding-top:3px}
+.crow+.crow{border-top:1px dashed var(--line);padding-top:5px}.crow+.crow .crl::before{content:'↓ ';color:var(--accent)}
 .chipb{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:2px 8px;font-size:12px;cursor:pointer}
 .chipb:hover{border-color:var(--accent)}
 .seltool{position:absolute;right:10px;top:8px;max-width:calc(100% - 20px);background:color-mix(in srgb,var(--panel) 94%,transparent);border:1px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:6px;z-index:3;box-shadow:0 2px 10px rgba(0,0,0,.12)}
@@ -123,7 +140,7 @@ table.prox td.d{text-align:right;white-space:nowrap}
 .conn{margin:2px 0 6px}.conn .cdir{font-size:11px;font-weight:600;color:var(--muted);margin:6px 0 2px}
 .conn ul{margin:0;padding-left:16px}.conn li{font-size:12.5px;line-height:1.45;margin:2px 0}
 .conn .via{color:var(--muted)}.conn .chipb{padding:0 7px;font-size:11.5px;vertical-align:baseline}
-.sech{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:10px 0 4px}
+.sech{font-size:12.5px;letter-spacing:.01em;color:var(--fg);font-weight:700;margin:12px 0 5px;padding-bottom:3px;border-bottom:1px solid var(--line)}
 ul.rel{margin:0;padding-left:16px;font-size:12px;display:grid;gap:3px}
 .lnk{border:0;background:none;padding:0;color:var(--accent);cursor:pointer;font:inherit;text-decoration:underline;text-underline-offset:2px}
 #plate{position:absolute;inset:0;z-index:2;cursor:crosshair;background:var(--paper)}
@@ -152,10 +169,20 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
 .zoomctl[hidden]{display:none}
 .btnp{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
 .btnp:hover{filter:brightness(1.08)}
+.rblock{border:1px solid var(--line);border-radius:8px;padding:4px 10px 8px;margin:6px 0 10px}.rblock .rbh{font-size:12px;font-weight:700;color:var(--fg);letter-spacing:.01em;margin:10px 0 4px;padding-top:8px;border-top:1px solid var(--line)}.rblock .rbh:first-child{border-top:0;padding-top:2px;margin-top:6px}
+details.mini{margin:2px 0 6px}details.mini>summary{cursor:pointer;font-size:12px;color:var(--muted)}details.mini>summary:hover{color:var(--fg)}details.mini[open]>summary{margin-bottom:3px}details.mini>.note,details.mini>p,details.mini>div{margin:2px 0 4px 21px}
+.rcard .rsum{font-size:12.5px;margin:3px 0 1px;line-height:1.45}
 .rcard{padding:8px 10px;margin:4px 0 6px;border-radius:8px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
 .rcard .rch{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.rcard .rcs{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin:7px 0 2px}
 .rcard ul{margin:0;padding-left:16px}.rcard li{font-size:12.5px;line-height:1.45;margin:2px 0}.rcard p{font-size:12.5px;margin:2px 0}
 .rank details{margin-top:3px}.rank summary{cursor:pointer;font-size:12px;color:var(--accent)}
+details.mini>summary,.rank summary{list-style:none;display:flex;align-items:flex-start;gap:6px}
+details.mini>summary::-webkit-details-marker,.rank summary::-webkit-details-marker{display:none}
+details.mini>summary::before,.rank summary::before{content:"i";flex:none;box-sizing:border-box;display:inline-grid;place-items:center;width:15px;height:15px;margin-top:1px;border-radius:50%;border:1.5px solid currentColor;font:italic 700 10px/1 Georgia,"Times New Roman",serif}
+details.mini[open]>summary::before,.rank details[open]>summary::before{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+#tb-layers .row>.hint{color:var(--fg);font-weight:600;min-width:34px}
+.refs{margin:4px 0;padding-left:22px}.refs li{font-size:12px;color:var(--muted);margin:5px 0;line-height:1.45}.refs li b{color:var(--fg);font-weight:600}
+.srcblk{scroll-margin-top:8px}
 .rankapp{padding:8px 10px;margin:4px 0 8px;border-radius:8px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
 .rank tr.on td{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .rank td{vertical-align:top}
@@ -186,10 +213,10 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
 <div class="app">
   <section class="pane v" aria-label="Illustrated atlas view">
     <div class="pane-h">
-      <div class="seg" id="lview"><button data-v="plate" aria-pressed="true">Atlas plate</button><button data-v="3d">3D</button><button data-v="path">Pathways</button></div>
-      <span id="ctlp" class="ctlrow"><span class="hint" style="font-size:11px">Labels</span><div class="seg" id="plabels"><button data-v="key" aria-pressed="true">Key</button><button data-v="all">All</button><button data-v="off">Off</button></div>
-        <span class="hint" style="font-size:11px">Cortex</span><label class="ck"><input type="checkbox" id="lpOn" checked> Long pathways</label><div class="seg" id="pcortex"><button data-v="plain" aria-pressed="true">Grey matter</button><button data-v="lobes">By lobe</button></div></span>
-      <span id="ctl3d" class="ctlrow" hidden><span class="hint" style="font-size:11px">3D cortex</span>
+      <div class="seg big" id="lview" aria-label="Left view"><button data-v="plate" aria-pressed="true">Atlas plate</button><button data-v="3d">3D</button><button data-v="path">Pathways</button></div>
+      <span id="ctlp" class="ctlrow"><span class="hint gl">Labels</span><div class="seg" id="plabels"><button data-v="key" aria-pressed="true">Key</button><button data-v="all">All</button><button data-v="off">Off</button></div>
+        <label class="ck"><input type="checkbox" id="lpOn" checked> Long pathways</label><span class="hint gl">Cortex</span><div class="seg" id="pcortex"><button data-v="plain" aria-pressed="true">Grey matter</button><button data-v="lobes">By lobe</button></div></span>
+      <span id="ctl3d" class="ctlrow" hidden><span class="hint gl">Cortex</span>
       <div class="seg" id="cxmode">
         <button data-v="both">Both</button><button data-v="R" aria-pressed="true">Right only</button><button data-v="L">Left only</button><button data-v="none">Off</button>
       </div>
@@ -203,7 +230,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
         <div class="stb"><button class="btn" id="aHide">Hide</button><button class="btn" id="aFade">Fade</button><button class="btn" id="aIso">Isolate</button><button class="btn" id="aCtx" title="Show this and everything within 5 mm; fade the rest">In context</button><button class="btn" id="aFrame">Frame</button><button class="btn" id="aAll">Show all structures</button></div>
         <div class="stb"><button class="btn" id="aUndo">Undo (0)</button><button class="btn" id="aRedo">Redo (0)</button></div></div>
       <div class="legend3" id="views3">
-        <span class="seg" style="pointer-events:auto;background:var(--paper)"><button data-cam="L">Left</button><button data-cam="R">Right</button><button data-cam="S">Top</button><button data-cam="A">Front</button><button data-cam="P">Back</button><button data-cam="I">Base</button></span>
+        <span class="camlab">View</span><span class="seg cams" style="pointer-events:auto"><button data-cam="L">Left</button><button data-cam="R">Right</button><button data-cam="S">Top</button><button data-cam="A">Front</button><button data-cam="P">Back</button><button data-cam="I">Base</button></span>
       </div>
     </div>
   </section>
@@ -212,7 +239,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
     <div class="pane-h">
       <span class="ttl">MRI</span>
       <div class="seg" id="pview" hidden><button data-v="std" aria-pressed="true">Slices</button><button data-v="probe">Probe’s eye</button><button data-v="inline">Inline</button></div>
-      <div class="seg" id="orient"><button data-v="ax" aria-pressed="true">Axial</button><button data-v="co">Coronal</button><button data-v="sa">Sagittal</button></div>
+      <div class="seg big" id="orient" aria-label="MRI plane"><button data-v="ax" aria-pressed="true">Axial</button><button data-v="co">Coronal</button><button data-v="sa">Sagittal</button></div>
       <div class="seg" id="bgsel"><button data-v="t1" aria-pressed="true">T1</button><button data-v="t2">T2</button><button data-v="mra" title="Background becomes a TOF-MRA maximum-intensity projection">MRA</button></div>
       <label class="ck" title="Overlay the TOF-MRA vessels as a maximum-intensity projection"><input type="checkbox" id="vmip"> Vessels (MIP)</label>
       <label class="ck">Slab <input type="range" id="slabw" min="1" max="120" value="30" style="width:70px"><span class="mono" id="slabv">30 mm</span></label>
@@ -240,9 +267,9 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <div class="row" style="margin:6px 0 0"><button class="btn" id="iGo">Centre MRI here</button><button class="btn" id="iHide">Hide this layer</button></div>
     </div>
     <div class="tabs" role="tablist">
-      <button role="tab" data-t="layers" aria-selected="true">Layers</button>
-      <button role="tab" data-t="plan" aria-selected="false">Lesion &amp; corridor</button>
-      <button role="tab" data-t="about" aria-selected="false">Sources</button>
+      <button role="tab" data-t="layers" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>Layers</button>
+      <button role="tab" data-t="plan" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>Lesion &amp; corridor</button>
+      <button role="tab" data-t="about" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5A2.5 2.5 0 0 1 6.5 19H20v3H6.5"/></svg>Sources</button>
     </div>
     <div class="tabbody" id="tb-layers">
       <div class="srchw"><input id="srch" type="search" placeholder="Search a structure, tract or artery (e.g. Broca, Vim, arcuate)" aria-label="Search"><div id="sres" class="sres" hidden></div></div>
@@ -253,49 +280,37 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <div class="sec">Structures</div><div id="sgroups"></div>
     </div>
     <div class="tabbody" id="tb-plan" hidden>
-      <div class="sec">Lesion</div>
-      <div class="row"><button class="btn" id="placeL">Place lesion</button><label class="ck"><input type="checkbox" id="lesOn" checked> Show</label></div>
+      <div class="sec"><span class="step">1</span>Lesion</div>
+      <div class="row"><button class="btn btnp" id="placeL">Place lesion</button><label class="ck"><input type="checkbox" id="lesOn" checked> Show</label></div>
       <div class="row mono"><span class="plab">Centre</span>x<input type="number" id="lx" step="1">y<input type="number" id="ly" step="1">z<input type="number" id="lz" step="1"></div>
       <div class="row"><span class="plab">Radius</span><input type="range" id="lr" min="2" max="30" value="9" style="flex:1"><span class="mono" id="lrv">9 mm</span></div>
-      <div class="sec">Route to the lesion</div>
+      <div class="sec"><span class="step">2</span>Route to the lesion</div>
       <div id="routeCard" class="rcard"><span class="note">Place the lesion to get a route and the reasons for it.</span></div>
       <div class="row"><label class="ck"><input type="checkbox" id="autoApp" checked> Pick the best-ranked route automatically when the lesion moves</label></div>
-      <details class="res" id="rankDet" open><summary>Ranked routes for this lesion</summary><div id="rankBox"></div><div id="rankInfo" class="note"></div></details>
-      <details class="res" id="manDet"><summary>Choose an approach or an entry yourself</summary>
-      <div class="appr">
+      <div class="rblock">
+        <div class="rbh">Ranked routes for this lesion</div>
+        <div id="rankBox"></div>
+        <div class="row note" style="margin-top:4px"><span id="rankInfo"></span><button class="lnk" data-goto="srcRank">Ranking method and references</button></div>
+        <div class="rbh">Choose an approach or an entry yourself</div>
         <div class="row"><select id="appr" aria-label="Standard approach"><option value="">Choose a surgical approach…</option></select><div class="seg" id="apSide"><button data-v="L" aria-pressed="true">Left</button><button data-v="R">Right</button></div></div>
         <div class="row"><label class="ck" title="Moves the lesion (= target) to where this approach usually aims, e.g. the foramen of Monro"><input type="checkbox" id="apLes"> Also move the lesion to this approach's usual target</label><button class="btn" id="apGo">Apply</button></div>
-        <p class="note" id="apDesc" hidden></p>
-      </div>
+        <details class="mini" id="apDet" hidden><summary>About this approach</summary><p class="note" id="apDesc"></p></details>
         <div class="row"><button class="btn" id="setE">Set entry on the MRI</button><button class="btn" id="sugBtn" title="Score entries on the brain surface within 100 mm and 30° of the surface normal (or inside the chosen approach's zone)">Show safest surface entries</button><button class="btn" id="twoBtn" title="Two-point method: lesion centre to its nearest pial or ependymal surface">Two-point direction</button><span hidden><button id="setT"></button><input type="checkbox" id="lockT" checked></span></div>
         <div id="twoTxt" class="row"></div><div id="sugList"></div>
-      <div class="row mono"><span class="plab">Entry</span>x<input type="number" id="ex" step="1">y<input type="number" id="ey" step="1">z<input type="number" id="ez" step="1"></div>
-      <div hidden><input type="number" id="tx"><input type="number" id="ty"><input type="number" id="tz"></div>
-      </details>
-      <div class="row"><span class="plab">Radius</span><input type="range" id="crad" min="1" max="12" value="4" style="flex:1"><span class="mono" id="cradv">4 mm</span></div>
-      <div class="row"><label class="ck"><input type="checkbox" id="corrOn" checked> Show corridor</label><span class="note" id="clen"></span></div>
-      <p class="note" style="margin:4px 0 6px">Entry points snap to the brain surface along the line from the lesion, except for approaches that follow a natural corridor. The buttons arm a click on the MRI or the atlas plate. Distances run from the lesion surface to the nearest atlas voxel, whether or not the layer is on. “@” is depth from the entry point. Lesion and target are the same point: the corridor runs from the entry to the lesion centre. <span class="tag">critical</span> marks eloquent cortex, motor, sensory, language and visual pathways, and arteries.</p>
-      <div class="sec">Trajectory assessment</div>
+        <div class="row mono"><span class="plab">Entry</span>x<input type="number" id="ex" step="1">y<input type="number" id="ey" step="1">z<input type="number" id="ez" step="1"></div>
+        <div hidden><input type="number" id="tx"><input type="number" id="ty"><input type="number" id="tz"></div>
+        <div class="rbh">Corridor</div>
+        <div class="row"><span class="plab">Radius</span><input type="range" id="crad" min="1" max="12" value="4" style="flex:1"><span class="mono" id="cradv">4 mm</span></div>
+        <div class="row"><label class="ck"><input type="checkbox" id="corrOn" checked> Show corridor</label><span class="note" id="clen"></span></div>
+        
+      </div>
+      <div class="sec"><span class="step">3</span>Trajectory assessment</div>
       <div id="assess" class="assess"><span class="note">Loading…</span></div>
-      <details class="res method" id="riskHow"><summary>風險分數怎麼算、參考什麼</summary>
-       <p class="note">這是教學用的<b>啟發式分數</b>（heuristic score）：每個因子的<b>計分項目</b>取自已發表的自動化路徑規劃系統，但<b>權重、門檻和 low／moderate／high 分界（&lt;2、2–4、≥4）是本工具自訂</b>，沒有經過臨床驗證。分數越低越安全。</p>
-       <div class="mfac"><div class="mf"><div class="mfh"><b>Vessel clearance</b><span class="pill">最高 3</span></div><div class="note">沿路徑每 0.5 mm 取樣，量到最近血管的距離扣掉通道半徑；≥3 mm 計 0，越近越高，碰到血管直接標紅。血管層是本 atlas 的族群血管（具名＋示意＋Mouches 機率 ≥25%），<b>不是病人的血管</b></div><div class="note mref">依據：Liu 2014（DBS）：&lt;3 mm 罰分、穿過血管＝最大成本；EpiNav（Vakharia 2019）：至少 3 mm，最好遠到 10 mm</div></div><div class="mf"><div class="mfh"><b>Sulcal crossing</b><span class="pill">最高 1.5</span></div><div class="note">腦表 30 mm 內 T1 暗區（腦溝 CSF，不含腦室）距離 &lt;4 mm 開始計分</div><div class="note mref">依據：EpiNav 把腦溝設為禁入區；Liu 2014 罰穿過溝底的路徑（血管走在溝裡）</div></div><div class="mf"><div class="mfh"><b>Ventricle</b><span class="pill">最高 1.5</span></div><div class="note">穿過腦室就計分；經腦室入路（Kocher、Keen、Frazier、transcortical、transcallosal）不計</div><div class="note mref">依據：Liu 2014：離腦室 &lt;2 mm 為硬限制（DBS）</div></div><div class="mf"><div class="mfh"><b>Eloquent entry</b><span class="pill">最高 2</span></div><div class="note">入口前 4 mm 落在 M1、S1、旁中央小葉、Broca、Wernicke、supramarginal、Heschl、V1</div><div class="note mref">依據：一般神外原則（皮質切開避開功能區）；清單為本工具選定</div></div><div class="mf"><div class="mfh"><b>Critical tracts</b><span class="pill">最高 3</span></div><div class="note">10 條族群 tract（HCP-1065：CST、corticobulbar、AF、SLF、IFOF、視放射、ML、FAT、UF、ILF）；每條計 1.5 × sin(路徑與纖維夾角)：垂直穿過最差，平行（parafascicular）最輕</div><div class="note mref">依據：沿纖維走向、不橫切纖維的原則；角度計分是本工具自訂</div></div><div class="mf"><div class="mfh"><b>Deep nuclei</b><span class="pill">最高 2</span></div><div class="note">穿過基底核、視丘、腦幹或腦神經核就計分</div><div class="note mref">依據：Liu 2014 罰穿過視丘；其餘為本工具延伸</div></div><div class="mf"><div class="mfh"><b>Length</b><span class="pill">最高 1</span></div><div class="note">70 mm 以下計 0，100 mm 計滿；&gt;100 mm 標警告</div><div class="note mref">依據：EpiNav（SEEG）上限 90 mm；本工具考慮開放／tubular 入路放寬到 100 mm</div></div><div class="mf"><div class="mfh"><b>Entry angle</b><span class="pill">最高 1</span></div><div class="note">路徑與腦表法線夾角，20° 以下計 0，40° 計滿；&gt;30° 標警告</div><div class="note mref">依據：EpiNav：鑽骨角度與骨面法線 &lt;30°（本工具量的是<b>腦表</b>法線，不是顱骨）</div></div><div class="mf"><div class="mfh"><b>Brain traversed</b><span class="pill">最高 2</span></div><div class="note">非自然通道的路徑：病灶前穿過的腦實質長度（不含腦室），10 mm 以內不計，50 mm 計滿。</div><div class="note mref">依據：「減少腦組織穿越」的一般神外原則（transgression）；門檻為本工具自訂。</div></div><div class="mf"><div class="mfh"><b>Approach cost</b><span class="pill">0–1.2</span></div><div class="note">入路本身的代價，與路徑無關：translabyrinthine +1.2（犧牲聽力）、transvermian +0.6（小腦性緘默）、presigmoid／Kawase／經鼻斜坡 +0.5、其他擴大入路 +0.3–0.4。只用在排序。</div><div class="note mref">依據：教科書描述的入路相關併發症；數值為本工具自訂。</div></div></div>
-       <p class="note">走自然通道（Sylvian 裂、腦池、顱底）的入路：sulcus、eloquent entry、angle、brain traversed 四項不計，血管分數上限 1.5，因為直線只代表方向，沿途組織與血管實際上是被撥開或繞過的。</p>
-       <div class="sec">Target 和 entry 怎麼決定</div>
-       <ul class="note mlist">
-        <li><b>Target＝lesion 中心</b>。你放的病灶球心就是終點；取樣到病灶表面停止。選 approach 並勾「Also move the lesion to this approach's usual target」時，改用該入路常見目標（例如 Kocher→Monro 孔、pterional→ICA 分叉）。</li>
-        <li><b>手動 entry</b>：在 MRI／plate 點一下，程式從 lesion 往你點的方向射線，停在<b>最外層腦表面</b>當入口。</li>
-        <li><b>Approach 預設</b>：入口和目標點是依教科書定位（例如 Kocher 為冠狀縫前 1 cm、中線旁 2.5–3 cm）手動放在 MNI 模板上的近似點；經皮質入路會再貼到腦表面。</li>
-        <li><b>Suggest safest entries</b>：腦表每約 3 mm 一個候選點（z &gt; −35，排除顱底），先篩掉長度 &gt;100 mm、角度 &gt;30°，選了 approach 時只留入口 25 mm 內的點，再用上面的分數排序，取彼此相距 ≥12 mm 的前 5 名。</li>
-        <li><b>Two-point direction</b>：Brown、Thompson、Spetzler（Barrow Quarterly 1996）的 two-point method：lesion 中心連到最靠近的軟腦膜或室管膜表面，延長到皮質就是入口。原法是為腦幹病灶設計的。</li>
-        <li><b>腦外段</b>：入口之後沿同一直線延伸到頭皮（模板 T1 訊號降到背景處），所以顯示的是皮膚到病灶的完整路徑。</li>
-       </ul>
-       <p class="note">與已驗證系統的差別：EpiNav 和 Liu 2014 用的是<b>病人自己的</b> CTA／MRV／顯影 MRI 血管與腦溝分割，而且是針對 SEEG、DBS 這類細針路徑設計的；這裡是族群 atlas 加上開顱通道的直線近似。</p>
-       <p class="note">參考：Vakharia VN et al. Computer-assisted planning for SEEG. <i>Neurotherapeutics</i> 2019;16:1183–97 · Liu Y et al. Multi-surgeon, multi-site validation of a trajectory planning algorithm for DBS. <i>IEEE TBME</i> 2014;61:2479–87 · Brown AP, Thompson BG, Spetzler RF. The two-point method: evaluating brain stem lesions. <i>BNI Quarterly</i> 1996;12(1).</p>
-      </details>
+      
       <details class="res" open><summary>Near the lesion <div class="seg" id="lrange" style="margin-left:8px"><button data-v="5">5 mm</button><button data-v="10" aria-pressed="true">10 mm</button></div></summary><table class="prox" id="ptab"></table></details>
       <details class="res" open><summary>Crossed along the trajectory</summary><table class="prox" id="ctab1"></table></details>
       <details class="res"><summary>Within the corridor radius</summary><table class="prox" id="ctab2"></table></details>
+      <details class="mini" style="margin-top:8px"><summary>How to read these tables</summary><p class="note">Distances run from the lesion surface to the nearest atlas voxel, whether or not that layer is shown. “@” is depth from the entry point. <span class="tag">critical</span> marks eloquent cortex, motor, sensory, language and visual pathways, and arteries. Scores and distances describe the population atlas, not this patient. <button class="lnk" data-goto="srcRisk">How the risk score is built</button></p></details>
     </div>
     <div class="tabbody" id="tb-about" hidden>
       <p class="note" style="margin-top:0">All layers live in MNI ICBM152 2009 space at 1 mm. Both panels draw from the same label volumes, so a colour block on the MRI and the matching shape in the illustration are the same voxels.</p>
@@ -304,13 +319,50 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       <div class="sec">Limits</div>
       <p class="note">Atlas tracts are group averages and do not show displacement, infiltration or oedema. Brainstem level boundaries are approximate axial planes, the STN is an ellipsoid at the published DISTAL-atlas centroid (±12, −13, −5.5) because the ATAG STN label is only a few voxels at 1 mm, and the substantia nigra is the ATAG label grown by 1 mm. CerebrA's “ventral diencephalon” label also covers the cerebral peduncles and midbrain tegmentum; it is split at the plane from the posterior commissure to the mammillary bodies, so only the part in front of that plane is called hypothalamus / subthalamic region, the peduncle (where corticofugal fibres run) is labelled separately, and the rest joins the midbrain. The arteries and the MRA image are population averages (Mouches &amp; Forkert 2019), already in MNI space, covering the whole brain. Averaging across people keeps the large, consistent arteries sharp (ICA, circle of Willis, M1, A1–A2, pericallosal, P1–P2, basilar) but blurs distal branches whose course varies between people, so small cortical branches look faint or missing. The 3D vessel surface is drawn where at least 12% of subjects had a vessel. Branches are grouped by position: vessels outside the brain envelope (skull base, extracranial) form their own group, a box around the skull base forms the ICA and circle-of-Willis group, and the rest take the territory they run through. These grouped surfaces are off by default. All named vessels are generic: arteries are centerlines traced on the population vessel-probability atlas, small branches and veins are textbook courses, and every branch is joined to its parent vessel. Individual variants are deliberately left out. Named arteries (ICA, M1, M2, A1, A2–pericallosal, PComm, P1–P2, P3–P4, SCA, basilar, vertebral) are centerlines traced with a minimal-cost path along the highest vessel probability between anatomical landmarks, with calibre from the radius atlas. Veins and dural sinuses (superior and inferior sagittal, straight, transverse and sigmoid sinuses, vein of Galen, internal cerebral veins, basal veins of Rosenthal) are not in any reachable dataset: their courses are placed from the template's own geometry (inner brain surface, corpus callosum, third ventricle, midbrain) and are approximate. With “Cut at slice” on, the 3D model is cut at the current MRI level.</p>
       <div class="sec">Planning mode</div>
-      <p class="note">The Lesion &amp; corridor tab is a separate planning mode; the lesion and corridor are hidden everywhere else. The lesion is the target. Transcortical entries snap to the brain surface along the line from the lesion. Each trajectory gets a heuristic risk score: vessel clearance (distance to atlas vessels minus the corridor radius), sulcal crossing (sulci as a surrogate for cortical vessels), ventricle entry, eloquent entry cortex, critical tracts crossed and the crossing angle (parallel is safer than perpendicular), deep nuclei, length and the angle to the surface normal. Hard limits of 100 mm and 30° follow published computer-assisted planning (Marcus et al., Oper Neurosurg 2019; Vakharia et al., J Neurosurg 2018). “Suggest safest entries” scores entries on the brain surface and shows the five lowest; “Two-point direction” follows the Barrow two-point method (lesion centre to its nearest pial or ependymal surface). Probe’s-eye and inline views follow the layout of commercial trajectory planners. All scores describe a population atlas, not a patient.</p>
+      <p class="note">The Lesion &amp; corridor tab is a separate planning mode; the lesion and corridor are hidden everywhere else. The lesion is the target. Probe’s-eye and inline views follow the layout of commercial trajectory planners. All scores describe a population atlas, not a patient.</p>
+      <div class="sec srcblk" id="srcRank">How the routes are ranked</div>
+      <p class="note">Place the lesion and every candidate route is scored and listed, lowest score first; the top one is applied automatically unless you untick “Pick the best-ranked route automatically”.</p>
+      <ul class="note mlist">
+        <li><b>Which routes are candidates.</b> A standard approach is listed only when the lesion lies within 15–30 mm of the approach’s usual target (further along the brainstem). A direct transcortical route (the best of the surface entries within 100 mm) is offered for lesions in the brain or on the convexity, never through the skull base, a cistern or the brainstem: its entry must be on the outer cortical surface with the scalp close by. Brainstem and deep lesions also get the two-point line [5].</li>
+        <li><b>Order.</b> Total = trajectory risk score (below) + fit penalty (how far the lesion is from the approach’s usual target) + approach cost (what the approach itself sacrifices, e.g. hearing in translabyrinthine). The lesion’s location label (lobe, deep, infratentorial, brainstem) and its distance to the ventricle decide which approaches are eligible.</li>
+        <li><b>Natural corridors.</b> Approaches through the Sylvian fissure, cisterns or skull base skip the sulcus, entry-cortex, angle and brain-traversed checks, and their vessel cost is capped, because the straight line only gives the direction: tissue and vessels along it are retracted or worked around.</li>
+        <li><b>Why / why not.</b> Each row explains what the approach is for, why it fits this lesion, what it risks and how it compares with the routes ranked next to it.</li>
+      </ul>
+      <p class="note">Not validated: the factors come from published planners [1–4], but the weights, thresholds, approach costs and bands are this project’s own. Check the patient’s own imaging.</p>
+      <div class="sec srcblk" id="srcRisk">風險分數怎麼算、參考什麼</div>
+      <div class="method">
+       <p class="note">這是教學用的<b>啟發式分數</b>（heuristic score）：每個因子的<b>計分項目</b>取自已發表的自動化路徑規劃系統，但<b>權重、門檻和 low／moderate／high 分界（&lt;2、2–4、≥4）是本工具自訂</b>，沒有經過臨床驗證。分數越低越安全。</p>
+       <div class="mfac"><div class="mf"><div class="mfh"><b>Vessel clearance</b><span class="pill">最高 3</span></div><div class="note">沿路徑每 0.5 mm 取樣，量到最近血管的距離扣掉通道半徑；≥3 mm 計 0，越近越高，碰到血管直接標紅。血管層是本 atlas 的族群血管（具名＋示意＋Mouches 機率 ≥25%），<b>不是病人的血管</b></div><div class="note mref">依據：EpiNav（SEEG）安全邊界 3 mm [1]；Liu 2014（DBS）&lt;3 mm 罰分、穿過血管＝最大成本 [3]</div></div><div class="mf"><div class="mfh"><b>Sulcal crossing</b><span class="pill">最高 1.5</span></div><div class="note">腦表 30 mm 內 T1 暗區（腦溝 CSF，不含腦室）距離 &lt;4 mm 開始計分</div><div class="note mref">依據：EpiNav 避開腦溝 [1]；Marcus 2019 以腦溝代替血管當主要避開結構，距腦溝 ≥10 mm 才算 0 風險 [2]；Liu 2014 罰穿過溝底的路徑（血管走在溝裡）[3]</div></div><div class="mf"><div class="mfh"><b>Ventricle</b><span class="pill">最高 1.5</span></div><div class="note">穿過腦室就計分；經腦室入路（Kocher、Keen、Frazier、transcortical、transcallosal）不計</div><div class="note mref">依據：Liu 2014：離腦室 &lt;2 mm 為硬限制（DBS）[3]</div></div><div class="mf"><div class="mfh"><b>Eloquent entry</b><span class="pill">最高 2</span></div><div class="note">入口前 4 mm 落在 M1、S1、旁中央小葉、Broca、Wernicke、supramarginal、Heschl、V1</div><div class="note mref">依據：一般神外原則（皮質切開避開功能區）；清單為本工具選定</div></div><div class="mf"><div class="mfh"><b>Critical tracts</b><span class="pill">最高 3</span></div><div class="note">10 條族群 tract（HCP-1065：CST、corticobulbar、AF、SLF、IFOF、視放射、ML、FAT、UF、ILF）；每條計 1.5 × sin(路徑與纖維夾角)：垂直穿過最差，平行（parafascicular）最輕</div><div class="note mref">依據：沿纖維走向、不橫切纖維的原則；角度計分是本工具自訂</div></div><div class="mf"><div class="mfh"><b>Deep nuclei</b><span class="pill">最高 2</span></div><div class="note">穿過基底核、視丘、腦幹或腦神經核就計分</div><div class="note mref">依據：避開深部灰質的一般神外原則；清單與權重為本工具自訂（Liu 2014 的 thalamus 項是 DBS 專用設計，不直接套用）</div></div><div class="mf"><div class="mfh"><b>Length</b><span class="pill">最高 1</span></div><div class="note">70 mm 以下計 0，100 mm 計滿；&gt;100 mm 標警告</div><div class="note mref">依據：Marcus 2019（腦切片規劃）上限 100 mm [2]；EpiNav（SEEG）用 90 mm [1]</div></div><div class="mf"><div class="mfh"><b>Entry angle</b><span class="pill">最高 1</span></div><div class="note">路徑與腦表法線夾角，20° 以下計 0，40° 計滿；&gt;30° 標警告</div><div class="note mref">依據：Marcus 2019 與法線夾角 &lt;30° [2]；EpiNav（SEEG）用 25° [1]（本工具量的是<b>腦表</b>法線，不是顱骨）</div></div><div class="mf"><div class="mfh"><b>Brain traversed</b><span class="pill">最高 2</span></div><div class="note">非自然通道的路徑：病灶前穿過的腦實質長度（不含腦室），10 mm 以內不計，50 mm 計滿。</div><div class="note mref">依據：「減少腦組織穿越」的一般神外原則（transgression）；門檻為本工具自訂。</div></div><div class="mf"><div class="mfh"><b>Approach cost</b><span class="pill">0–1.2</span></div><div class="note">入路本身的代價，與路徑無關：translabyrinthine +1.2（犧牲聽力）、transvermian +0.6（小腦性緘默）、presigmoid／Kawase／經鼻斜坡 +0.5、其他擴大入路 +0.3–0.4。只用在排序。</div><div class="note mref">依據：教科書描述的入路相關併發症；數值為本工具自訂。</div></div></div>
+       <p class="note">走自然通道（Sylvian 裂、腦池、顱底）的入路：sulcus、eloquent entry、angle、brain traversed 四項不計，血管分數上限 1.5，因為直線只代表方向，沿途組織與血管實際上是被撥開或繞過的。</p>
+       <div class="sec srcblk" id="srcEntry">Target、entry 和距離怎麼決定</div>
+       <ul class="note mlist">
+        <li><b>Target＝lesion 中心</b>。你放的病灶球心就是終點；取樣到病灶表面停止。選 approach 並勾「Also move the lesion to this approach's usual target」時，改用該入路常見目標（例如 Kocher→Monro 孔、pterional→ICA 分叉）。</li>
+        <li><b>手動 entry</b>：在 MRI／plate 點一下，程式從 lesion 往你點的方向射線，停在<b>最外層腦表面</b>當入口。</li>
+        <li><b>Approach 預設</b>：入口和目標點是依教科書定位（例如 Kocher 為冠狀縫前 1 cm、中線旁 2.5–3 cm）手動放在 MNI 模板上的近似點；經皮質入路會再貼到腦表面。</li>
+        <li><b>Suggest safest entries</b>：腦表每約 3 mm 一個候選點（z &gt; −35，排除顱底），先篩掉長度 &gt;100 mm、角度 &gt;30°，選了 approach 時只留入口 25 mm 內的點，再用上面的分數排序，取彼此相距 ≥12 mm 的前 5 名（同 Marcus 2019：列出 5 條最低風險路徑讓醫師挑 [2]）。</li>
+        <li><b>Two-point direction</b>：Brown、Thompson、Spetzler 的 two-point method [5]：lesion 中心連到最靠近的軟腦膜或室管膜表面，延長到皮質就是入口。原法是為腦幹病灶設計的。</li>
+        <li><b>距離</b>：近病灶表格從<b>病灶表面</b>量到最近的 atlas voxel，不論該圖層有沒有開；「@」是離入口的深度。<span class="tag">critical</span> 標示功能區皮質、運動／感覺／語言／視覺路徑和動脈。</li>
+        <li><b>腦外段</b>：入口之後沿同一直線延伸到頭皮（模板 T1 訊號降到背景處），所以顯示的是皮膚到病灶的完整路徑。</li>
+       </ul>
+       <p class="note">與已驗證系統的差別：EpiNav、Marcus 2019 和 Liu 2014 用的是<b>病人自己的</b> CTA／MRV／顯影 MRI 血管與腦溝分割，而且是針對 SEEG、腦切片、DBS 這類細針路徑設計的；這裡是族群 atlas 加上開顱通道的直線近似。</p>
+       
+      </div>
+      <div class="sec srcblk" id="srcRefs">Key references for route ranking</div>
+      <ol class="refs">
+        <li><b>Vakharia VN, Sparks R, Rodionov R, et al.</b> Computer-assisted planning for the insertion of stereoelectroencephalography electrodes for the investigation of drug-resistant focal epilepsy: an external validation study. <i>J Neurosurg</i> 2019;130(2):601–10. <a href="https://doi.org/10.3171/2017.10.JNS171826" target="_blank" rel="noopener">doi:10.3171/2017.10.JNS171826</a> — EpiNav: 3 mm vessel margin, sulcus avoidance, length and drilling-angle limits.</li>
+        <li><b>Marcus HJ, Vakharia VN, Sparks R, et al.</b> Computer-assisted versus manual planning for stereotactic brain biopsy: a retrospective comparative pilot study. <i>Oper Neurosurg</i> 2020;18(4):417–22. <a href="https://doi.org/10.1093/ons/opz177" target="_blank" rel="noopener">doi:10.1093/ons/opz177</a> — lesion targets, 100 mm and 30° limits, sulcal risk, five lowest-risk entries offered to the surgeon.</li>
+        <li><b>Liu Y, Konrad PE, Neimat JS, et al.</b> Multisurgeon, multisite validation of a trajectory planning algorithm for deep brain stimulation procedures. <i>IEEE Trans Biomed Eng</i> 2014;61(9):2479–87. <a href="https://doi.org/10.1109/TBME.2014.2322776" target="_blank" rel="noopener">doi:10.1109/TBME.2014.2322776</a> — weighted cost of vessel, ventricle and sulcal-base proximity.</li>
+        <li><b>Vakharia VN, Sparks R, Vos SB, et al.</b> Computer-assisted planning for stereoelectroencephalography (SEEG). <i>Neurotherapeutics</i> 2019;16(4):1183–97. <a href="https://doi.org/10.1007/s13311-019-00774-9" target="_blank" rel="noopener">doi:10.1007/s13311-019-00774-9</a> — review of automated trajectory planners and the constraints they share.</li>
+        <li><b>Brown AP, Thompson BG, Spetzler RF.</b> The two-point method: evaluating brain stem lesions. <i>BNI Quarterly</i> 1996;12(1). — the two-point line.</li>
+      </ol>
+
       <div class="sec">Data and licences</div>
       <p class="note">Template: ICBM 2009b nonlinear symmetric T1/T2, © 1993–2009 Louis Collins, McConnell Brain Imaging Centre, Montreal Neurological Institute, McGill University (permissive licence; copyright notice retained).<br>
       Cortex, ventricles, deep grey: CerebrA atlas (Manera et al., 2020, Sci Data).<br>
       Thalamic nuclei: THOMAS (Su et al., 2019), CC0.<br>
       GPi, red nucleus, substantia nigra: ATAG (Keuken et al., 2014).<br>
       Cerebellar lobules: SUIT (Diedrichsen et al., 2009), CC BY-NC 3.0, non-commercial.<br>
+      Optic radiation loops: the Meyer and Baum loop layers are schematic bundles placed on template landmarks (LGN, temporal horn, atrium, calcarine banks), with the Meyer loop tip at the level of the temporal-horn tip (Yogarajah M et al. Brain 2009;132:1656–68), because the group-average optic radiation truncates the loop. Both count as optic radiation in the risk score.<br>
       Tracts: HCP-1065 population tractography atlas (Yeh, 2022, Nat Commun), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).<br>
       Atlas files via the DSI Studio atlas repository (github.com/frankyeh/DSI-Studio-atlas).<br>
       Arteries and the MRA image: population TOF-MRA average, vessel probability and vessel radius atlases (Mouches P, Forkert ND. A statistical atlas of cerebral arteries generated using multi-center MRA datasets from healthy subjects. Sci Data 2019;6:29), Calgary Medical Image Processing and Analysis Lab. The main trunks (ICA, M1, A1–A2, P1–P3, PComm, BA) are traced on the vessel-probability atlas; the distal named branches (MCA M2 trunks and M3–M4 cortical arteries, ACA and PCA cortical branches) follow the sulcal and fissural landmarks of the cortical parcellation and are pulled onto the probability ridge, so they show the usual population course rather than any individual's branching pattern. Choroidal, thalamoperforating, ophthalmic and anterior spinal arteries are schematic textbook courses.</p>
@@ -428,6 +480,7 @@ $('clip').onchange=e=>{st.clip=e.target.checked;updateClip();update3DPlane()};
 $('plane3').onchange=e=>{st.plane=e.target.checked;update3DPlane()};
 $('focus').onchange=e=>{st.focus=e.target.checked;apply3DVis()};
 $('callo').onchange=e=>{st.callouts=e.target.checked};
+document.addEventListener('click',e=>{const g=e.target.closest('[data-goto]');if(!g)return;document.querySelector('.tabs button[data-t="about"]').click();const t=$(g.dataset.goto);if(t)t.scrollIntoView({block:'start'})});
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));
   ['layers','plan','about'].forEach(t=>$('tb-'+t).hidden=t!==b.dataset.t);
@@ -632,7 +685,7 @@ const APPROACHES=[
 ];
 (()=>{const sel=$('appr');const groups={};for(const a of APPROACHES){if(!groups[a.g]){groups[a.g]=document.createElement('optgroup');groups[a.g].label=a.g;sel.append(groups[a.g])}const o=document.createElement('option');o.value=a.id;o.textContent=a.name;groups[a.g].append(o)}
   let side='L';seg('apSide',v=>{side=v});
-  const show=()=>{const a=APPROACHES.find(q=>q.id===sel.value);$('apDesc').hidden=!a;if(a)$('apDesc').textContent=(a.ind?'適應症：'+a.ind+' ':'')+(a.pick?'為什麼用它：'+a.pick+' ':'')+'路徑：'+a.d+'（常見目標：'+a.tn+'）'};
+  const show=()=>{const a=APPROACHES.find(q=>q.id===sel.value);$('apDet').hidden=!a;if(a)$('apDesc').textContent=(a.ind?'適應症：'+a.ind+' ':'')+(a.pick?'為什麼用它：'+a.pick+' ':'')+'路徑：'+a.d+'（常見目標：'+a.tn+'）'};
   sel.onchange=show;
   $('apGo').onclick=()=>{const a=APPROACHES.find(q=>q.id===sel.value);if(!a)return;const m=side==='R'?-1:1;
     if($('apLes').checked&&a.T){st.lesion.c=[a.T[0]*m,a.T[1],a.T[2]];rankKey=st.lesion.c.map(Math.round).join(',')+'/'+st.lesion.r}   // a chosen preset is not overridden by the automatic choice
@@ -771,7 +824,8 @@ function update3DTools(){
 }
 function resize(){const r=host.getBoundingClientRect();renderer.setSize(r.width,r.height,false);renderer.domElement.style.width=r.width+'px';renderer.domElement.style.height=r.height+'px';cam.aspect=r.width/r.height;cam.updateProjectionMatrix();drawMRI()}
 new ResizeObserver(()=>resize()).observe(host);
-function setCam(v){const d=330;const t=ctl.target;const P={L:[-d,0,0],R:[d,0,0],S:[0,-1,d],A:[0,d,0],P:[0,-d,0],I:[0,1,-d]}[v];
+function setCam(v){if(st.view==='3d')ctl.target.set(0,-18,10);const t=ctl.target;const d=Math.max(330,98/(Math.tan(15*Math.PI/180)*Math.min(1,cam.aspect||1)));   // whole brain fits the pane, portrait panes included
+  const P={L:[-d,0,0],R:[d,0,0],S:[0,-1,d],A:[0,d,0],P:[0,-d,0],I:[0,1,-d]}[v];
   cam.position.set(t.x+P[0],t.y+P[1],t.z+P[2]);ctl.update();if(st.clip)updateClip()}
 $('views3').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setCam(b.dataset.cam)});
 cam.position.set(-330,170,190);ctl.update();
@@ -963,7 +1017,9 @@ const DESC={
 'ifof':'下額枕束 (inferior fronto-occipital fasciculus)，經外囊/極外囊與顳幹下方。與語意處理相關，優勢側損傷：語意性錯語 (semantic paraphasia)。',
 'unc':'鉤束 (uncinate fasciculus)，連接顳極與眶額，經顳幹 (temporal stem)。常在前顳葉切除時受影響，功能後果通常輕。',
 'ilf':'下縱束 (inferior longitudinal fasciculus)，枕顳連結，與視覺辨識、閱讀相關。',
-'or':'視放射 (optic radiation)，LGN 到 V1；前部繞顳角上方形成 Meyer loop。顳葉手術損傷：對側上象限盲 ("pie in the sky")。',
+'or':'視放射 (optic radiation, geniculocalcarine tract)：LGN 到 V1，分三束：腹側 Meyer loop（繞顳角上方往前再折回，到距狀溝下唇，對側上象限）、中央束（黃斑）、背側 Baum loop（經頂葉白質，到距狀溝上唇，對側下象限）。這一層是 HCP-1065 族群纖維束，群體平均會把 Meyer loop 的前端截短，兩個 loop 另以示意層顯示。',
+'or_mey':'Meyer loop（視放射腹側束）：從 LGN 往前繞過顳角頂部，前端約在顳角尖端同一高度（平均 0 mm，範圍 −15 到 +9 mm），距顳極約 24–47 mm（Yogarajah 2009），再沿顳角與心房外側壁往後，到距狀溝下唇（舌回側）。負責對側上象限：顳葉前部切除或經顳葉入路損傷 → 對側上象限盲 ("pie in the sky")。（示意路徑，依模板地標放置）',
+'or_baum':'Baum loop（視放射背側束）：從 LGN 經豆狀核後內囊往上，走在心房上外側的頂葉白質，到距狀溝上唇（楔葉側）。負責對側下象限：頂葉病灶或經頂葉入路損傷 → 對側下象限盲 ("pie on the floor")。（示意路徑，依模板地標放置）',
 'cn2':'視神經/視徑 (CN II)。視交叉後的視徑繞大腦腳到 LGN；損傷：對側同側偏盲。',
 'ar':'聽放射 (acoustic radiation)，MGN 到 Heschl 回。',
 'cing':'扣帶束 (cingulum)，扣帶回下方的邊緣系統聯絡纖維。',
@@ -1016,7 +1072,7 @@ a_pca_tp:'視丘穿通動脈：P1 發出，經後穿質供應視丘與中腦（�
 a_oph:'眼動脈：床突上 ICA 的第一支，在視神經下方經視神經管入眶，供應視網膜。眼動脈段動脈瘤與前床突切除時的關鍵構造。（示意路徑）',
 a_acom:'前交通動脈 (AComm)：連接兩側 A1–A2 交界，前循環動脈瘤最好發處；其後方穿通支供應穹窿與下視丘。',
 a_asa:'前脊髓動脈：兩側椎動脈 V4 各發一支，在延腦前方中線合成，沿前正中裂下行，供應延腦內側與脊髓前 2/3。（示意路徑）',
-a_a1:'ACA A1：ICA 分叉到前交通動脈 (AComm)，穿過視神經／視交叉上方；發出 medial lenticulostriate 與 Heubner recurrent artery。',
+a_a1:'ACA A1：ICA 分叉到前交通動脈 (AComm)，穿過視神經／視交叉上方；發出 medial lenticulostriate；Heubner recurrent artery 多起於 A2 近端，其次 A1–A2 交界，少數起於 A1。',
 a_a2:'ACA A2–pericallosal：左右各一條，從 AComm 兩端發出，在縱裂內並行沿胼胝體上方走（只有一條正中 A2 是 azygos ACA 變異）；供應內側額頂葉（下肢運動感覺區）。經縱裂手術時位於視野中央。',
 a_pcom:'後交通動脈 (PComm)：連接 ICA 與 PCA，CN III 走在其下外側；PComm 動脈瘤壓迫造成動眼神經麻痺。',
 a_p1p2:'PCA P1–P2：基底動脈頂向外繞大腦腳，P1 發出視丘穿通支；P2 在環池內與 basal vein、CN IV 並行。',
@@ -1044,7 +1100,7 @@ cs_cn9:'舌咽神經 (CN IX)：延腦橄欖後溝最上方的根絲，經頸靜�
 cs_cn10:'迷走神經 (CN X)：橄欖後溝 IX 下方的多條根絲，經頸靜脈孔。損傷：聲帶麻痺、吞嚥困難。（示意路徑）',
 cs_cn11:'副神經 (CN XI)：脊髓根自上頸髓上行經枕大孔，與延腦根會合，經頸靜脈孔出顱。（示意路徑）',
 cs_cn12:'舌下神經 (CN XII)：錐體與橄欖之間的前外側溝出腦，經舌下神經管。Far lateral 入路走在其附近；損傷造成同側舌偏斜。（示意路徑）',
-sa_heubner:'Heubner 回返動脈：多起於 A1–A2 交界，沿 A1 上方往外回走到前穿質，供應尾狀核頭與內囊前肢。AComm 動脈瘤手術時最容易損傷，造成對側臉與上肢無力。（示意路徑）',
+sa_heubner:'Heubner 回返動脈：多起於 A2 近端（AComm 遠側數 mm 內），其次 A1–A2 交界，沿 A1 上方往外回走到前穿質，供應尾狀核頭與內囊前肢。AComm 動脈瘤手術時最容易損傷，造成對側臉與上肢無力。（示意路徑）',
 sa_lsa1:'外側豆紋動脈：從 M1 上方垂直穿入前穿質，供應殼核、內囊上部。腦島與 M1 附近手術時損傷會造成內囊梗塞。（示意路徑，實際約 6–20 支）',
 sa_lsa2:'外側豆紋動脈（中間支）。（示意路徑）',sa_lsa3:'外側豆紋動脈（外側支，最遠可從 M2 起始）。（示意路徑）',
 sa_acha:'前脈絡叢動脈 (AChA)：ICA 於 PComm 遠端發出，沿視徑往後進顳角脈絡叢。供應內囊後肢下部、視徑、外側膝狀體。損傷：偏癱、偏身感覺、偏盲。（示意路徑；TopBrain 有實際標註）',
@@ -1105,7 +1161,7 @@ const CONN={
 'Ventral posterolateral (VPL)':{i:[['Contralateral body: touch, vibration, proprioception','medial lemniscus (dorsal column–medial lemniscus)','ml'],['Contralateral body: pain and temperature','spinothalamic tract']],o:[['Primary somatosensory cortex (postcentral gyrus)','superior thalamic radiation, posterior limb of the internal capsule','str']]},
 'Centromedian (CM)':{i:[['GPi, motor cortex, reticular formation','pallidothalamic and corticothalamic fibres']],o:[['Putamen and caudate','thalamostriate fibres'],['Widespread cortex','diffuse thalamocortical fibres']]},
 'Pulvinar':{i:[['Superior colliculus, pretectum','tectopulvinar fibres']],o:[['Parieto-temporo-occipital association cortex','posterior thalamic radiation']]},
-'Lateral geniculate (LGN)':{i:[['Retina (ipsilateral temporal + contralateral nasal fibres)','optic tract','cn2']],o:[['Primary visual cortex (calcarine)','optic radiation (Meyer loop)','or']]},
+'Lateral geniculate (LGN)':{i:[['Retina (ipsilateral temporal + contralateral nasal fibres)','optic tract','cn2']],o:[['Lower bank of the calcarine (upper visual field)','optic radiation, ventral fibres: Meyer loop','or_mey'],['Occipital pole (macula)','optic radiation, central bundle','or'],['Upper bank of the calcarine (lower visual field)','optic radiation, dorsal fibres: Baum loop','or_baum']]},
 'Medial geniculate (MGN)':{i:[['Inferior colliculus','brachium of the inferior colliculus (after the lateral lemniscus)']],o:[['Primary auditory cortex (Heschl gyrus)','acoustic radiation','ar']]},
 'Thalamus (other nuclei)':{i:[['Cortex (reciprocal)','corticothalamic fibres']],o:[['Cortex','thalamic radiations']]},
 'Caudate nucleus':{i:[['Prefrontal and association cortex','corticostriate fibres'],['SNc (dopamine)','nigrostriatal fibres'],['CM thalamus','thalamostriate fibres']],o:[['GPi / SNr (direct pathway)','striatopallidal / striatonigral fibres'],['GPe (indirect pathway)','striatopallidal fibres']]},
@@ -1125,7 +1181,7 @@ const CONN={
 'Pons':{i:[['Cerebral cortex (pontine nuclei)','corticopontine tracts','cpt']],o:[['Contralateral cerebellar hemisphere','middle cerebellar peduncle','mcp']]},
 'Medulla':{i:[['Red nucleus → inferior olive','central tegmental tract'],['Dorsal columns (gracile, cuneate nuclei)','fasciculus gracilis / cuneatus']],o:[['Contralateral cerebellum (climbing fibres)','olivocerebellar fibres, inferior cerebellar peduncle','icp'],['Contralateral VPL thalamus','medial lemniscus','ml']]},
 'Cerebellar white matter / dentate region':{i:[['Cerebellar cortex (Purkinje cells)','corticonuclear fibres']],o:[['Contralateral red nucleus and VL thalamus','superior cerebellar peduncle / dentato-rubro-thalamic tract','drtt']]},
-'Cerebellum · Anterior lobe (I–V)':{i:[['Spinal cord','spinocerebellar tracts, inferior cerebellar peduncle','icp'],['Contralateral pontine nuclei','middle cerebellar peduncle','mcp']],o:[['Deep cerebellar nuclei','Purkinje cell axons']]},
+'Cerebellum · Anterior lobe (I–V)':{i:[['Spinal cord','spinocerebellar tracts (dorsal via the inferior, ventral via the superior cerebellar peduncle)','icp'],['Contralateral pontine nuclei','middle cerebellar peduncle','mcp']],o:[['Deep cerebellar nuclei','Purkinje cell axons']]},
 'Cerebellum · Posterior lobe (VI–VIII)':{i:[['Contralateral pontine nuclei (cerebral cortex)','middle cerebellar peduncle','mcp'],['Contralateral inferior olive','inferior cerebellar peduncle','icp']],o:[['Dentate nucleus','Purkinje cell axons']]},
 'Cerebellum · Flocculus (X)':{i:[['Vestibular nerve and nuclei','juxtarestiform body (inferior cerebellar peduncle)','icp']],o:[['Vestibular nuclei','juxtarestiform body']]},
 'Cerebellum · Tonsil / IX':{i:[['Vestibular and spinal afferents','inferior cerebellar peduncle','icp']],o:[['Fastigial and vestibular nuclei','Purkinje cell axons']]},
@@ -1169,8 +1225,8 @@ Object.assign(CONN,{
 'Entorhinal cortex':{i:[['Association cortex via parahippocampal gyrus','cingulum','cing']],o:[['Hippocampus (dentate gyrus, CA1)','perforant path']]},
 'Parahippocampal gyrus':{i:[['Cingulate cortex','cingulum','cing'],['Occipito-temporal cortex (scenes)','inferior longitudinal fasciculus','ilf']],o:[['Entorhinal cortex → hippocampus','short association fibres']]},
 'Pericalcarine (V1, BA17)':{i:[['LGN (contralateral visual field)','optic radiation','or']],o:[['V2 / extrastriate cortex','short association fibres'],['Opposite occipital cortex','forceps major (splenium)','cc_major'],['Superior colliculus, pulvinar','corticotectal fibres']]},
-'Cuneus':{i:[['LGN (upper bank of the calcarine = lower visual field)','optic radiation (dorsal fibres)','or']],o:[['Parietal cortex (dorsal "where" stream)','SLF / occipito-parietal fibres','slf'],['Opposite occipital cortex','forceps major','cc_major']]},
-'Lingual gyrus':{i:[['LGN (lower bank = upper visual field)','optic radiation via the Meyer loop','or']],o:[['Fusiform and temporal cortex (ventral stream)','inferior longitudinal fasciculus','ilf']]},
+'Cuneus':{i:[['LGN (upper bank of the calcarine = lower visual field)','optic radiation, dorsal fibres (Baum loop)','or_baum']],o:[['Parietal cortex (dorsal "where" stream)','SLF / occipito-parietal fibres','slf'],['Opposite occipital cortex','forceps major','cc_major']]},
+'Lingual gyrus':{i:[['LGN (lower bank = upper visual field)','optic radiation, ventral fibres (Meyer loop)','or_mey']],o:[['Fusiform and temporal cortex (ventral stream)','inferior longitudinal fasciculus','ilf']]},
 'Lateral occipital cortex':{i:[['V1 / V2','short association fibres']],o:[['Temporal cortex (objects, faces)','inferior longitudinal fasciculus','ilf'],['Frontal cortex','inferior fronto-occipital fasciculus','ifof']]},
 'Postcentral gyrus (S1)':{i:[['VPL / VPM thalamus','superior thalamic radiation','str']],o:[['Superior parietal lobule, S2','short association fibres'],['Dorsal horn and dorsal column nuclei (gain control)','corticospinal (sensory) fibres','cst'],['Opposite S1','corpus callosum (body)','cc_body']]},
 'Superior parietal lobule':{i:[['S1, visual cortex (dorsal stream), pulvinar','association fibres']],o:[['Dorsal premotor cortex, frontal eye field','SLF I–II','slf'],['Pontine nuclei','corticopontine tracts','cpt']]},
@@ -1198,8 +1254,65 @@ function tractFor(id,o,x){const sd=o.side?'_'+(x?(o.side==='L'?'r':'l'):o.side.t
   return TR.find(t=>t.id===id+sd)||TR.find(t=>t.id==='cs_'+id+sd)||TR.find(t=>t.id===id+'_l')||TR.find(t=>t.id===id)||TR.find(t=>t.id.startsWith('cs_'+id+'_'))||TR.find(t=>t.id.startsWith('cs_'+id))}
 function chipFor(k,o){const b=document.createElement('button');b.className='chipb';const sw=document.createElement('span');sw.className='sw';sw.style.background=o.color;b.append(sw,document.createTextNode(o.name+sideTxt(o)));
   b.onclick=()=>{if(k==='t')st.visT[o.id]=true;else VIS('s')[o.id]=true;syncers.forEach(f=>f());refresh();select(k,o)};return b}
+// ---- course of a tract: structures in the order the fibres pass them, from the anatomical start of the pathway
+// rule = which streamline end is the start: sup / inf / ant / post / med / left (x<0 first) / opp (the side opposite the tract's own)
+const COURSE={
+ cst:['sup','Descending (efferent)','motor cortex → corona radiata → internal capsule (posterior limb) → cerebral peduncle → basis pontis → medullary pyramid'],
+ cbt:['sup','Descending (efferent)','motor cortex (face area) → internal capsule (genu) → cerebral peduncle → brainstem motor nuclei'],
+ cpt:['sup','Descending (efferent)','frontal / parietal cortex → internal capsule → cerebral peduncle → pontine nuclei'],
+ ml:['inf','Ascending (afferent)','nucleus gracilis / cuneatus (medulla) → internal arcuate decussation → medial lemniscus through pons and midbrain → VPL thalamus'],
+ str:['inf','Ascending (thalamocortical; corticothalamic fibres run back)','VPL / VL thalamus → internal capsule (posterior limb) → corona radiata → sensorimotor cortex'],
+ atr:['post','Ascending (thalamocortical; corticothalamic fibres run back)','anterior / MD thalamus → internal capsule (anterior limb) → prefrontal cortex'],
+ or:['ant','Visual afferent','LGN → sagittal stratum (lateral wall of the atrium and occipital horn) → calcarine (V1) cortex; ventral fibres form the Meyer loop, dorsal fibres the Baum loop'],
+ or_mey:['ant','Visual afferent (upper visual field)','LGN → forward over the roof of the temporal horn → loop at the level of the horn tip → back along the lateral wall of the temporal horn and atrium → lower bank of the calcarine'],
+ or_baum:['ant','Visual afferent (lower visual field)','LGN → retrolenticular internal capsule → parietal white matter above and lateral to the atrium → upper bank of the calcarine'],
+ ar:['med','Auditory afferent','MGN → sublenticular internal capsule → Heschl gyrus (A1)'],
+ cn2:['ant','Visual afferent','retina → optic nerve → chiasm → optic tract → LGN'],
+ drtt:['inf','Cerebellar efferent','dentate nucleus → superior cerebellar peduncle → decussation in the midbrain → red nucleus region → VL thalamus'],
+ scp:['inf','Cerebellar efferent','dentate / interposed nuclei → superior cerebellar peduncle → midbrain'],
+ mcp:['left','Cerebellar afferent (crossed)','left hemisphere ↔ middle cerebellar peduncle ↔ basis pontis ↔ right hemisphere; each side\'s pontine nuclei project to the opposite cerebellar hemisphere'],
+ icp:['inf','Cerebellar afferent','spinal cord / inferior olive (medulla) → inferior cerebellar peduncle → cerebellum'],
+ fx:['post','Hippocampal efferent','hippocampus → fimbria → crus → body → column of the fornix → mammillary body'],
+ af:['post','Association (two-way)','posterior temporal cortex → around the Sylvian fissure → frontal operculum (Broca)'],
+ slf:['post','Association (two-way)','inferior parietal lobule → lateral to the corona radiata → premotor and inferior frontal cortex'],
+ ifof:['post','Association (two-way)','occipital cortex → sagittal stratum → extreme / external capsule → frontal cortex'],
+ ilf:['post','Association (two-way)','occipital cortex → lateral wall of the temporal horn → anterior temporal lobe'],
+ unc:['post','Association (two-way)','temporal pole → limen insulae → orbitofrontal cortex'],
+ fat:['sup','Association (two-way)','SMA / pre-SMA (superior frontal gyrus) → inferior frontal gyrus (Broca)'],
+ cing:['ant','Association (two-way)','subgenual / anterior cingulate → around the corpus callosum → retrosplenial cortex → parahippocampal gyrus'],
+ cc_minor:['left','Commissural (both directions)','left frontal cortex → genu → right frontal cortex'],
+ cc_body:['left','Commissural (both directions)','left hemisphere → body of the corpus callosum → right hemisphere'],
+ cc_tap:['left','Commissural (both directions)','left temporal lobe → tapetum / splenium → right temporal lobe'],
+ cc_major:['left','Commissural (both directions)','left occipital cortex → splenium → right occipital cortex'],
+ ac:['left','Commissural (both directions)','left temporal lobe / olfactory areas → anterior commissure → right side']};
+function courseKey(t){return t.id.replace(/^cs_/,'').replace(/_[lr]$/,'')}
+const COURSEC=new Map();
+function courseAlong(t){if(COURSEC.has(t.id))return COURSEC.get(t.id);const R=COURSE[courseKey(t)];if(!R||!t.lines||!t.lines.length){COURSEC.set(t.id,null);return null}
+  const sideSign=t.side==='L'?-1:t.side==='R'?1:0;
+  const key=p=>({sup:p[2],inf:-p[2],ant:p[1],post:-p[1],med:-Math.abs(p[0]),lat:Math.abs(p[0]),left:-p[0],opp:sideSign?-sideSign*p[0]:-p[0]})[R[0]];
+  const acc=new Map();let tot=0;
+  for(const L of t.lines){const a=sec(L,Int16Array);const n=a.length/3;if(n<4)continue;const P=[];for(let i=0;i<n;i++)P.push([a[i*3]/4,a[i*3+1]/4,a[i*3+2]/4]);
+    if(key(P[n-1])>key(P[0]))P.reverse();   // start end first
+    const cum=[0];for(let i=1;i<n;i++)cum.push(cum[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1],P[i][2]-P[i-1][2]));const len=cum[n-1]||1;
+    for(let i=0;i<n;i++){const x=Math.round(P[i][0]-OX),y=Math.round(P[i][1]-OY),z=Math.round(P[i][2]-OZ);if(x<0||y<0||z<0||x>=NX||y>=NY||z>=NZ)continue;const Lb=LAB[vi(x,y,z)];if(!Lb)continue;
+      const e=acc.get(Lb)||{n:0,f:0,f0:1,f1:0};const fr=cum[i]/len;e.n++;e.f+=fr;if(fr<e.f0)e.f0=fr;if(fr>e.f1)e.f1=fr;acc.set(Lb,e);tot++}}
+  const min=Math.max(4,tot*0.012);
+  const seq=[...acc.entries()].filter(([id,e])=>e.n>=min&&SB[id]&&SB[id].group!=='Ventricles')   // fibres run beside the ventricle wall, not through CSF
+    .map(([id,e])=>({o:SB[id],n:e.n,f:e.f/e.n})).sort((a,b)=>a.f-b.f);
+  const out={seq,kind:R[1],text:R[2]};COURSEC.set(t.id,out);return out}
 function showConn(k,o){const box=$('iConn');box.innerHTML='';
-  const computed=()=>{const pairs=k==='s'?tractsThrough(o).slice(0,10).map(([t,n])=>['t',t,n]):k==='t'&&o.X&&!isVes(o)&&!o.group.startsWith('Arterial')?structsAlong(o).slice(0,12).map(([s2,n])=>['s',s2,n]):[];if(!pairs.length)return;
+  const course=k==='t'&&o.X&&!isVes(o)&&!o.group.startsWith('Arterial')?courseAlong(o):null;
+  const computed=()=>{if(course&&course.seq.length){
+      const h=document.createElement('div');h.className='sech';h.textContent='Course through the atlas (start → end)';box.append(h);
+      const d=document.createElement('div');d.className='cdirn';const b0=document.createElement('b');b0.textContent=course.kind+': ';d.append(b0,document.createTextNode(course.text));box.append(d);
+      // fibres fan out at their ends: structures near either end are alternatives (where fibres start or end), the middle ones are passed in order
+      const st0=course.seq.filter(x=>x.f<0.22),en0=course.seq.filter(x=>x.f>0.78),mid=course.seq.filter(x=>x.f>=0.22&&x.f<=0.78);
+      const byN=a=>a.slice().sort((p,q)=>q.n-p.n).slice(0,7);
+      const row=(lab,list,ord)=>{if(!list.length)return;const r=document.createElement('div');r.className='crow';const h2=document.createElement('div');h2.className='crl';h2.textContent=lab;r.append(h2);
+        const ol=document.createElement('ol');ol.className=ord?'course':'course alt';list.forEach(it=>{const li=document.createElement('li');const b=chipFor('s',it.o);b.title=it.n+' streamline points · '+Math.round(it.f*100)+'% of the way along';li.append(b);ol.append(li)});r.append(ol);box.append(r)};
+      row('Starts in',byN(st0),false);row('Then passes',mid.slice(0,10),true);row('Ends in',byN(en0),false);
+      const nt=document.createElement('div');nt.className='note';nt.textContent=(/^or_(mey|baum)/.test(o.id)?'Schematic bundle on template landmarks. ':'HCP-1065 streamlines of this tract. ')+'Order = mean position along the fibres, counted from the anatomical start above; at each end the fibres fan out, so those structures are listed by how many fibres reach them. '+(/two-way|both directions/.test(course.kind)?'These fibres carry signals both ways; the order shows the course, not a one-way flow.':'Structures the bundle only brushes are left out.');box.append(nt);return}
+    const pairs=k==='s'?tractsThrough(o).slice(0,10).map(([t,n])=>['t',t,n]):k==='t'&&o.X&&!isVes(o)&&!o.group.startsWith('Arterial')?structsAlong(o).slice(0,12).map(([s2,n])=>['s',s2,n]):[];if(!pairs.length)return;
     const h=document.createElement('div');h.className='sech';h.textContent=k==='s'?'Atlas tracts passing through ('+pairs.length+')':'Runs through (atlas structures)';box.append(h);const w=document.createElement('div');w.className='ialso';
     pairs.forEach(([k2,o2,n])=>{const b=chipFor(k2,o2);b.title=n+' voxels of overlap';w.append(b)});box.append(w);const nt=document.createElement('div');nt.className='note';nt.textContent=k==='s'?'Computed on this atlas: group-average tracts (HCP-1065) whose voxels fall inside this structure, most overlap first.':'Computed on this atlas: structures holding the most voxels of this tract.';box.append(nt)};
   const C=k==='s'&&CONN[o.name];if(!C){computed();return}
@@ -1219,7 +1332,7 @@ function select(k,o,p,also){
   if(p)F.push(['MNI',p.map(n=>Math.round(n)).join(', ')]);
   if(k==='s'&&o.vox)F.push(['Atlas volume',(o.vox/1000).toFixed(o.vox<1000?2:1)+' mL']);
   if(k==='s'&&o.note&&o.note!=='eloquent')F.push(['Note',o.note]);
-  if(k==='t'&&o.group!=='Arteries'&&o.n)F.push(['Streamlines','HCP-1065 group atlas, '+o.n]);
+  if(k==='t'&&o.group!=='Arteries'&&o.n)F.push(/^or_(mey|baum)_/.test(o.id)?['Source','Schematic bundle on template landmarks (textbook course); not tractography']:['Streamlines','HCP-1065 group atlas, '+o.n]);
   if(k==='t'&&(isVes(o)||o.group.startsWith('Arterial tree'))&&p&&o.RAD){const i=vesselAt(o,p);if(i>=0){
     const dia=o.RAD[i]/10*2;F.push(['Local calibre','≈ '+(dia>0?dia.toFixed(1):'<1')+' mm diameter (population radius atlas)']);
     const nb=o.NB[i];if(nb)F.push(['Runs beside',SB[nb].name+sideTxt(SB[nb])+(o.NBD[i]?' ('+o.NBD[i]+' mm)':' (on its surface)')]);
@@ -1311,9 +1424,9 @@ const SHORTF={
 'Nucleus accumbens':'獎賞迴路','Basal forebrain':'膽鹼性投射 (Meynert)','Thalamus (other nuclei)':'感覺運動中繼','Anterior nucleus (AV)':'Papez 迴路；記憶','Ventral anterior (VA)':'基底核→運動前區','Ventral lateral anterior (VLa)':'GPi 輸出中繼','Ventral lateral posterior (VLp / Vim)':'小腦輸入；顫抖 DBS 目標','Ventral posterolateral (VPL)':'軀幹肢體感覺中繼','Pulvinar':'視覺注意整合','Lateral geniculate (LGN)':'視覺中繼','Medial geniculate (MGN)':'聽覺中繼','Centromedian (CM)':'警覺；板內核','Mediodorsal (MD)':'前額葉連結、執行功能',
 'Red nucleus':'小腦→紅核；CN III 穿過','Substantia nigra':'多巴胺；PD 退化','Subthalamic nucleus (STN)':'PD DBS 目標','Midbrain':'CN III、IV；大腦腳','Pons':'CN V–VIII；CST 散布','Medulla':'CN IX–XII；生命中樞','Optic chiasm':'鼻側視野纖維交叉','Hypothalamus / subthalamic region':'下視丘：內分泌、體溫','Cerebral peduncle (crus cerebri)':'CST、皮質橋腦纖維','Diencephalon–midbrain junction (lateral)':'視徑、膝狀體附近',
 'Lateral ventricle':'CSF','Third ventricle':'CSF；底為下視丘','Fourth ventricle':'CSF；菱形窩','Vermis':'軀幹平衡','Cerebellar white matter / dentate region':'齒狀核：DRTT 起點','Cerebellum · Anterior lobe (I–V)':'肢體步態協調','Cerebellum · Posterior lobe (VI–VIII)':'肢體協調、認知','Cerebellum · Tonsil / IX':'扁桃；下疝壓延腦','Cerebellum · Flocculus (X)':'前庭小腦、眼動',
-cst:'對側肢體隨意運動',cbt:'對側下臉、構音吞嚥',fat:'言語起始 (SMA–Broca)',ml:'精細觸覺、本體感覺',str:'感覺運動視丘皮質',af:'復誦、語音迴路',slf:'額頂注意、語音',ifof:'語意處理',unc:'顳極–眶額',ilf:'視覺辨識、閱讀',or:'視放射：對側視野',cn2:'視覺',ar:'聽覺',cing:'邊緣聯絡',fx:'海馬→乳頭體、記憶',atr:'視丘–前額葉',
+cst:'對側肢體隨意運動',cbt:'對側下臉、構音吞嚥',fat:'言語起始 (SMA–Broca)',ml:'精細觸覺、本體感覺',str:'感覺運動視丘皮質',af:'復誦、語音迴路',slf:'額頂注意、語音',ifof:'語意處理',unc:'顳極–眶額',ilf:'視覺辨識、閱讀',or:'視放射：對側視野',or_mey:'Meyer loop：對側上象限',or_baum:'Baum loop：對側下象限',cn2:'視覺',ar:'聽覺',cing:'邊緣聯絡',fx:'海馬→乳頭體、記憶',atr:'視丘–前額葉',
 cc_minor:'雙側額葉連結',cc_body:'雙側運動感覺連結',cc_tap:'顳角／三角區外壁',cc_major:'雙側枕葉連結',ac:'雙側顳葉連結',cpt:'皮質→橋腦→小腦',drtt:'小腦→Vim；顫抖',scp:'小腦輸出',mcp:'橋腦→小腦',icp:'脊髓前庭→小腦',cn3:'眼動、瞳孔',cn5:'臉部感覺、咀嚼',cn7:'顏面表情',cn8:'聽覺、平衡',
-dcml:'精細觸覺、本體感覺',a_m2s:'額葉蓋部、中央區',a_m2:'顳葉、後頂葉',a_mca_of:'外側眶額',a_mca_pf:'Broca、額下回',a_mca_prc:'運動前區',a_mca_cen:'臉/手運動感覺',a_mca_ap:'中央後回、緣上回',a_mca_pp:'緣上回、頂內溝',a_mca_ang:'角回（閱讀書寫）',a_mca_to:'外側枕顳',a_mca_pt:'Wernicke 區',a_mca_mt:'顳中回',a_mca_at:'前顳葉',a_mca_tp:'顳極',a_aca_mof:'直回、內側眶面',a_aca_fp:'額極',a_aca_pcl:'下肢運動感覺',a_aca_pcu:'楔前葉',a_pca_calc:'V1 視覺皮質',a_pca_po:'楔葉、楔前葉',a_pca_at:'海馬旁回',a_pca_pt:'梭狀回',a_pca_mpch:'第三腦室頂脈絡叢、松果體',a_pca_lpch:'三角區脈絡叢',a_pca_tp:'視丘、中腦',a_oph:'視網膜',a_acom:'動脈瘤好發',a_asa:'延腦內側、脊髓前部',cs_cn1:'嗅覺',tb_m3:'蓋部；Sylvian 裂表面',tb_a3:'胼胝體膝部 pericallosal',tb_acom:'動脈瘤好發',tb_oa:'視神經旁',tb_3rda2:'正中 A2（變異）',tb_3rda3:'正中 A3（變異）',cs_cn3:'眼動、瞳孔收縮',cs_cn5:'臉部感覺、咀嚼肌',cs_cn7:'顏面表情肌',cs_cn8:'聽覺、平衡',sa_sca2:'小腦上面、齒狀核',cs_cn4:'上斜肌；唯一背側出腦',cs_cn6:'外直肌；行程最長',cs_cn9:'咽部感覺、味覺後1/3',cs_cn10:'咽喉、副交感',cs_cn11:'胸鎖乳突肌、斜方肌',cs_cn12:'舌肌',sa_heubner:'尾狀核頭、內囊前肢',sa_lsa1:'內囊、基底核',sa_lsa2:'內囊、基底核',sa_lsa3:'內囊、基底核',sa_acha:'內囊後肢、視徑',sa_cma:'內側額葉、旁中央小葉',sa_aica:'CPA、CN VII/VIII 旁',sa_pica:'延腦外側、小腦下面',sv_smcv:'Sylvian 裂表面引流',sv_labbe:'顳葉→橫竇；顳下入路勿傷',sv_trolard:'Sylvian→SSS 吻合',sv_bridge1:'皮質→SSS',sv_bridge2:'皮質→SSS',sv_bridge3:'皮質→SSS',sv_tsv:'尾狀核視丘溝',sv_septal:'透明中隔',sv_dandy:'CPA 上方；MVD 常遇',sv_sps:'岩骨嵴',sv_cav:'CN III/IV/V1/V2/VI、ICA',sv_occ:'小腦鐮',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；Heubner',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'V3 繞 C1；V4 發出 PICA',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
+dcml:'精細觸覺、本體感覺',a_m2s:'額葉蓋部、中央區',a_m2:'顳葉、後頂葉',a_mca_of:'外側眶額',a_mca_pf:'Broca、額下回',a_mca_prc:'運動前區',a_mca_cen:'臉/手運動感覺',a_mca_ap:'中央後回、緣上回',a_mca_pp:'緣上回、頂內溝',a_mca_ang:'角回（閱讀書寫）',a_mca_to:'外側枕顳',a_mca_pt:'Wernicke 區',a_mca_mt:'顳中回',a_mca_at:'前顳葉',a_mca_tp:'顳極',a_aca_mof:'直回、內側眶面',a_aca_fp:'額極',a_aca_pcl:'下肢運動感覺',a_aca_pcu:'楔前葉',a_pca_calc:'V1 視覺皮質',a_pca_po:'楔葉、楔前葉',a_pca_at:'海馬旁回',a_pca_pt:'梭狀回',a_pca_mpch:'第三腦室頂脈絡叢、松果體',a_pca_lpch:'三角區脈絡叢',a_pca_tp:'視丘、中腦',a_oph:'視網膜',a_acom:'動脈瘤好發',a_asa:'延腦內側、脊髓前部',cs_cn1:'嗅覺',tb_m3:'蓋部；Sylvian 裂表面',tb_a3:'胼胝體膝部 pericallosal',tb_acom:'動脈瘤好發',tb_oa:'視神經旁',tb_3rda2:'正中 A2（變異）',tb_3rda3:'正中 A3（變異）',cs_cn3:'眼動、瞳孔收縮',cs_cn5:'臉部感覺、咀嚼肌',cs_cn7:'顏面表情肌',cs_cn8:'聽覺、平衡',sa_sca2:'小腦上面、齒狀核',cs_cn4:'上斜肌；背側出腦、顱內行程最長',cs_cn6:'外直肌；顱內壓高易受牽拉',cs_cn9:'咽部感覺、味覺後1/3',cs_cn10:'咽喉、副交感',cs_cn11:'胸鎖乳突肌、斜方肌',cs_cn12:'舌肌',sa_heubner:'尾狀核頭、內囊前肢',sa_lsa1:'內囊、基底核',sa_lsa2:'內囊、基底核',sa_lsa3:'內囊、基底核',sa_acha:'內囊後肢、視徑',sa_cma:'內側額葉、旁中央小葉',sa_aica:'CPA、CN VII/VIII 旁',sa_pica:'延腦外側、小腦下面',sv_smcv:'Sylvian 裂表面引流',sv_labbe:'顳葉→橫竇；顳下入路勿傷',sv_trolard:'Sylvian→SSS 吻合',sv_bridge1:'皮質→SSS',sv_bridge2:'皮質→SSS',sv_bridge3:'皮質→SSS',sv_tsv:'尾狀核視丘溝',sv_septal:'透明中隔',sv_dandy:'CPA 上方；MVD 常遇',sv_sps:'岩骨嵴',sv_cav:'CN III/IV/V1/V2/VI、ICA',sv_occ:'小腦鐮',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；內側 LSA',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'V3 繞 C1；V4 發出 PICA',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
 const shortOf=(k,o)=>k==='s'?(SHORTF[o.name]||''):(SHORTF[vkey(o.id)]||'');
 const GM='#e7bca8';
 function plateFill(o){if(o.group.startsWith('Cortex'))return st.plateLobes?o.color:(o.note==='eloquent'?o.color:GM);return o.color}
@@ -1343,10 +1456,17 @@ function lpRegions(){const s=sliceIdx();const key=st.orient+'|'+s+'|'+st.radio;i
 function drawLP(k,ox,oy,dpr){if(!st.lp)return;for(const R of lpRegions()){px.beginPath();
     if(R.circle){px.arc(ox+R.anchor[0]*k,oy+R.anchor[1]*k,2.4*k,0,7)}else{for(const poly of R.poly)for(const ring of poly){ring.forEach((p,i)=>{const x=ox+p[0]*k,y=oy+p[1]*k;i?px.lineTo(x,y):px.moveTo(x,y)});px.closePath()}}
     px.fillStyle=R.o.color;px.globalAlpha=.13;px.fill('evenodd');px.globalAlpha=1;px.setLineDash([5*dpr,3.5*dpr]);px.lineWidth=1.9*dpr;px.strokeStyle=R.o.color;px.stroke();px.setLineDash([])}}
+let BB3=null;const BBP={};
+function brainBox(){if(!BB3){const a=[NX,NY,NZ],b=[0,0,0];for(let z=0;z<NZ;z++)for(let y=0;y<NY;y++){const o=(z*NY+y)*NX;for(let x=0;x<NX;x++)if(BRAIN[o+x]){if(x<a[0])a[0]=x;if(x>b[0])b[0]=x;if(y<a[1])a[1]=y;if(y>b[1])b[1]=y;if(z<a[2])a[2]=z;if(z>b[2])b[2]=z}}BB3=[a,b]}
+  const key=st.orient+st.radio;if(BBP[key])return BBP[key];const [a,b]=BB3;let c0=1e9,c1=-1e9,r0=1e9,r1=-1e9;
+  for(const x of [a[0],b[0]])for(const y of [a[1],b[1]])for(const z of [a[2],b[2]]){const q=v2s(x,y,z);c0=Math.min(c0,q[0]);c1=Math.max(c1,q[0]+1);r0=Math.min(r0,q[1]);r1=Math.max(r1,q[1]+1)}
+  return BBP[key]=[c0-3,c1+3,r0-3,r1+3]}
 function drawPlate(){if(st.view!=='plate')return;const r=$('v3').getBoundingClientRect();if(!r.width)return;const dpr=window.devicePixelRatio||1;
   pc.width=Math.round(r.width*dpr);pc.height=Math.round(r.height*dpr);pc.style.width=r.width+'px';pc.style.height=r.height+'px';
   const W=pc.width,Hh=pc.height,C=sliceContours();const {w,h}=C;const lab=st.labels!=='off';
-  const ZP=st.zp;const k=Math.min(W*(lab?0.56:0.92)/w,Hh*0.93/h)*ZP.s;const ox=(W-w*k)/2+ZP.x*dpr,oy=(Hh-h*k)/2+(st.labels!=='off'?6*dpr:0)+ZP.y*dpr;plateGeom={k,ox,oy,dpr,w,h};
+  const ZP=st.zp;const bb=brainBox();const bw=bb[1]-bb[0],bh=bb[3]-bb[2],we=bb[0]+bb[1],he=bb[2]+bb[3];   // brain extent on this plane (constant while paging)
+  const colW=Math.min(168,Math.max(118,0.24*W/dpr))*dpr;   // label column width, narrower on small panes so the brain stays large
+  const k=Math.min(lab?(W-2*colW)/bw:W*0.92/bw,Hh*0.92/bh,lab?W*0.62/bw:9e9)*ZP.s;const ox=(W-we*k)/2+ZP.x*dpr,oy=(Hh-he*k)/2+(st.labels!=='off'?6*dpr:0)+ZP.y*dpr;plateGeom={k,ox,oy,dpr,w:we,h:he};
   px.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--paper')||'#f2efe9';px.fillRect(0,0,W,Hh);
   px.lineJoin='round';px.lineCap='round';const ink='#3b302a';
   // brain (white matter ground)
@@ -1375,7 +1495,7 @@ function drawPlate(){if(st.view!=='plate')return;const r=$('v3').getBoundingClie
   // orientation + caption
   px.fillStyle='#6b5d50';px.font=`${11*dpr}px "IBM Plex Mono", monospace`;px.textAlign='left';
   const o=st.orient;px.fillText((o==='ax'?'Axial':o==='co'?'Coronal':'Sagittal')+'  '+(o==='ax'?'z':o==='co'?'y':'x')+' = '+st.cross[o==='ax'?2:o==='co'?1:0].toFixed(0)+' mm',10*dpr,Hh-10*dpr);
-  px.textAlign='center';const sideL=o==='sa'?'A':(st.radio?'R':'L'),sideR=o==='sa'?'P':(st.radio?'L':'R');px.fillText(sideL,ox+10*dpr,oy+4*dpr);px.fillText(sideR,ox+w*k-10*dpr,oy+4*dpr);
+  px.textAlign='center';const sideL=o==='sa'?'A':(st.radio?'R':'L'),sideR=o==='sa'?'P':(st.radio?'L':'R');{const b2=brainBox();px.fillText(sideL,ox+b2[0]*k+6*dpr,oy+b2[2]*k+10*dpr);px.fillText(sideR,ox+b2[1]*k-6*dpr,oy+b2[2]*k+10*dpr)}
   if(lab)plateLabels(C,k,ox,oy,dpr,W,Hh);
 }
 function labelName(o){const m=o.name.match(/^(.*?)\s*\(([^()]*)\)$/);
@@ -1383,6 +1503,11 @@ function labelName(o){const m=o.name.match(/^(.*?)\s*\(([^()]*)\)$/);
   if(m&&(o.group==='Thalamus'||/^G[Pp]|STN/.test(m[2])))return m[2];
   if(m&&m[2].length>8&&!/Broca|Wernicke|V1|A1/.test(m[2]))return m[1];
   return o.name.replace('Cerebellum · ','')}
+// shorter form of a label for narrow columns: keep the key landmark in brackets (Broca, Wernicke, M1…), abbreviate the usual anatomical words
+function compactName(n){const m=n.match(/^(.*?)\s*\(([^()]*)\)$/);let base=m?m[1]:n,tag='';
+  if(m){const k=m[2].match(/Broca|Wernicke|V1|A1|M1|S1|SMA|CN [IVX]+|Vim|LMN/);if(k)tag=' ('+k[0]+')'}
+  const AB=[[/\bSuperior\b/g,'Sup.'],[/\bInferior\b/g,'Inf.'],[/\bMiddle\b/g,'Mid.'],[/\bAnterior\b/g,'Ant.'],[/\bPosterior\b/g,'Post.'],[/\bMedial\b/g,'Med.'],[/\bLateral\b/g,'Lat.'],[/\bgyrus\b/g,'g.'],[/\bartery\b/g,'a.'],[/\bnerve\b/g,'n.'],[/\bnucleus\b/g,'nucl.'],[/\bsinus\b/g,'s.'],[/\bfasciculus\b/g,'fasc.'],[/\bcerebral\b/g,'cereb.'],[/\bcerebellar\b/g,'cbll.']];
+  for(const [r,t] of AB)base=base.replace(r,t);return base+tag}
 function plateLabels(C,k,ox,oy,dpr,W,Hh){
   const pri=o=>({'Thalamus':5,'Basal ganglia':5,'Brainstem nuclei':6,'Brainstem':4,'Diencephalon':3,'Limbic':4,'Ventricles':3,'Cerebellum':2}[o.group]||(o.group.startsWith('Cortex')?(o.note==='eloquent'?5:1.5):0));
   const items=[];
@@ -1391,14 +1516,14 @@ function plateLabels(C,k,ox,oy,dpr,W,Hh){
   for(const T of C.tracts)if(T.area>=6&&!(st.lp&&/^(cst|ml)_/.test(T.o.id)))items.push({...T,sc:(T.o.group.startsWith('Arterial tree')?-9:isVes(T.o)?5.2:CRIT_T.has(T.o.group)?6:3.5)+Math.log(T.area)/3});
   const by=new Map();for(const it of items){const nm=it.k+it.o.name;const b=by.get(nm);if(!b||it.area>b.area)by.set(nm,it)}
   const cap=st.labels==='all'?40:20;const sel=[...by.values()].sort((a,b)=>b.sc-a.sc).slice(0,cap);
-  const colL=Math.max(ox-14*dpr,150*dpr),colR=Math.min(ox+C.w*k+14*dpr,W-150*dpr);const midX=Math.max(colL+1,Math.min(colR-1,ox+C.w*k/2));const L=[],R=[];for(const it of sel){it.ax=ox+it.anchor[0]*k;it.ay=oy+it.anchor[1]*k;if(it.ax<colL+8*dpr||it.ax>colR-8*dpr||it.ay<0||it.ay>Hh)continue;(it.ax<midX?L:R).push(it)}
+  const bb=brainBox(),cw=Math.min(168,Math.max(118,0.24*W/dpr))*dpr-12*dpr;const colL=Math.max(ox+bb[0]*k-10*dpr,cw),colR=Math.min(ox+bb[1]*k+10*dpr,W-cw);const midX=Math.max(colL+1,Math.min(colR-1,ox+(bb[0]+bb[1])*k/2));const L=[],R=[];for(const it of sel){it.ax=ox+it.anchor[0]*k;it.ay=oy+it.anchor[1]*k;if(it.ax<colL+8*dpr||it.ax>colR-8*dpr||it.ay<0||it.ay>Hh)continue;(it.ax<midX?L:R).push(it)}
   const gap=29*dpr,top=18*dpr,bot=Hh-24*dpr;
   const lay=arr=>{arr.sort((a,b)=>a.ay-b.ay);let y=top;for(const it of arr){it.ly=Math.max(it.ay,y);y=it.ly+gap}
     let over=arr.length?arr[arr.length-1].ly-bot:0;if(over>0)for(let i=arr.length-1;i>=0;i--){arr[i].ly-=over;if(i>0){const need=arr[i].ly-gap-arr[i-1].ly;over=need<0?-need:0;if(!over)break}}};
   lay(L);lay(R);
   const draw=(it,left)=>{const tx=left?colL:colR;const crit=(it.k==='t'?CRIT_T.has(it.o.group):it.o.note==='eloquent');
     px.textAlign=left?'right':'left';px.font=`600 ${11.5*dpr}px "Source Serif 4", Georgia, serif`;px.fillStyle=crit?'#8f1d12':'#2b2622';
-    const maxw=(left?tx:W-tx)-8*dpr;if(st.zp.s>1.05){px.save();px.globalAlpha=.82;px.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--paper')||'#f2efe9';px.fillRect(left?tx-maxw-4*dpr:tx-4*dpr,it.ly-12*dpr,maxw+8*dpr,28*dpr);px.restore()}let nm=labelName(it.o);while(px.measureText(nm).width>maxw&&nm.length>4)nm=nm.slice(0,-2).trimEnd()+'…';px.fillText(nm,tx,it.ly);
+    const maxw=(left?tx:W-tx)-8*dpr;if(st.zp.s>1.05){px.save();px.globalAlpha=.82;px.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--paper')||'#f2efe9';px.fillRect(left?tx-maxw-4*dpr:tx-4*dpr,it.ly-12*dpr,maxw+8*dpr,28*dpr);px.restore()}let nm=labelName(it.o);if(px.measureText(nm).width>maxw)nm=compactName(nm);while(px.measureText(nm).width>maxw&&nm.length>4)nm=nm.slice(0,-2).trimEnd()+'…';px.fillText(nm,tx,it.ly);
     let f=shortOf(it.k,it.o);if(f){px.font=`${10*dpr}px "IBM Plex Sans", system-ui, sans-serif`;px.fillStyle='#6b5d50';while(px.measureText(f).width>maxw&&f.length>2)f=f.slice(0,-2)+'…';px.fillText(f,tx,it.ly+12.5*dpr)}
     const lx=left?tx+5*dpr:tx-5*dpr;const ly=it.ly-4*dpr;
     px.strokeStyle='#3a322b';px.lineWidth=.8*dpr;px.beginPath();px.moveTo(lx,ly);const ex=left?Math.max(lx+8*dpr,Math.min(it.ax-12*dpr,lx+40*dpr)):Math.min(lx-8*dpr,Math.max(it.ax+12*dpr,lx-40*dpr));px.lineTo(ex,ly);px.lineTo(it.ax,it.ay);px.stroke();
@@ -1423,7 +1548,7 @@ seg('lview',v=>setView(v));$('lpOn').onchange=e=>{st.lp=e.target.checked;drawPla
 new ResizeObserver(()=>drawPlate()).observe($('v3'));
 
 // ---------- the three long pathways (Netter-style 3D plate)
-const PW={"paths":{"cst":[[-34.0,-17.7,64.1],[-32.8,-18.1,61.3],[-31.6,-18.4,58.4],[-30.6,-18.7,56.1],[-29.8,-18.9,54.0],[-29.2,-19.0,52.0],[-28.7,-18.9,50.0],[-28.3,-18.7,48.0],[-28.0,-18.4,46.0],[-27.9,-18.0,44.0],[-28.1,-17.4,42.0],[-28.5,-16.9,40.0],[-29.1,-16.3,38.0],[-29.7,-15.7,36.0],[-30.2,-15.1,34.0],[-30.5,-14.5,32.0],[-30.5,-14.0,30.0],[-30.1,-13.5,28.0],[-29.4,-13.0,26.0],[-28.6,-12.6,24.0],[-27.8,-12.2,22.0],[-27.1,-12.0,20.0],[-26.4,-11.9,18.0],[-25.7,-11.8,16.0],[-25.1,-11.8,14.0],[-24.4,-11.9,12.0],[-23.8,-12.0,10.0],[-23.3,-12.1,8.0],[-22.7,-12.2,6.0],[-22.1,-12.4,4.0],[-21.4,-12.6,2.0],[-20.7,-12.8,0.0],[-19.9,-13.1,-2.0],[-19.1,-13.4,-4.0],[-18.2,-13.8,-6.0],[-17.4,-14.3,-8.0],[-16.5,-14.9,-10.0],[-15.6,-15.6,-12.0],[-14.7,-16.3,-14.0],[-13.8,-17.1,-16.0],[-12.8,-17.9,-18.0],[-11.9,-18.8,-20.0],[-11.1,-19.6,-22.0],[-10.3,-20.5,-24.0],[-9.6,-21.3,-26.0],[-9.0,-22.1,-28.0],[-8.3,-22.9,-30.0],[-7.6,-23.8,-32.0],[-7.0,-24.7,-34.0],[-6.5,-25.7,-36.0],[-6.0,-26.7,-38.0],[-5.6,-27.8,-40.0],[-5.2,-28.9,-42.0],[-4.9,-29.9,-44.0],[-4.6,-30.8,-46.0],[-4.4,-31.6,-48.0],[-3.9,-32.3,-50.1],[-3.2,-33.1,-52.7],[-2.3,-34.6,-56.6],[-1.6,-36.8,-62.3],[-0.8,-39.6,-68.9],[0.5,-42.6,-75.2],[2.1,-45.3,-81.4],[3.5,-47.8,-90.2],[4.3,-49.8,-103.3],[4.8,-50.6,-117.2],[6.3,-49.7,-126.7],[10.1,-47.8,-131.4],[15.6,-45.7,-133.7],[20.5,-44.2,-135.1]],"dcml":[[21.6,-64.6,-141.1],[15.6,-62.4,-139.3],[9.1,-59.8,-135.1],[4.7,-57.2,-125.1],[3.0,-54.7,-108.2],[2.8,-52.6,-89.9],[3.1,-51.1,-76.8],[2.9,-49.2,-69.1],[1.7,-46.0,-64.0],[-0.4,-42.7,-60.1],[-3.1,-40.7,-56.5],[-5.6,-40.4,-53.1],[-6.9,-40.4,-50.3],[-7.4,-39.8,-48.0],[-7.5,-38.9,-46.0],[-7.6,-38.1,-44.0],[-7.6,-37.8,-42.0],[-7.7,-37.7,-40.0],[-7.8,-37.7,-38.0],[-8.1,-37.6,-36.0],[-8.4,-37.3,-34.0],[-8.8,-37.0,-32.0],[-9.2,-36.4,-30.0],[-9.5,-35.6,-28.0],[-9.7,-34.7,-26.0],[-9.8,-33.7,-24.0],[-9.9,-32.8,-22.0],[-9.9,-31.8,-20.0],[-9.9,-30.9,-18.0],[-9.9,-30.0,-16.0],[-10.0,-29.1,-14.0],[-10.3,-28.0,-12.0],[-10.8,-26.8,-10.0],[-11.7,-25.4,-8.0],[-13.0,-24.0,-6.0],[-14.6,-22.8,-4.0],[-16.3,-22.0,-2.0],[-18.0,-21.6,0.0],[-19.2,-21.5,2.1],[-20.0,-22.0,4.3],[-20.7,-23.6,6.8],[-21.6,-25.8,9.4],[-22.4,-27.4,11.8],[-22.9,-28.4,14.0],[-23.5,-29.4,16.0],[-24.4,-31.0,18.0],[-25.6,-33.2,20.0],[-27.2,-35.3,22.0],[-29.1,-36.8,24.0],[-31.3,-37.7,26.0],[-33.7,-38.2,28.0],[-36.4,-38.5,30.0],[-38.8,-38.6,32.0],[-40.6,-38.4,34.0],[-41.7,-38.2,36.0],[-42.4,-37.9,38.0],[-43.0,-38.0,40.2],[-43.6,-38.7,42.6],[-44.2,-39.8,44.8]],"stt":[[21.6,-65.5,-149.1],[15.7,-63.3,-147.9],[9.0,-60.3,-146.3],[3.8,-57.2,-144.6],[0.1,-54.6,-142.3],[-2.5,-52.7,-137.6],[-4.3,-51.1,-126.8],[-5.2,-49.1,-109.0],[-5.8,-47.1,-90.4],[-6.4,-45.7,-77.6],[-6.8,-44.6,-70.6],[-7.0,-43.4,-66.1],[-7.1,-42.0,-62.0],[-7.6,-40.7,-58.0],[-8.9,-40.2,-54.0],[-10.9,-40.1,-50.0],[-12.2,-39.8,-46.0],[-12.8,-39.2,-42.0],[-13.1,-38.6,-38.0],[-13.5,-38.0,-34.0],[-13.9,-37.0,-30.0],[-14.2,-35.5,-26.0],[-14.3,-33.8,-22.0],[-14.2,-31.9,-18.0],[-14.2,-29.9,-14.0],[-14.9,-27.6,-9.9],[-16.4,-25.5,-5.5],[-18.3,-24.4,-0.5],[-20.2,-25.2,4.8],[-21.6,-27.3,8.9],[-22.4,-29.0,11.8],[-22.9,-30.0,14.0],[-23.5,-31.0,16.0],[-24.4,-32.6,18.0],[-25.6,-34.8,20.0],[-27.2,-36.9,22.0],[-29.1,-38.4,24.0],[-31.3,-39.3,26.0],[-33.7,-39.8,28.0],[-36.4,-40.1,30.0],[-38.8,-40.2,32.0],[-40.6,-40.0,34.0],[-41.7,-39.8,36.0],[-42.4,-39.5,38.0],[-43.0,-39.6,40.2],[-43.6,-40.3,42.6],[-44.2,-41.4,44.8]]},"cord":[[0.0,-45.6,-72],[0.0,-46.1,-76],[0.0,-46.6,-80],[0.0,-47.1,-84],[0.0,-47.6,-88],[0.0,-48.0,-92],[0.0,-48.5,-96],[0.0,-49.0,-100],[0.0,-49.5,-104],[0.0,-50.0,-108],[0.0,-50.4,-112],[0.0,-50.9,-116],[0.0,-51.4,-120],[0.0,-51.9,-124],[0.0,-52.4,-128],[0.0,-52.8,-132],[0.0,-53.3,-136],[0.0,-53.8,-140],[0.0,-54.3,-144],[0.0,-54.8,-148],[0.0,-55.2,-152],[0.0,-55.7,-156],[0.0,-56.2,-160]],"secs":[{"name":"Midbrain (superior colliculus level)","z":-10,"ring":[[11.2,-26.0],[11.5,-28.0],[11.2,-30.0],[10.7,-31.0],[10.0,-32.5],[9.3,-34.0],[8.8,-35.0],[8.2,-37.0],[7.3,-38.0],[6.0,-38.4],[4.0,-38.5],[2.0,-38.5],[0.0,-38.5],[-2.0,-38.5],[-4.0,-38.5],[-6.0,-38.4],[-7.3,-38.0],[-8.2,-37.0],[-8.8,-35.0],[-9.3,-34.0],[-10.0,-32.5],[-10.7,-31.0],[-11.2,-30.0],[-11.5,-28.0],[-11.2,-26.0],[-10.3,-25.0],[-9.0,-24.6],[-7.0,-24.5],[-5.4,-25.0],[-4.0,-25.2],[-2.0,-25.2],[-0.9,-25.0],[0.9,-25.0],[2.0,-25.2],[4.0,-25.2],[5.4,-25.0],[7.0,-24.5],[9.0,-24.6],[10.3,-25.0],[11.2,-26.0]],"c":[0.0,-30.3],"pts":{"cst":[-16.5,-14.9],"dcml":[-10.8,-26.8],"stt":[-14.9,-27.6]}},{"name":"Mid pons","z":-30,"ring":[[17.2,-22.0],[17.5,-24.0],[17.5,-26.0],[17.5,-28.0],[17.2,-30.0],[16.8,-31.0],[16.5,-33.0],[16.0,-34.3],[15.0,-35.6],[14.0,-37.0],[13.0,-37.4],[11.0,-37.8],[10.0,-38.7],[9.5,-40.0],[9.1,-42.0],[8.0,-42.8],[6.6,-42.0],[5.7,-41.0],[5.0,-40.0],[3.0,-39.2],[2.0,-38.8],[0.0,-38.5],[-2.0,-38.8],[-3.0,-39.2],[-5.0,-40.0],[-5.7,-41.0],[-6.6,-42.0],[-8.0,-42.8],[-9.1,-42.0],[-9.5,-40.0],[-10.0,-38.7],[-11.0,-37.8],[-13.0,-37.4],[-14.0,-37.0],[-15.0,-35.6],[-16.0,-34.3],[-16.5,-33.0],[-16.8,-31.0],[-17.2,-30.0],[-17.5,-28.0],[-17.5,-26.0],[-17.5,-24.0],[-17.2,-22.0],[-16.8,-21.0],[-16.2,-19.0],[-15.5,-18.0],[-14.5,-17.0],[-13.5,-16.0],[-12.5,-15.0],[-11.3,-14.0],[-10.0,-13.3],[-9.0,-12.8],[-7.0,-12.5],[-5.0,-12.5],[-3.5,-13.0],[-2.0,-13.5],[0.0,-13.5],[2.0,-13.5],[3.5,-13.0],[5.0,-12.5],[7.0,-12.5],[9.0,-12.8],[10.0,-13.3],[11.3,-14.0],[12.5,-15.0],[13.5,-16.0],[14.5,-17.0],[15.5,-18.0],[16.2,-19.0],[16.8,-21.0],[17.2,-22.0]],"c":[0.0,-26.5],"pts":{"cst":[-8.3,-22.9],"dcml":[-9.2,-36.4],"stt":[-13.9,-37.0]}},{"name":"Medulla (olive level)","z":-52,"ring":[[10.2,-34.0],[10.5,-36.0],[10.3,-38.0],[10.3,-40.0],[10.5,-42.0],[10.2,-44.0],[9.5,-45.0],[8.5,-46.0],[7.5,-47.0],[6.0,-47.8],[4.0,-47.3],[3.0,-46.8],[1.0,-46.3],[-1.0,-46.3],[-3.0,-46.8],[-4.0,-47.3],[-6.0,-47.8],[-7.5,-47.0],[-8.5,-46.0],[-9.5,-45.0],[-10.2,-44.0],[-10.5,-42.0],[-10.3,-40.0],[-10.3,-38.0],[-10.5,-36.0],[-10.2,-34.0],[-9.3,-33.0],[-8.0,-32.1],[-7.1,-31.0],[-6.0,-30.3],[-5.0,-29.7],[-3.0,-29.2],[-1.3,-30.0],[0.0,-30.4],[1.3,-30.0],[3.0,-29.2],[5.0,-29.7],[6.0,-30.3],[7.1,-31.0],[8.0,-32.1],[9.3,-33.0],[10.2,-34.0]],"c":[0.0,-38.6],"pts":{"cst":[-3.2,-33.1],"dcml":[-5.6,-40.4],"stt":[-8.9,-40.2]}},{"name":"Cervical cord (C6, schematic)","z":-120,"c":[0.0,-51.4],"cord":true,"pts":{"cst":[4.6,-52.4],"dcml":[2.4,-55.8],"stt":[-5.2,-50.4]}}],"labels":[{"p":"cst","at":[-34.0,-17.7,64.1],"t":"Precentral gyrus (M1)","f":"上運動神經元起點"},{"p":"cst","at":[-23.3,-12.1,8.0],"t":"Posterior limb, internal capsule","f":"CST 下行經內囊後肢"},{"p":"cst","at":[-14.7,-16.3,-14.0],"t":"Cerebral peduncle","f":"大腦腳中間 3/5"},{"p":"cst","at":[-7.0,-24.7,-34.0],"t":"Basis pontis","f":"CST 散成小束"},{"p":"cst","at":[-1.6,-36.8,-62.3],"t":"Medullary pyramid","f":"延腦錐體"},{"p":"cst","at":[0.5,-43.4,-78],"t":"Pyramidal decussation","f":"85–90% 在此交叉"},{"p":"cst","at":[4.6,-50.5,-104],"t":"Lateral corticospinal tract","f":"對側（已交叉）下行"},{"p":"cst","at":[4.5,-49.7,-131],"t":"Anterior horn (LMN)","f":"α 運動神經元→肌肉"},{"p":"dcml","at":[2.4,-56.0,-122],"t":"Dorsal column (fasciculus cuneatus)","f":"同側上行，未交叉"},{"p":"dcml","at":[4.0,-51.5,-68],"t":"Nucleus cuneatus / gracilis","f":"第二級神經元"},{"p":"dcml","at":[0.0,-40.9,-60],"t":"Internal arcuate fibers","f":"在延腦交叉"},{"p":"dcml","at":[-9.2,-36.4,-30.0],"t":"Medial lemniscus","f":"精細觸覺、本體感覺"},{"p":"dcml","at":[-19.0,-21.3,5.5],"t":"VPL nucleus (thalamus)","f":"第三級神經元"},{"p":"dcml","at":[-44.2,-39.8,44.8],"t":"Postcentral gyrus (S1)","f":"初級體感覺皮質"},{"p":"stt","at":[3.0,-57.6,-145],"t":"Dorsal horn","f":"第二級神經元（脊髓）"},{"p":"stt","at":[0.0,-53.0,-143],"t":"Anterior white commissure","f":"進入後 1–2 節內交叉"},{"p":"stt","at":[-5.2,-48.0,-100],"t":"Anterolateral (spinothalamic) tract","f":"痛、溫、粗觸覺"},{"p":"stt","at":[-12.8,-39.2,-42.0],"t":"Spinothalamic tract, brainstem","f":"走在腦幹外側（示意）"}]};
+const PW={"paths":{"cst":[[-35.0,-17.0,67.0],[-34.3,-17.6,64.9],[-33.4,-18.0,62.7],[-32.4,-18.3,60.2],[-31.5,-18.5,58.0],[-30.6,-18.7,56.0],[-29.8,-18.9,54.0],[-29.2,-19.0,52.0],[-28.7,-18.9,50.0],[-28.3,-18.7,48.0],[-28.0,-18.4,46.0],[-27.9,-18.0,44.0],[-28.1,-17.4,42.0],[-28.5,-16.9,40.0],[-29.1,-16.3,38.0],[-29.7,-15.7,36.0],[-30.2,-15.1,34.0],[-30.5,-14.5,32.0],[-30.5,-14.0,30.0],[-30.1,-13.5,28.0],[-29.4,-13.0,26.0],[-28.6,-12.6,24.0],[-27.8,-12.2,22.0],[-27.1,-12.0,20.0],[-26.4,-11.9,18.0],[-25.7,-11.8,16.0],[-25.1,-11.8,14.0],[-24.4,-11.9,12.0],[-23.8,-12.0,10.0],[-23.3,-12.1,8.0],[-22.7,-12.2,6.0],[-22.1,-12.4,4.0],[-21.4,-12.6,2.0],[-20.7,-12.8,0.0],[-19.9,-13.1,-2.0],[-19.1,-13.4,-4.0],[-18.2,-13.8,-6.0],[-17.4,-14.3,-8.0],[-16.5,-14.9,-10.0],[-15.6,-15.6,-12.0],[-14.7,-16.3,-14.0],[-13.8,-17.1,-16.0],[-12.8,-17.9,-18.0],[-11.9,-18.8,-20.0],[-11.1,-19.6,-22.0],[-10.3,-20.5,-24.0],[-9.6,-21.3,-26.0],[-9.0,-22.1,-28.0],[-8.3,-22.9,-30.0],[-7.6,-23.8,-32.0],[-7.0,-24.7,-34.0],[-6.5,-25.7,-36.0],[-6.0,-26.7,-38.0],[-5.6,-27.8,-40.0],[-5.2,-28.9,-42.0],[-4.9,-29.9,-44.0],[-4.6,-30.8,-46.0],[-4.4,-31.6,-48.0],[-3.9,-32.3,-50.1],[-3.2,-33.1,-52.7],[-2.3,-34.6,-56.6],[-1.6,-36.8,-62.3],[-0.8,-39.6,-68.9],[0.5,-42.6,-75.2],[2.1,-45.3,-81.4],[3.5,-47.8,-90.2],[4.3,-49.8,-103.3],[4.8,-50.6,-117.2],[6.3,-49.7,-126.7],[10.1,-47.8,-131.4],[15.6,-45.7,-133.7],[20.5,-44.2,-135.1]],"dcml":[[21.6,-64.6,-141.1],[15.6,-62.4,-139.3],[9.1,-59.8,-135.1],[4.7,-57.2,-125.1],[3.0,-54.7,-108.2],[2.8,-52.6,-89.9],[3.1,-51.1,-76.8],[2.9,-49.2,-69.1],[1.7,-46.0,-64.0],[-0.4,-42.7,-60.1],[-3.1,-40.7,-56.5],[-5.6,-40.4,-53.1],[-6.9,-40.4,-50.3],[-7.4,-39.8,-48.0],[-7.5,-38.9,-46.0],[-7.6,-38.1,-44.0],[-7.6,-37.8,-42.0],[-7.7,-37.7,-40.0],[-7.8,-37.7,-38.0],[-8.1,-37.6,-36.0],[-8.4,-37.3,-34.0],[-8.8,-37.0,-32.0],[-9.2,-36.4,-30.0],[-9.5,-35.6,-28.0],[-9.7,-34.7,-26.0],[-9.8,-33.7,-24.0],[-9.9,-32.8,-22.0],[-9.9,-31.8,-20.0],[-9.9,-30.9,-18.0],[-9.9,-30.0,-16.0],[-10.0,-29.1,-14.0],[-10.3,-28.0,-12.0],[-10.8,-26.8,-10.0],[-11.7,-25.4,-8.0],[-13.0,-24.0,-6.0],[-14.6,-22.8,-4.0],[-16.3,-22.0,-2.0],[-18.0,-21.6,0.0],[-19.2,-21.4,2.1],[-19.8,-21.6,4.3],[-20.1,-22.3,6.8],[-20.5,-23.7,9.4],[-21.1,-25.3,11.8],[-21.6,-26.6,14.0],[-22.2,-27.7,16.0],[-23.2,-29.3,18.0],[-24.8,-31.4,20.0],[-26.8,-33.6,22.0],[-29.1,-35.5,24.0],[-31.8,-36.7,26.0],[-34.8,-37.2,28.0],[-37.7,-37.3,30.0],[-40.3,-37.3,32.0],[-42.3,-37.2,34.0],[-43.9,-37.0,36.0],[-45.2,-36.7,38.0],[-46.2,-36.3,40.2],[-46.8,-35.7,42.6],[-46.6,-34.4,45.1],[-45.0,-31.0,48.0]],"stt":[[21.6,-65.5,-149.1],[15.7,-63.3,-147.9],[9.0,-60.3,-146.3],[3.8,-57.2,-144.6],[0.1,-54.6,-142.3],[-2.5,-52.7,-137.6],[-4.3,-51.1,-126.8],[-5.2,-49.1,-109.0],[-5.8,-47.1,-90.4],[-6.4,-45.7,-77.6],[-6.8,-44.6,-70.6],[-7.0,-43.4,-66.1],[-7.1,-42.0,-62.0],[-7.6,-40.7,-58.0],[-8.9,-40.2,-54.0],[-10.9,-40.1,-50.0],[-12.2,-39.8,-46.0],[-12.8,-39.2,-42.0],[-13.1,-38.6,-38.0],[-13.5,-38.0,-34.0],[-13.9,-37.0,-30.0],[-14.2,-35.5,-26.0],[-14.3,-33.8,-22.0],[-14.2,-31.9,-18.0],[-14.2,-29.9,-14.0],[-14.9,-27.6,-9.9],[-16.4,-25.4,-5.5],[-18.1,-24.0,-0.5],[-19.5,-23.9,4.8],[-20.4,-25.2,8.9],[-21.1,-26.9,11.8],[-21.6,-28.2,14.0],[-22.2,-29.3,16.0],[-23.2,-30.9,18.0],[-24.8,-33.0,20.0],[-26.8,-35.2,22.0],[-29.1,-37.1,24.0],[-31.8,-38.3,26.0],[-34.8,-38.8,28.0],[-37.7,-38.9,30.0],[-40.3,-38.9,32.0],[-42.3,-38.8,34.0],[-43.9,-38.6,36.0],[-45.2,-38.3,38.0],[-46.2,-37.9,40.2],[-46.8,-37.3,42.6],[-46.6,-36.0,45.1],[-45.0,-32.0,48.0]]},"cord":[[0.0,-45.6,-72],[0.0,-46.1,-76],[0.0,-46.6,-80],[0.0,-47.1,-84],[0.0,-47.6,-88],[0.0,-48.0,-92],[0.0,-48.5,-96],[0.0,-49.0,-100],[0.0,-49.5,-104],[0.0,-50.0,-108],[0.0,-50.4,-112],[0.0,-50.9,-116],[0.0,-51.4,-120],[0.0,-51.9,-124],[0.0,-52.4,-128],[0.0,-52.8,-132],[0.0,-53.3,-136],[0.0,-53.8,-140],[0.0,-54.3,-144],[0.0,-54.8,-148],[0.0,-55.2,-152],[0.0,-55.7,-156],[0.0,-56.2,-160]],"secs":[{"name":"Midbrain (superior colliculus level)","z":-10,"ring":[[15.1,-23.0],[15.2,-25.0],[14.3,-26.0],[13.0,-26.9],[12.3,-28.0],[11.7,-29.0],[11.0,-30.5],[10.3,-32.0],[9.7,-33.0],[9.0,-34.5],[8.5,-36.0],[8.0,-37.3],[7.0,-38.2],[5.0,-38.5],[3.0,-38.5],[1.0,-38.5],[-1.0,-38.5],[-3.0,-38.5],[-5.0,-38.5],[-7.0,-38.2],[-8.0,-37.3],[-8.5,-36.0],[-9.0,-34.5],[-9.7,-33.0],[-10.3,-32.0],[-11.0,-30.5],[-11.7,-29.0],[-12.3,-28.0],[-13.0,-26.8],[-13.9,-25.0],[-13.4,-23.0],[-12.8,-22.0],[-12.0,-20.7],[-11.0,-19.3],[-10.2,-18.0],[-9.5,-17.0],[-8.7,-16.0],[-8.0,-15.0],[-6.0,-14.7],[-5.5,-16.0],[-6.2,-17.0],[-6.5,-19.0],[-6.2,-21.0],[-5.2,-22.0],[-4.0,-22.1],[-3.0,-21.5],[-2.0,-20.5],[-1.0,-19.2],[-0.9,-18.0],[-1.5,-17.0],[-2.5,-16.0],[-2.0,-14.6],[-0.7,-14.0],[0.7,-14.0],[2.0,-14.5],[3.0,-15.4],[3.0,-16.3],[2.5,-18.0],[2.8,-20.0],[3.7,-21.0],[5.0,-21.7],[7.0,-21.4],[8.0,-20.2],[8.2,-19.0],[7.7,-18.0],[7.0,-16.5],[6.7,-15.0],[8.0,-14.6],[9.3,-15.0],[10.2,-16.0],[10.8,-18.0],[11.2,-19.0],[11.8,-21.0],[13.0,-21.9],[14.0,-22.1],[15.1,-23.0]],"c":[0.0,-30.3],"pts":{"cst":[-16.5,-14.9],"dcml":[-10.8,-26.8],"stt":[-14.9,-27.6]}},{"name":"Mid pons","z":-30,"ring":[[17.2,-22.0],[17.5,-24.0],[17.5,-26.0],[17.5,-28.0],[17.2,-30.0],[16.8,-31.0],[16.5,-33.0],[16.0,-34.3],[15.0,-35.6],[14.0,-37.0],[13.0,-37.4],[11.0,-37.8],[10.0,-38.7],[9.5,-40.0],[9.1,-42.0],[8.0,-42.8],[6.6,-42.0],[5.7,-41.0],[5.0,-40.0],[3.0,-39.2],[2.0,-38.8],[0.0,-38.5],[-2.0,-38.8],[-3.0,-39.2],[-5.0,-40.0],[-5.7,-41.0],[-6.6,-42.0],[-8.0,-42.8],[-9.1,-42.0],[-9.5,-40.0],[-10.0,-38.7],[-11.0,-37.8],[-13.0,-37.4],[-14.0,-37.0],[-15.0,-35.6],[-16.0,-34.3],[-16.5,-33.0],[-16.8,-31.0],[-17.2,-30.0],[-17.5,-28.0],[-17.5,-26.0],[-17.5,-24.0],[-17.2,-22.0],[-16.8,-21.0],[-16.2,-19.0],[-15.5,-18.0],[-14.5,-17.0],[-13.5,-16.0],[-12.5,-15.0],[-11.3,-14.0],[-10.0,-13.3],[-9.0,-12.8],[-7.0,-12.5],[-5.0,-12.5],[-3.5,-13.0],[-2.0,-13.5],[0.0,-13.5],[2.0,-13.5],[3.5,-13.0],[5.0,-12.5],[7.0,-12.5],[9.0,-12.8],[10.0,-13.3],[11.3,-14.0],[12.5,-15.0],[13.5,-16.0],[14.5,-17.0],[15.5,-18.0],[16.2,-19.0],[16.8,-21.0],[17.2,-22.0]],"c":[0.0,-26.5],"pts":{"cst":[-8.3,-22.9],"dcml":[-9.2,-36.4],"stt":[-13.9,-37.0]}},{"name":"Medulla (olive level)","z":-52,"ring":[[10.2,-34.0],[10.5,-36.0],[10.2,-38.0],[9.8,-39.0],[8.7,-40.0],[9.6,-41.0],[10.3,-42.0],[10.2,-44.0],[9.5,-45.0],[8.5,-46.0],[7.5,-47.0],[6.0,-47.8],[4.0,-47.2],[3.0,-46.3],[3.0,-45.6],[4.0,-44.1],[4.0,-44.0],[2.0,-43.7],[1.0,-44.0],[-1.0,-44.0],[-2.0,-43.7],[-4.0,-44.0],[-4.0,-44.1],[-3.0,-45.6],[-3.0,-46.3],[-4.0,-47.2],[-6.0,-47.8],[-7.5,-47.0],[-8.5,-46.0],[-9.5,-45.0],[-10.2,-44.0],[-10.3,-42.0],[-9.6,-41.0],[-8.7,-40.0],[-9.8,-39.0],[-10.2,-38.0],[-10.5,-36.0],[-10.2,-34.0],[-9.3,-33.0],[-8.0,-32.1],[-7.1,-31.0],[-6.0,-30.3],[-5.0,-29.7],[-3.0,-29.2],[-1.3,-30.0],[0.0,-30.4],[1.3,-30.0],[3.0,-29.2],[5.0,-29.7],[6.0,-30.3],[7.1,-31.0],[8.0,-32.1],[9.3,-33.0],[10.2,-34.0]],"c":[0.0,-38.6],"pts":{"cst":[-3.2,-33.1],"dcml":[-5.6,-40.4],"stt":[-8.9,-40.2]}},{"name":"Cervical cord (C6, schematic)","z":-120,"c":[0.0,-51.4],"cord":true,"pts":{"cst":[4.6,-52.4],"dcml":[2.4,-55.8],"stt":[-5.2,-50.4]}}],"labels":[{"p":"cst","at":[-35.0,-17.0,67.0],"t":"Precentral gyrus (M1)","f":"上運動神經元起點"},{"p":"cst","at":[-23.3,-12.1,8.0],"t":"Posterior limb, internal capsule","f":"CST 下行經內囊後肢"},{"p":"cst","at":[-14.7,-16.3,-14.0],"t":"Cerebral peduncle","f":"大腦腳中間 3/5"},{"p":"cst","at":[-7.0,-24.7,-34.0],"t":"Basis pontis","f":"CST 散成小束"},{"p":"cst","at":[-1.6,-36.8,-62.3],"t":"Medullary pyramid","f":"延腦錐體"},{"p":"cst","at":[0.5,-43.4,-78],"t":"Pyramidal decussation","f":"85–90% 在此交叉"},{"p":"cst","at":[4.6,-50.5,-104],"t":"Lateral corticospinal tract","f":"對側（已交叉）下行"},{"p":"cst","at":[4.5,-49.7,-131],"t":"Anterior horn (LMN)","f":"α 運動神經元→肌肉"},{"p":"dcml","at":[2.4,-56.0,-122],"t":"Dorsal column (fasciculus cuneatus)","f":"同側上行，未交叉"},{"p":"dcml","at":[4.0,-51.5,-68],"t":"Nucleus cuneatus / gracilis","f":"第二級神經元"},{"p":"dcml","at":[0.0,-40.9,-60],"t":"Internal arcuate fibers","f":"在延腦交叉"},{"p":"dcml","at":[-9.2,-36.4,-30.0],"t":"Medial lemniscus","f":"精細觸覺、本體感覺"},{"p":"dcml","at":[-19.0,-21.3,5.5],"t":"VPL nucleus (thalamus)","f":"第三級神經元"},{"p":"dcml","at":[-45.0,-31.0,48.0],"t":"Postcentral gyrus (S1)","f":"初級體感覺皮質"},{"p":"stt","at":[3.0,-57.6,-145],"t":"Dorsal horn","f":"第二級神經元（脊髓）"},{"p":"stt","at":[0.0,-53.0,-143],"t":"Anterior white commissure","f":"進入後 1–2 節內交叉"},{"p":"stt","at":[-5.2,-48.0,-100],"t":"Anterolateral (spinothalamic) tract","f":"痛、溫、粗觸覺"},{"p":"stt","at":[-12.8,-39.2,-42.0],"t":"Spinothalamic tract, brainstem","f":"走在腦幹外側（示意）"}]};
 const PCOL={cst:'#c8342a',dcml:'#2d63c4',stt:'#2e9a57'};
 const PNAME={cst:'Corticospinal tract (motor)',dcml:'Dorsal column–medial lemniscus',stt:'Spinothalamic (anterolateral) tract'};
 st.pw={cst:true,dcml:true,stt:true};
@@ -1437,8 +1562,8 @@ function secTexture(s){const c=document.createElement('canvas');c.width=c.height
   const poly=(half,fill,lw)=>{const pts=half.concat(half.slice().reverse().map(([a,b])=>[-a,b]));x.beginPath();pts.forEach((p,i)=>i?x.lineTo(X(p[0]),Y(p[1])):x.moveTo(X(p[0]),Y(p[1])));x.closePath();x.fillStyle=fill;x.fill();x.lineWidth=lw||3;x.strokeStyle=ink;x.stroke()};
   const ell=(cx,cy,rx,ry,rot)=>{x.beginPath();x.ellipse(X(cx),Y(cy),rx*SC,ry*SC,rot||0,0,7)};
   const shade=(cx,cy,rx,ry,rot,col,lab)=>{ell(cx,cy,rx,ry,rot);x.fillStyle=col;x.fill();x.lineWidth=1.2;x.strokeStyle='rgba(59,48,42,.55)';x.stroke();
-    if(lab){x.font='italic 15px "Source Serif 4", Georgia, serif';x.fillStyle='#6b5d50';x.textAlign='center';x.fillText(lab,X(-cx),Y(cy)+5)}};
-  const lab=(t,px,py,al)=>{x.font='600 21px "IBM Plex Sans", sans-serif';x.fillStyle='#1d1814';x.textAlign=al||'left';x.fillText(t,px,py)};
+    if(lab){x.font='italic 19px "Source Serif 4", Georgia, serif';x.fillStyle='#6b5d50';x.textAlign='center';x.fillText(lab,X(-cx),Y(cy)+5)}};
+  const lab=(t,px,py,al)=>{x.font='600 28px "IBM Plex Sans", sans-serif';x.fillStyle='#1d1814';x.textAlign=al||'left';x.fillText(t,px,py)};
   // tract region: drawn solid on the represented side, faded on the mirror side
   const tract=(k,cx,cy,rx,ry,rot,txt,side)=>{for(const [sx,f] of [[-1,true],[1,false]]){ell(cx*sx*side,cy,rx,ry,(rot||0)*sx*side);
       x.fillStyle=PCOL[k];x.globalAlpha=f?.07:.22;x.fill();x.globalAlpha=f?.45:1;x.setLineDash([8,5]);x.lineWidth=3;x.strokeStyle=PCOL[k];x.stroke();x.setLineDash([]);x.globalAlpha=1}
@@ -1448,7 +1573,7 @@ function secTexture(s){const c=document.createElement('canvas');c.width=c.height
     for(const sx of [1,-1]){x.beginPath();x.moveTo(X(sx*2.4),Y(-8.4));x.quadraticCurveTo(X(sx*8),Y(-11.5),X(sx*11.6),Y(-5.6));x.quadraticCurveTo(X(sx*7.5),Y(-6.4),X(sx*2.8),Y(-5.2));x.closePath();x.fillStyle='#e2c4a4';x.fill();
       x.beginPath();x.moveTo(X(sx*2.6),Y(-4.6));x.quadraticCurveTo(X(sx*7.6),Y(-5.8),X(sx*11.2),Y(-4.4));x.lineWidth=5;x.strokeStyle='#4a3b36';x.stroke()}
     shade(3.1,-1.4,2.0,2.0,0,'#d9a1a1','RN');shade(-3.1,-1.4,2.0,2.0,0,'#d9a1a1');ell(0,4.6,0.7,0.9);x.fillStyle='#9cc4e0';x.fill();x.lineWidth=1.2;x.strokeStyle=ink;x.stroke();
-    x.font='italic 15px "Source Serif 4", Georgia, serif';x.fillStyle='#6b5d50';x.textAlign='center';x.fillText('crus',X(-7),Y(-9.4));x.fillText('SN',X(-7.4),Y(-3.6));x.fillText('SC',X(0),Y(8));x.fillText('aqueduct',X(0),Y(3.2));
+    x.font='italic 19px "Source Serif 4", Georgia, serif';x.fillStyle='#6b5d50';x.textAlign='center';x.fillText('crus',X(-7),Y(-9.4));x.fillText('SN',X(-7.4),Y(-3.6));x.fillText('SC',X(0),Y(8));x.fillText('aqueduct',X(0),Y(3.2));
     tract('cst',6.9,-8.0,2.4,1.25,-0.42,'CST',1);   // middle 3/5 of the crus
     tract('dcml',7.6,-0.6,1.1,2.4,0.55,'ML',1);    // dorsolateral to the red nucleus
     tract('stt',9.4,2.2,0.9,1.5,0.6,'STT',1);}       // just dorsolateral to ML, near the surface
@@ -1456,7 +1581,7 @@ function secTexture(s){const c=document.createElement('canvas');c.width=c.height
     poly([[0,-10.6],[5,-10.8],[9.4,-8.6],[11.6,-4],[11.2,0.4],[8.6,1.8],[7.4,4.8],[5.2,7.4],[2.4,6.4],[0,5.6]],'#ead8c2');
     x.setLineDash([4,5]);x.lineWidth=1.4;x.strokeStyle='rgba(59,48,42,.5)';x.beginPath();x.moveTo(X(-10.6),Y(0.4));x.quadraticCurveTo(X(0),Y(-0.8),X(10.6),Y(0.4));x.stroke();x.setLineDash([]);
     x.beginPath();x.moveTo(X(0),Y(5.6));x.lineTo(X(2.4),Y(6.4));x.lineTo(X(0),Y(7.4));x.lineTo(X(-2.4),Y(6.4));x.closePath();x.fillStyle='#9cc4e0';x.fill();x.lineWidth=1.2;x.strokeStyle=ink;x.stroke();
-    x.font='italic 15px "Source Serif 4", Georgia, serif';x.fillStyle='#6b5d50';x.textAlign='center';x.fillText('basis pontis',X(0),Y(-8.6));x.fillText('tegmentum',X(-4.4),Y(3.6));x.fillText('4th v.',X(0),Y(8.8));
+    x.font='italic 19px "Source Serif 4", Georgia, serif';x.fillStyle='#6b5d50';x.textAlign='center';x.fillText('basis pontis',X(0),Y(-8.6));x.fillText('tegmentum',X(-4.4),Y(3.6));x.fillText('4th v.',X(0),Y(8.8));
     for(const [cx,cy] of [[2.4,-6.2],[4.8,-4.4],[3.2,-3.0],[6.2,-6.6],[6.6,-2.8]])tract('cst',cx,cy,0.95,0.85,0,null,1); // CST scattered among pontine nuclei
     lab('CST',X(7.6),Y(-6.2)+7);
     tract('dcml',2.9,1.3,2.7,0.75,0.08,null,1);lab('ML',X(2.9),Y(1.3)+0.75*SC+22,'center');    // flattened band at the basis–tegmentum border
@@ -1465,7 +1590,7 @@ function secTexture(s){const c=document.createElement('canvas');c.width=c.height
     poly([[0,-7.6],[1.8,-8.1],[3.4,-7.2],[4.4,-6.2],[5.9,-6.9],[7.6,-5],[8.1,-2],[7.5,0.6],[7.7,3],[6.2,5.4],[3.2,5.8],[1.4,4.6],[0,4.4]],'#ead8c2');
     for(const sx of [1,-1]){x.beginPath();const o=[5.3*sx,-4.0];for(let a=0;a<=Math.PI*2+.01;a+=Math.PI/24){const r=1.45+0.22*Math.sin(a*8);const px=X(o[0]+Math.cos(a)*r*1.15),py=Y(o[1]+Math.sin(a)*r*.95);a?x.lineTo(px,py):x.moveTo(px,py)}x.lineWidth=2;x.strokeStyle='#8a6a4e';x.stroke()}
     x.beginPath();x.moveTo(X(-1.4),Y(4.6));x.quadraticCurveTo(X(0),Y(3.6),X(1.4),Y(4.6));x.lineWidth=2;x.strokeStyle='#5d8fb8';x.stroke();
-    x.font='italic 15px "Source Serif 4", Georgia, serif';x.fillStyle='#6b5d50';x.textAlign='center';x.fillText('olive',X(-5.3),Y(-1.6));x.fillText('pyramid',X(-1.8),Y(-4.6));x.fillText('ICP',X(-7.0),Y(3.2));x.fillText('4th v.',X(0),Y(6.6));
+    x.font='italic 19px "Source Serif 4", Georgia, serif';x.fillStyle='#6b5d50';x.textAlign='center';x.fillText('olive',X(-5.3),Y(-1.6));x.fillText('pyramid',X(-1.8),Y(-4.6));x.fillText('ICP',X(-7.0),Y(3.2));x.fillText('4th v.',X(0),Y(6.6));
     tract('cst',1.8,-6.3,1.45,1.15,0,'CST',1);     // pyramid
     tract('dcml',0.95,-2.4,0.72,2.3,0,null,1);      // paramedian, dorsal to the pyramid
     lab('ML',X(0.95)+16,Y(-1.0)+7);
@@ -1505,7 +1630,7 @@ function buildPathScene(){const sc=new THREE.Scene();
     // neuron bodies at the ends
     for(const p of [PW.paths[k][0],PW.paths[k][PW.paths[k].length-1]]){const b=new THREE.Mesh(new THREE.SphereGeometry(2.4,20,14),new THREE.MeshToonMaterial({color:new THREE.Color(PCOL[k]),gradientMap:grad}));b.position.set(...p);b.add(new THREE.Mesh(b.geometry,outlineMat(.3,'#1d1814')));sc.add(b);pObjs[k].push(b)}}
   // cross-section insets
-  const DZ=[20,-28,-76,-124];PW.secs.forEach((s,i)=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:secTexture(s),depthTest:false}));sp.scale.set(44,44,1);sp.position.set(80,s.c[1],DZ[i]);sp.renderOrder=20;sc.add(sp);
+  const DZ=[20,-28,-76,-124];PW.secs.forEach((s,i)=>{const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:secTexture(s),depthTest:false}));sp.scale.set(46,46,1);sp.position.set(80,s.c[1],DZ[i]);sp.renderOrder=20;sc.add(sp);
     const a=new THREE.Vector3(s.cord?7:12,s.c[1],s.z),b=new THREE.Vector3(56,s.c[1],DZ[i]);const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]),new THREE.LineDashedMaterial({color:0x3b302a,dashSize:2,gapSize:2}));ln.computeLineDistances();sc.add(ln);
     const ring=new THREE.Mesh(new THREE.TorusGeometry(s.cord?7:13,.25,6,48),new THREE.MeshBasicMaterial({color:0x3b302a,transparent:true,opacity:.6}));ring.position.set(0,s.c[1],s.z);sc.add(ring)});
   pScene=sc}
@@ -1718,10 +1843,9 @@ function rankApproaches(apply){if(!PD){loadPlan().then(()=>rankApproaches(apply)
   if(!info.bs&&(intra||convex)){const fe=bestFree(T,info.infra);if(fe)opts.push({kind:'free',id:'free',side:T[0]>0?'R':'L',name:info.infra?'Suboccipital, direct (best cerebellar entry)':'Direct transcortical (best surface entry)',E:fe.E,nat:false,vent:false,r:fe.r,fit:0,n:fe.n,why:'best of '+fe.n+' surface entries within 100 mm',total:fe.r.score})}
   if(info.bs||info.deep){const tp=twoPoint();if(tp&&(info.bs||tp.E[2]>-25)){const r=assess(tp.E,T,st.corr.rad,{vent:tp.vent});if(r)opts.push({kind:'two',id:'two',side:'',name:'Two-point line (Brown 1996)',E:tp.E,nat:false,vent:tp.vent,r,fit:0,tp,why:'nearest '+(tp.vent?'ependymal':'pial')+' surface '+tp.d.toFixed(0)+' mm away',total:r.score+(r.hard.length?1:0)})}}
   opts.sort((a,b)=>a.total-b.total);opts.forEach((q,k)=>{q.rank=k+1});RANK=opts;st.rankInfo=info;
-  $('rankInfo').innerHTML='Lesion at <span class="mono">'+T.map(v=>Math.round(v)).join(', ')+'</span> · '+info.name+(info.ventD<99&&info.ventD>0?' · ventricle '+info.ventD.toFixed(0)+' mm':'')+'. '+
-    'Ranked by the heuristic risk score plus a fit penalty (distance from the approach’s usual target). Natural-corridor approaches are listed only when the lesion lies within 15–30 mm of their usual target (more along the brainstem). A direct route is offered for lesions in the brain or on the convexity, never through the skull base, a cistern or the brainstem: its entry must be on the outer cortical surface with the scalp close by. Not validated: check the patient’s own imaging.';
+  $('rankInfo').innerHTML='Lesion: '+info.name+(info.ventD<99&&info.ventD>0?' · ventricle '+info.ventD.toFixed(0)+' mm':'')+' ';
   const box=$('rankBox');box.innerHTML='';
-  if(!opts.length){box.innerHTML='<p class="note">No preset approach fits this location. Open “Choose an approach or an entry yourself” to set one.</p>';if(apply){st.corr.src=null;st.corr.on=false;$('corrOn').checked=false;corrChanged()}return}
+  if(!opts.length){box.innerHTML='<p class="note">No preset approach fits this location. Choose an approach or set an entry below.</p>';if(apply){st.corr.src=null;st.corr.on=false;$('corrOn').checked=false;corrChanged()}return}
   const tb=document.createElement('table');tb.className='prox rank';
   opts.slice(0,8).forEach((q,k)=>{const tr=tb.insertRow();tr.dataset.k=k;const a=tr.insertCell(),b=tr.insertCell(),c=tr.insertCell();a.textContent='#'+(k+1);
     const nm=document.createElement('b');nm.textContent=q.name;const ln=document.createElement('div');ln.className='note';ln.textContent='risk '+q.r.score.toFixed(1)+(q.fit>.05?' + fit '+q.fit.toFixed(1):'')+(q.cost?' + approach '+q.cost.toFixed(1):'')+' · '+q.r.L.toFixed(0)+' mm · '+q.why+(q.r.hard.length?' · '+q.r.hard.join(', '):'');
@@ -1743,7 +1867,7 @@ function routeWhy(q,list){const info=st.rankInfo||lesInfo(st.lesion.c);const why
   else{const el=entryLabel(q.E,st.lesion.c);why.push('Entry set by hand'+(el?' through '+el:'')+'. Corridor '+q.r.L.toFixed(0)+' mm, '+(q.r.ang!=null?q.r.ang.toFixed(0)+'° from the surface normal':'')+'.')}
   const [bn]=rband(q.r.score);const tp=topParts(q.r,3);why.push('Heuristic risk '+q.r.score.toFixed(1)+' ('+bn+')'+(tp.length?'; main contributors: '+tp.map(p=>p[0]+' '+p[1].toFixed(1)).join(', '):'; no factor above 0.3')+'.');
   for(const p of q.r.parts)if(p[1]>=.5)watch.push(p[0]+': '+p[2]);q.r.hard.forEach(h=>watch.push('Outside usual limits: '+h));if(q.r.minVes<3&&q.r.minVes>=0)watch.push('Nearest vessel '+q.r.minVes.toFixed(1)+' mm from the corridor edge.');
-  if(list&&list.length>1){const me=list.indexOf(q);const other=me===0?list[1]:list[0];if(other){const diff=[];const om=new Map(other.r.parts.map(p=>[p[0],p[1]]));
+  if(list&&list.length>1){let me=list.indexOf(q);if(me<0)me=list.findIndex(x=>x.id===q.id&&(x.side||'')===(q.side||'')&&x.kind===q.kind);if(me<0)me=list.length;const other=me===0?list[1]:list[0];if(other){const diff=[];const om=new Map(other.r.parts.map(p=>[p[0],p[1]]));
       for(const p of q.r.parts){const ov=om.has(p[0])?om.get(p[0]):0;diff.push([p[0],ov-p[1]])}diff.push(['Fit to the approach’s target',(other.fit||0)-(q.fit||0)]);diff.push(['Approach cost',(other.cost||0)-(q.cost||0)]);
       if(me===0){diff.sort((a,b)=>b[1]-a[1]);const d=diff.filter(x=>x[1]>.2).slice(0,2);cmp='Ranked above '+other.name+' ('+q.total.toFixed(1)+' vs '+other.total.toFixed(1)+')'+(d.length?', mainly on '+d.map(x=>x[0]+' (−'+x[1].toFixed(1)+')').join(' and '):', by a small margin')+'.'}
       else{diff.sort((a,b)=>a[1]-b[1]);const d=diff.filter(x=>x[1]<-.2).slice(0,2);cmp='#'+(me+1)+'; the top option, '+other.name+', scores lower ('+other.total.toFixed(1)+' vs '+q.total.toFixed(1)+')'+(d.length?', mainly on '+d.map(x=>x[0]+' ('+x[1].toFixed(1)+')').join(' and '):'')+'.'}}}
@@ -1757,7 +1881,11 @@ function routeCard(){const box=$('routeCard');if(!box)return;box.innerHTML='';if
   if(!same)q={kind:'custom',name:'Custom entry',E:st.corr.E.slice(),r,fit:0,total:r.score};else q=Object.assign({},q,{r,total:r.score+(q.fit||0)+(q.cost||0)});
   const [bn,col]=rband(r.score);const h=document.createElement('div');h.className='rch';const b=document.createElement('b');b.textContent=q.name;const p=document.createElement('span');p.className='pill';p.style.color=col;p.textContent='risk '+r.score.toFixed(1)+' · '+bn;h.append(b,p);
   const src=document.createElement('div');src.className='note';src.textContent=q.kind==='custom'?'Set by you':q.how==='auto'?'Best-ranked route for this lesion (chosen automatically)':q.how==='preset'?'Approach chosen by you from the list':'Picked by you from the ranked routes';
-  box.append(h,src,routeWhyEl(q,same&&q.rank?RANK:null))}
+  const el=entryLabel(st.corr.E,st.lesion.c);const tp=topParts(r,2);
+  const sm=document.createElement('div');sm.className='rsum';sm.textContent=(el?'Entry: '+el+' · ':'')+r.L.toFixed(0)+' mm to the lesion centre'+(tp.length?' · main risk: '+tp.map(p=>p[0]+' '+p[1].toFixed(1)).join(', '):' · no major risk factor')+(r.hard.length?' · '+r.hard.join(', '):'');
+  const det=document.createElement('details');det.className='mini';det.open=routeCard.open||false;det.addEventListener('toggle',()=>{routeCard.open=det.open});
+  const su=document.createElement('summary');su.textContent='Why this route, what to watch for, and the alternatives';det.append(su,routeWhyEl(q,same&&q.rank?RANK:null));
+  box.append(h,src,sm,det)}
 function useOpt(q,how){rankKey=st.lesion.c.map(Math.round).join(',')+'/'+st.lesion.r;const isAp=q.kind==='ap';st.corr.app=isAp?q.id:null;st.corr.appSide=q.side||'L';st.corr.nat=q.nat;st.corr.vent=q.vent;
   if(isAp){$('appr').value=q.id;$('appr').onchange();const sb=$('apSide').querySelector('button[data-v="'+(q.side||'L')+'"]');if(sb)sb.click()}else{$('appr').value='';$('appr').onchange()}
   st.corr.src=Object.assign({},q,{how:how||'picked',T:st.lesion.c.slice()});document.querySelectorAll('#rankBox tr').forEach(tr=>tr.classList.toggle('on',RANK[+tr.dataset.k]===q));
