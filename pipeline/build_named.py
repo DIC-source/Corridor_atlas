@@ -4,7 +4,7 @@ from scipy.interpolate import splprep,splev
 import nibabel as nib
 O=np.array([-90,-126,-72]);SH=(181,217,181)
 A=json.load(open('out/arteries.json'));V=json.load(open('out/veins.json'))
-R=nib.load('../data/raw/mouches/vesselRadius.nii').get_fdata(dtype=np.float32)[::-1];HO=np.array([-91.25,-126.25,-72.25])
+R=nib.load('../dl/mouches/vesselRadius.nii').get_fdata(dtype=np.float32)[::-1];HO=np.array([-91.25,-126.25,-72.25])
 from scipy import ndimage as ndi
 Rm=ndi.maximum_filter(R,3)
 def smooth(p,step=0.7,s=None):
@@ -43,9 +43,22 @@ for k,v in A.items():
     idx=np.clip(((P-HO)/0.5).round().astype(int),0,np.array(R.shape)-1);r=np.clip(Rm[tuple(idx.T)],0.7,3.0)
     r=ndi.uniform_filter1d(r,9)
     if base=='va': r=np.full(len(P),1.8)
+    if k=='a2':   # usual anatomy = paired A2/pericallosal arteries, one each side of the midline (a single median A2 = azygos ACA, a variant)
+        for sd,mm in (('l',-1),('r',1)):
+            Q=P.copy();Q[:,0]=mm*1.6;mv,mf=tube(Q,r);vox,rv=voxels(Q,r)
+            OUT.append(dict(id='a_a2_'+sd,P=Q,r=r,name=v['name'],group='Arteries',color=AC[base],side=sd.upper(),vox=vox,radv=rv,mesh=(mv,mf)))
+        print('a2 -> a2_l/a2_r');continue
     mv,mf=tube(P,r);vox,rv=voxels(P,r)
     OUT.append(dict(id='a_'+k,P=P,r=r,name=v['name'],group='Arteries',color=AC[base],side=v['side'],vox=vox,radv=rv,mesh=(mv,mf),**({'sch':True,'note':'schematic course: V2 in the transverse foramina, V3 over C1, V4 along the medulla'} if base=='va' else {})))
     print(k,len(P),'r %.1f-%.1f'%(r.min(),r.max()),len(vox))
+import os
+B=json.load(open('out/branches.json')) if os.path.exists('out/branches.json') else {}
+for k,v in B.items():   # distal named branches (population course along sulci; see branches.py)
+    if k=='m2_l' or k=='m2_r':OUT[:]=[o for o in OUT if o['id']!='a_'+k]
+    P=smooth(v['pts']);t=np.linspace(0,1,len(P));r=v['r'][0]+(v['r'][1]-v['r'][0])*t
+    mv,mf=tube(P,r,seg=10);vox,rv=voxels(P,np.maximum(r,0.6))
+    OUT.append(dict(id='a_'+k,P=P,r=r,name=v['name'],group='Arteries',color=v['color'],side=v['side'],vox=vox,radv=rv,mesh=(mv,mf),sch=True,note=v['note']+' — population course (sulcal landmarks + vessel-probability atlas); individual branching varies',parent=v.get('parent')))
+    print(k,len(P),len(vox))
 for k,v in V.items():
     P=smooth(v['pts'],s=len(v['pts'])*0.6);t=np.linspace(0,1,len(P));r=v['r'][0]+(v['r'][1]-v['r'][0])*t
     mv,mf=tube(P,r);vox,rv=voxels(P,r)

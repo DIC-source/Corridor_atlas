@@ -313,7 +313,7 @@ details.res>table{margin:0 4px 6px;width:calc(100% - 8px)}
       Cerebellar lobules: SUIT (Diedrichsen et al., 2009), CC BY-NC 3.0, non-commercial.<br>
       Tracts: HCP-1065 population tractography atlas (Yeh, 2022, Nat Commun), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).<br>
       Atlas files via the DSI Studio atlas repository (github.com/frankyeh/DSI-Studio-atlas).<br>
-      Arteries and the MRA image: population TOF-MRA average, vessel probability and vessel radius atlases (Mouches P, Forkert ND. A statistical atlas of cerebral arteries generated using multi-center MRA datasets from healthy subjects. Sci Data 2019;6:29), Calgary Medical Image Processing and Analysis Lab.</p>
+      Arteries and the MRA image: population TOF-MRA average, vessel probability and vessel radius atlases (Mouches P, Forkert ND. A statistical atlas of cerebral arteries generated using multi-center MRA datasets from healthy subjects. Sci Data 2019;6:29), Calgary Medical Image Processing and Analysis Lab. The main trunks (ICA, M1, A1–A2, P1–P3, PComm, BA) are traced on the vessel-probability atlas; the distal named branches (MCA M2 trunks and M3–M4 cortical arteries, ACA and PCA cortical branches) follow the sulcal and fissural landmarks of the cortical parcellation and are pulled onto the probability ridge, so they show the usual population course rather than any individual's branching pattern. Choroidal, thalamoperforating, ophthalmic and anterior spinal arteries are schematic textbook courses.</p>
     </div>
   </aside>
 </div>
@@ -988,9 +988,36 @@ const DESC={
 'v_skb':'顱底與顱外動脈：落在腦實質外的血管，包含 ICA 岩部/海綿竇段、顱外椎動脈與外頸動脈分支 (TOF-MRA 也會拍到)。依位置分組，並非逐段命名。',
 a_ica:'頸內動脈 (ICA)：岩部、海綿竇段到床突上段，於前穿質下方分成 MCA 與 ACA。旁邊有視神經、CN III、PComm 起點；動脈瘤好發於 PComm 與眼動脈起點。',
 a_m1:'MCA M1（蝶骨段）：ICA 分叉到 limen insulae，上方發出 lateral lenticulostriate arteries 供應內囊與基底核。M1 損傷：對側偏癱、優勢側失語。',
-a_m2:'MCA M2（腦島段）：沿腦島表面上行，之後經蓋部 (M3) 到皮質 (M4)。腦島手術時要逐支保留。',
+a_m2:'MCA M2 下幹（腦島段）：M1 在 limen insulae 分叉後，沿腦島長回往後上到腦島後點；發出顳葉與後頂葉的皮質支。腦島手術時要逐支保留。（族群路徑）',
+a_m2s:'MCA M2 上幹（腦島段）：沿腦島短回上行到上環狀溝；發出眶額、前額、中央前、中央、前頂葉動脈。優勢側上幹閉塞：運動性失語與對側臉/手無力。（族群路徑）',
+a_mca_of:'MCA 眶額動脈（外側額底）：最前面的分支，經 pars orbitalis 到外側眶回。眉弓／翼點開顱打開 Sylvian 裂前段時最先看到。（族群路徑）',
+a_mca_pf:'MCA 前額動脈（candelabra）：出 Sylvian 裂前段，沿上升支往上、再沿額下溝往前，供應 Broca 區 (pars triangularis/opercularis) 與額中回下部。（族群路徑）',
+a_mca_prc:'MCA 中央前（pre-Rolandic）動脈：M4 走在中央前溝內，供應運動前區與中央前回前緣（臉、手運動）。（族群路徑）',
+a_mca_cen:'MCA 中央（Rolandic）動脈：M4 走在中央溝內，供應中央前後回的臉與手區。凸面手術沿溝進入時要保留。（族群路徑）',
+a_mca_ap:'MCA 前頂葉動脈：M4 走在中央後溝，再往後進入頂內溝前段，供應中央後回與緣上回前部。（族群路徑）',
+a_mca_pp:'MCA 後頂葉動脈：由下幹在 Sylvian 裂後端發出，越過緣上回往頂內溝，供應緣上回與頂上小葉下緣。（族群路徑）',
+a_mca_ang:'MCA 角回動脈：常為 MCA 最後的延續支，從 Sylvian 裂末端沿顳上溝後段進入角回。優勢側：Gerstmann、閱讀書寫障礙。（族群路徑）',
+a_mca_to:'MCA 顳枕動脈：沿顳上溝後段往後到外側枕葉。（族群路徑）',
+a_mca_pt:'MCA 後顳動脈：M3 繞過顳蓋，M4 橫越顳上回後部到顳中回；優勢側供應 Wernicke 區。（族群路徑）',
+a_mca_mt:'MCA 中顳動脈：橫越顳上回中段到顳中回。（族群路徑）',
+a_mca_at:'MCA 前顳動脈：常直接由 M1 發出，越過顳上回前部到顳中回前段。前顳葉切除時會處理。（族群路徑）',
+a_mca_tp:'MCA 顳極動脈：由 M1 發出到顳極。（族群路徑）',
+a_aca_mof:'ACA 內側眶額動脈：A2 的第一支皮質支，走向直回與內側眶面。額下入路與 AComm 動脈瘤手術時在視野內。（族群路徑）',
+a_aca_fp:'ACA 額極動脈：A2 在胼胝體膝下方發出，沿內側額面往前到額極。（族群路徑）',
+a_aca_pcl:'ACA 旁中央動脈：到旁中央小葉（下肢運動感覺區）。縱裂入路與矢狀竇旁腦膜瘤手術要保留，損傷造成對側下肢無力。（族群路徑）',
+a_aca_pcu:'ACA 楔前葉（內頂）動脈：pericallosal 遠端分支到楔前葉。（族群路徑）',
+a_pca_calc:'PCA 距狀動脈：P4 走在距狀溝內到枕極，供應初級視覺皮質 (V1)。損傷：對側同側偏盲（黃斑可能保留）。（族群路徑）',
+a_pca_po:'PCA 頂枕動脈：P4 沿頂枕溝上行，供應楔葉與楔前葉後部。枕葉經天幕入路時在視野上緣。（族群路徑）',
+a_pca_at:'PCA 前顳動脈：P2 發出，供應海馬旁回與顳葉下面前部。（族群路徑）',
+a_pca_pt:'PCA 後顳動脈：P2/P3 發出，供應梭狀回與顳枕下面。（族群路徑）',
+a_pca_mpch:'內側後脈絡叢動脈 (MPChA)：P2 發出，繞中腦到四疊體池，再沿中間帆（第三腦室頂）往前到 Monro 孔，與大腦內靜脈並行。經胼胝體／中間帆入路要保護。（示意路徑）',
+a_pca_lpch:'外側後脈絡叢動脈 (LPChA)：P2 發出，經脈絡裂進入三角區與顳角的脈絡叢。三角區腫瘤常由此供血。（示意路徑）',
+a_pca_tp:'視丘穿通動脈：P1 發出，經後穿質供應視丘與中腦（此處以一支代表，實際多支；Percheron 動脈為其變異）。基底動脈頂端動脈瘤手術時要保護。（示意路徑）',
+a_oph:'眼動脈：床突上 ICA 的第一支，在視神經下方經視神經管入眶，供應視網膜。眼動脈段動脈瘤與前床突切除時的關鍵構造。（示意路徑）',
+a_acom:'前交通動脈 (AComm)：連接兩側 A1–A2 交界，前循環動脈瘤最好發處；其後方穿通支供應穹窿與下視丘。',
+a_asa:'前脊髓動脈：兩側椎動脈 V4 各發一支，在延腦前方中線合成，沿前正中裂下行，供應延腦內側與脊髓前 2/3。（示意路徑）',
 a_a1:'ACA A1：ICA 分叉到前交通動脈 (AComm)，穿過視神經／視交叉上方；發出 medial lenticulostriate 與 Heubner recurrent artery。',
-a_a2:'ACA A2–pericallosal：AComm 以後沿胼胝體上方走，供應內側額頂葉（下肢運動感覺區）。經縱裂手術時位於視野中央。',
+a_a2:'ACA A2–pericallosal：左右各一條，從 AComm 兩端發出，在縱裂內並行沿胼胝體上方走（只有一條正中 A2 是 azygos ACA 變異）；供應內側額頂葉（下肢運動感覺區）。經縱裂手術時位於視野中央。',
 a_pcom:'後交通動脈 (PComm)：連接 ICA 與 PCA，CN III 走在其下外側；PComm 動脈瘤壓迫造成動眼神經麻痺。',
 a_p1p2:'PCA P1–P2：基底動脈頂向外繞大腦腳，P1 發出視丘穿通支；P2 在環池內與 basal vein、CN IV 並行。',
 a_p3:'PCA P3–P4：四疊體池以後到距狀溝與頂枕溝支。損傷：對側同側偏盲。',
@@ -1198,7 +1225,8 @@ function select(k,o,p,also){
     const nb=o.NB[i];if(nb)F.push(['Runs beside',SB[nb].name+sideTxt(SB[nb])+(o.NBD[i]?' ('+o.NBD[i]+' mm)':' (on its surface)')]);
     const Tt=TER[vi(o.X[i],o.Y[i],o.Z[i])];if(Tt)F.push(['Territory here',TB[Tt].name.replace(' territory','')+sideTxt(TB[Tt])]);
     F.push(['Source',o.tb?'TopBrain challenge data, case 008 '+(o.id.startsWith('tbv_')?'CTA':'MRA')+' annotation, warped to MNI'+(/mirrored/.test(o.tb)?' ('+o.tb+')':''):o.group==='Veins & sinuses'?'Placed from template geometry (approximate course)':o.id.startsWith('a_')?'Centerline traced on the population vessel atlas (Mouches & Forkert 2019)':'Population vessel atlas (Mouches & Forkert 2019)']);}}
-  if(o.sch)F.push(['Accuracy','Schematic textbook course anchored to template landmarks, not traced from imaging'+(o.note&&o.note!=='schematic course'?' ('+o.note.replace(/^schematic[^;]*;?\s*/,'')+')':'')]);
+  if(o.sch&&/population course \(sulcal/.test(o.note||''))F.push(['Accuracy','Population course: drawn along the sulcal/fissural landmarks of the atlas parcellation and pulled onto the ridge of the population vessel-probability atlas (Mouches & Forkert). Not one person\'s vessel; individual branching varies ('+o.note.split(' — ')[0]+')']);
+  else if(o.sch)F.push(['Accuracy','Schematic textbook course anchored to template landmarks, not traced from imaging'+(o.note&&o.note!=='schematic course'?' ('+o.note.replace(/^schematic[^;]*;?\s*/,'')+')':'')]);
   const ld=lesionDist(k,o);if(ld)F.push(['Lesion',ld]);
   if(k!=='v'&&crit(o,k))F.push(['Flag',isVes(o)?'Critical: '+(o.group==='Arteries'?'artery':'vein / sinus'):'Critical: eloquent cortex or pathway']);
   const dl=$('iFacts');dl.innerHTML='';F.forEach(([a,b])=>{const dt=document.createElement('dt');dt.textContent=a;const dd=document.createElement('dd');dd.textContent=b;dl.append(dt,dd)});
@@ -1257,7 +1285,7 @@ function drawContoursMRI(k){if(!st.outl)return;const C=sliceContours();const dpr
   if(proj)drawVesselProj(k,dpr);
   mx.restore()}
 // When the MRI shows a maximum-intensity projection, vessels are annotated by their projection over the same slab
-const VABBR={a_ica:'ICA',tb_m3:'M3',tb_a3:'A3',tb_acom:'AComm',tb_oa:'OA',tb_3rda2:'Median A2',tb_3rda3:'Median A3',a_m1:'M1',a_m2:'M2',a_a1:'A1',a_a2:'A2/pericallosal',a_pcom:'PComm',a_p1p2:'P1–P2',a_p3:'P3–P4',a_sca:'SCA',a_ba:'BA',a_va:'VA',
+const VABBR={a_ica:'ICA',tb_m3:'M3',tb_a3:'A3',tb_acom:'AComm',tb_oa:'OA',tb_3rda2:'Median A2',tb_3rda3:'Median A3',a_m1:'M1',a_m2:'M2 inf.',a_m2s:'M2 sup.',a_mca_of:'Orbitofrontal',a_mca_pf:'Prefrontal',a_mca_prc:'Precentral a.',a_mca_cen:'Central a.',a_mca_ap:'Ant. parietal',a_mca_pp:'Post. parietal',a_mca_ang:'Angular a.',a_mca_to:'Temporo-occ.',a_mca_pt:'Post. temporal',a_mca_mt:'Mid. temporal',a_mca_at:'Ant. temporal',a_mca_tp:'Temporopolar',a_aca_mof:'Med. orbitofrontal',a_aca_fp:'Frontopolar',a_aca_pcl:'Paracentral a.',a_aca_pcu:'Precuneal a.',a_pca_calc:'Calcarine a.',a_pca_po:'Parieto-occ. a.',a_pca_at:'PCA ant. temporal',a_pca_pt:'PCA post. temporal',a_pca_mpch:'MPChA',a_pca_lpch:'LPChA',a_pca_tp:'Thalamoperf.',a_oph:'OphA',a_acom:'AComm',a_asa:'ASA',a_a1:'A1',a_a2:'A2/pericallosal',a_pcom:'PComm',a_p1p2:'P1–P2',a_p3:'P3–P4',a_sca:'SCA',a_ba:'BA',a_va:'VA',
   sa_heubner:'Heubner',sa_lsa1:'LSA',sa_lsa2:'LSA',sa_lsa3:'LSA',sa_acha:'AChA',sa_cma:'CMA',sa_aica:'AICA',sa_sca2:'SCA',sa_pica:'PICA',
   vn_sss:'SSS',vn_iss:'ISS',vn_straight:'Straight s.',vn_galen:'Galen',vn_icv:'ICV',vn_bvr:'BVR',vn_ts:'Transverse s.',vn_sig:'Sigmoid s.',
   sv_smcv:'Sylvian v.',sv_labbe:'Labbé',sv_trolard:'Trolard',sv_bridge1:'Bridging v.',sv_bridge2:'Bridging v.',sv_bridge3:'Bridging v.',sv_tsv:'Thalamostriate v.',sv_septal:'Septal v.',sv_dandy:'Petrosal v.',sv_sps:'SPS',sv_cav:'Cavernous s.',sv_occ:'Occipital s.'};
@@ -1285,7 +1313,7 @@ const SHORTF={
 'Lateral ventricle':'CSF','Third ventricle':'CSF；底為下視丘','Fourth ventricle':'CSF；菱形窩','Vermis':'軀幹平衡','Cerebellar white matter / dentate region':'齒狀核：DRTT 起點','Cerebellum · Anterior lobe (I–V)':'肢體步態協調','Cerebellum · Posterior lobe (VI–VIII)':'肢體協調、認知','Cerebellum · Tonsil / IX':'扁桃；下疝壓延腦','Cerebellum · Flocculus (X)':'前庭小腦、眼動',
 cst:'對側肢體隨意運動',cbt:'對側下臉、構音吞嚥',fat:'言語起始 (SMA–Broca)',ml:'精細觸覺、本體感覺',str:'感覺運動視丘皮質',af:'復誦、語音迴路',slf:'額頂注意、語音',ifof:'語意處理',unc:'顳極–眶額',ilf:'視覺辨識、閱讀',or:'視放射：對側視野',cn2:'視覺',ar:'聽覺',cing:'邊緣聯絡',fx:'海馬→乳頭體、記憶',atr:'視丘–前額葉',
 cc_minor:'雙側額葉連結',cc_body:'雙側運動感覺連結',cc_tap:'顳角／三角區外壁',cc_major:'雙側枕葉連結',ac:'雙側顳葉連結',cpt:'皮質→橋腦→小腦',drtt:'小腦→Vim；顫抖',scp:'小腦輸出',mcp:'橋腦→小腦',icp:'脊髓前庭→小腦',cn3:'眼動、瞳孔',cn5:'臉部感覺、咀嚼',cn7:'顏面表情',cn8:'聽覺、平衡',
-dcml:'精細觸覺、本體感覺',cs_cn1:'嗅覺',tb_m3:'蓋部；Sylvian 裂表面',tb_a3:'胼胝體膝部 pericallosal',tb_acom:'動脈瘤好發',tb_oa:'視神經旁',tb_3rda2:'正中 A2（變異）',tb_3rda3:'正中 A3（變異）',cs_cn3:'眼動、瞳孔收縮',cs_cn5:'臉部感覺、咀嚼肌',cs_cn7:'顏面表情肌',cs_cn8:'聽覺、平衡',sa_sca2:'小腦上面、齒狀核',cs_cn4:'上斜肌；唯一背側出腦',cs_cn6:'外直肌；行程最長',cs_cn9:'咽部感覺、味覺後1/3',cs_cn10:'咽喉、副交感',cs_cn11:'胸鎖乳突肌、斜方肌',cs_cn12:'舌肌',sa_heubner:'尾狀核頭、內囊前肢',sa_lsa1:'內囊、基底核',sa_lsa2:'內囊、基底核',sa_lsa3:'內囊、基底核',sa_acha:'內囊後肢、視徑',sa_cma:'內側額葉、旁中央小葉',sa_aica:'CPA、CN VII/VIII 旁',sa_pica:'延腦外側、小腦下面',sv_smcv:'Sylvian 裂表面引流',sv_labbe:'顳葉→橫竇；顳下入路勿傷',sv_trolard:'Sylvian→SSS 吻合',sv_bridge1:'皮質→SSS',sv_bridge2:'皮質→SSS',sv_bridge3:'皮質→SSS',sv_tsv:'尾狀核視丘溝',sv_septal:'透明中隔',sv_dandy:'CPA 上方；MVD 常遇',sv_sps:'岩骨嵴',sv_cav:'CN III/IV/V1/V2/VI、ICA',sv_occ:'小腦鐮',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；Heubner',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'V3 繞 C1；V4 發出 PICA',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
+dcml:'精細觸覺、本體感覺',a_m2s:'額葉蓋部、中央區',a_m2:'顳葉、後頂葉',a_mca_of:'外側眶額',a_mca_pf:'Broca、額下回',a_mca_prc:'運動前區',a_mca_cen:'臉/手運動感覺',a_mca_ap:'中央後回、緣上回',a_mca_pp:'緣上回、頂內溝',a_mca_ang:'角回（閱讀書寫）',a_mca_to:'外側枕顳',a_mca_pt:'Wernicke 區',a_mca_mt:'顳中回',a_mca_at:'前顳葉',a_mca_tp:'顳極',a_aca_mof:'直回、內側眶面',a_aca_fp:'額極',a_aca_pcl:'下肢運動感覺',a_aca_pcu:'楔前葉',a_pca_calc:'V1 視覺皮質',a_pca_po:'楔葉、楔前葉',a_pca_at:'海馬旁回',a_pca_pt:'梭狀回',a_pca_mpch:'第三腦室頂脈絡叢、松果體',a_pca_lpch:'三角區脈絡叢',a_pca_tp:'視丘、中腦',a_oph:'視網膜',a_acom:'動脈瘤好發',a_asa:'延腦內側、脊髓前部',cs_cn1:'嗅覺',tb_m3:'蓋部；Sylvian 裂表面',tb_a3:'胼胝體膝部 pericallosal',tb_acom:'動脈瘤好發',tb_oa:'視神經旁',tb_3rda2:'正中 A2（變異）',tb_3rda3:'正中 A3（變異）',cs_cn3:'眼動、瞳孔收縮',cs_cn5:'臉部感覺、咀嚼肌',cs_cn7:'顏面表情肌',cs_cn8:'聽覺、平衡',sa_sca2:'小腦上面、齒狀核',cs_cn4:'上斜肌；唯一背側出腦',cs_cn6:'外直肌；行程最長',cs_cn9:'咽部感覺、味覺後1/3',cs_cn10:'咽喉、副交感',cs_cn11:'胸鎖乳突肌、斜方肌',cs_cn12:'舌肌',sa_heubner:'尾狀核頭、內囊前肢',sa_lsa1:'內囊、基底核',sa_lsa2:'內囊、基底核',sa_lsa3:'內囊、基底核',sa_acha:'內囊後肢、視徑',sa_cma:'內側額葉、旁中央小葉',sa_aica:'CPA、CN VII/VIII 旁',sa_pica:'延腦外側、小腦下面',sv_smcv:'Sylvian 裂表面引流',sv_labbe:'顳葉→橫竇；顳下入路勿傷',sv_trolard:'Sylvian→SSS 吻合',sv_bridge1:'皮質→SSS',sv_bridge2:'皮質→SSS',sv_bridge3:'皮質→SSS',sv_tsv:'尾狀核視丘溝',sv_septal:'透明中隔',sv_dandy:'CPA 上方；MVD 常遇',sv_sps:'岩骨嵴',sv_cav:'CN III/IV/V1/V2/VI、ICA',sv_occ:'小腦鐮',a_ica:'頸內動脈',a_m1:'MCA 主幹；LSA 起點',a_m2:'腦島表面 MCA 分支',a_a1:'ACA 起始段；Heubner',a_a2:'內側額頂葉、下肢區',a_pcom:'ICA–PCA 交通',a_p1p2:'中腦、視丘穿通支',a_p3:'枕葉、距狀皮質',a_sca:'小腦上面、齒狀核',a_ba:'腦幹穿通支',a_va:'V3 繞 C1；V4 發出 PICA',vn_sss:'皮質靜脈回流；勿閉塞後 2/3',vn_iss:'大腦鐮下緣',vn_straight:'Galen→窦匯',vn_galen:'深部靜脈匯流',vn_icv:'深部靜脈；第三腦室頂',vn_bvr:'繞大腦腳到 Galen',vn_ts:'天幕附著緣；優勢側常較大',vn_sig:'到頸靜脈孔',stt:'痛、溫、粗觸覺',v_cow:'ICA／Willis 環',v_aca:'內側額頂供血',v_mca:'外側半球供血',v_pca:'枕葉、顳下供血',v_vb:'腦幹、小腦供血',v_skb:'顱底／顱外'};
 const shortOf=(k,o)=>k==='s'?(SHORTF[o.name]||''):(SHORTF[vkey(o.id)]||'');
 const GM='#e7bca8';
 function plateFill(o){if(o.group.startsWith('Cortex'))return st.plateLobes?o.color:(o.note==='eloquent'?o.color:GM);return o.color}
@@ -1753,7 +1781,7 @@ function panner(el,which){let p=null;el.addEventListener('contextmenu',e=>e.prev
   el.addEventListener('pointermove',e=>{if(!p)return;const Z=which==='m'?st.zm:st.zp;Z.x+=e.clientX-p[0];Z.y+=e.clientY-p[1];el._panned=true;p=[e.clientX,e.clientY];which==='m'?drawMRI():drawPlate()});
   el.addEventListener('pointerup',e=>{if(p){p=null;el.style.cursor=''}});
   el.addEventListener('dblclick',e=>{e.preventDefault();zoomReset(which)})}
-panner(mc,"m");panner(pc,"p");window.__z={st,c2v:(x,y)=>canvasToVoxel({clientX:x,clientY:y},false),RANK:()=>RANK,rank:a=>rankApproaches(a),v2m,TR,select:(k,o)=>select(k,o),S};
+panner(mc,"m");panner(pc,"p");window.__z={st,c2v:(x,y)=>canvasToVoxel({clientX:x,clientY:y},false),RANK:()=>RANK,rank:a=>rankApproaches(a),v2m,TR,select:(k,o)=>select(k,o),S,go:p=>{st.cross=p;crossChanged()},rf:()=>{syncers.forEach(f=>f());refresh()},rel:(k,o)=>relations(k,o),cen:(k,o)=>centroidOf(k,o)};
 (()=>{const mk=(host,which,id)=>{const d=document.createElement('div');d.className='zoomctl';d.innerHTML='<button class="btn" aria-label="Zoom in">+</button><span class="mono" id="'+id+'">100%</span><button class="btn" aria-label="Zoom out">−</button><button class="btn" title="Fit (double-click)">Fit</button>';
   const b=d.querySelectorAll('button');b[0].onclick=()=>zoomAt(which,null,1.4);b[1].onclick=()=>zoomAt(which,null,1/1.4);b[2].onclick=()=>zoomReset(which);host.append(d)};
   mk($('vm'),'m','zmM');mk($('v3'),'p','zmP');$('zmP').parentNode.id='zoomP';$('zoomP').hidden=st.view!=='plate'})();
