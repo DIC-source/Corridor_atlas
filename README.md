@@ -2,11 +2,25 @@
 
 Atlas-based neuroanatomy viewer for teaching and pre-operative rehearsal: an illustrated atlas plate / 3D model / long-pathway view on the left, MRI or MRA with outline annotations on the right, and a Lesion & corridor planning mode: place the lesion and the routes to it are ranked automatically (31 standard neurosurgical approaches, the best direct cortical entry and the two-point line), each with the reasons for it; the ranking method, risk-score factors and key references are in the Sources tab (indication, why this approach, what it risks, how it compares), a heuristic trajectory risk score, and the corridor drawn from scalp to lesion. Selecting a structure shows its afferent and efferent pathways (textbook) and the atlas tracts that run through it.
 
-> **Teaching and rehearsal only.** Everything is built from population atlases in MNI ICBM152 space, not from any patient. Real planning needs the patient's own MRI, DTI tractography, functional mapping and navigation.
+The site opens on a choice of two workspaces:
+
+- **Brain atlas**: the brain viewer and corridor planning described above.
+- **Spinal pathways**: C0 to the coccyx.
+  - **Anatomy**: textbook cross-section plate, 3D, PAM50 T2 MRI and a CT-style rendering. Click any structure to name it.
+  - **Cord tracts**: the cord section and 3D block with the textbook tract layout, segment by segment.
+  - **Approach**: spine procedures named as in the literature (ACDF, TLIF, OLIF, TELD…). Each lists its corridor, visualisation and invasiveness. They are ranked for a lesion you place on the images, with inline axial and sagittal views along the route.
+
+> **Teaching and rehearsal only.** Everything is built from population atlases (MNI ICBM152, PAM50) and a generic reference body (BodyParts3D), not from any patient. Real planning needs the patient's own imaging, DTI tractography, functional mapping and navigation.
 
 ## Run it
 
-It is a static site: `docs/index.html` plus two data files, `docs/atlas-data.bin` (anatomy) and `docs/plan-data.wasm` (planning layers), both gzip-compressed binaries decompressed in the browser.
+It is a static site: `docs/index.html` plus gzip-compressed data files decompressed in the browser:
+- `atlas-data.wasm`: brain core.
+- `atlas-extra.wasm`: brain T2, MRA and 3D meshes, streamed in after the core.
+- `plan-data.wasm`: brain planning layers.
+- `spine-data.wasm`: spine skeleton, cord, roots and vessels.
+- `spine-mri.wasm`: PAM50.
+- `spine-soft.wasm`: spine soft tissue.
 
 ```bash
 cd docs
@@ -21,9 +35,12 @@ Opening `index.html` straight from disk will not work, because browsers block `f
 | Path | What it is |
 | --- | --- |
 | `docs/index.html` | The whole viewer (HTML, CSS, JS in one file) |
-| `docs/atlas-data.bin` | Packed volumes, meshes, tracts, vessels, pathway geometry |
-| `docs/plan-data.wasm` | Planning layers: distance to vessels and sulci, critical-tract directions, entry candidates |
-| `pipeline/` | Python scripts that build `atlas-data.bin` from the source atlases |
+| `docs/atlas-data.wasm`, `docs/atlas-extra.wasm` | Brain: packed volumes, meshes, tracts, vessels, pathway geometry (core first, extra streamed after) |
+| `docs/plan-data.wasm` | Brain planning layers: distance to vessels and sulci, critical-tract directions, entry candidates |
+| `docs/spine-data.wasm` | Spine: BodyParts3D vertebrae, sacrum, ribs and discs placed on the atlas cord, with measured canal and body sizes per level |
+| `docs/spine-mri.wasm` | Spine: PAM50 T2 template, cord/CSF/grey-matter masks, white-matter tract labels and level labels |
+| `docs/spine-soft.wasm` | Spine: BodyParts3D muscles, great vessels, viscera and skin, with the same placement as the bones |
+| `pipeline/` | Python scripts that build the data files from the source atlases |
 | `data/SOURCES.md` | Where each input comes from and its licence |
 | `data/raw/` | Downloaded inputs (git-ignored; see SOURCES.md) |
 
@@ -47,15 +64,22 @@ python3 build_named.py  # tube meshes + voxel masks for named vessels
 python3 schematic.py  # schematic surgical vessels (Heubner, LSA, AChA, SCA, AICA, PICA, Labbé, Trolard, bridging veins...) and CN I, III-XII
 python3 paths.py && python3 paths2.py   # long-pathway (CST / DCML / STT) geometry; cortical ends pinned inside the precentral (M1) and postcentral (S1) gyri
 python3 connect.py    # join every branch to its parent at its usual origin (e.g. Heubner on proximal A2, PComm on P1, AChA distal to PComm); repeated passes so moved parents carry their children
-python3 pack.py       # writes ../docs/atlas-data.bin
+python3 pack.py       # writes ../docs/atlas-data.wasm (core) and ../docs/atlas-extra.wasm (T2, MRA, 3D meshes)
 python3 plandata.py   # planning layers (vessel/sulcus distance, critical-tract directions incl. the Meyer/Baum loops, entry candidates) -> plan-data.wasm
+
+# spine (inputs: data/raw/bodyparts3d/stl/, data/raw/pam50/)
+python3 spinebp.py    # vertebrae, sacrum, ribs, discs placed on the atlas cord (C1 canal centre), canal and body sizes per level -> spine-data.wasm
+python3 spinemri.py   # PAM50 T2 template, cord/CSF/GM masks, tract atlas, levels -> spine-mri.wasm
+python3 spinesoft.py  # muscles, great vessels, viscera, skin with the same transform as the bones -> spine-soft.wasm
 ```
+
+The spine's roots, sympathetic trunk, small vessels, carotid sheath above C7, pharynx, larynx and tract blocks are schematic and are built in `index.html` from the measured vertebral levels. The Sources tab says which parts are schematic.
 
 Intermediate files go to `pipeline/out/` (git-ignored). Viewer controls: mouse wheel pages slices, Ctrl + wheel or pinch zooms the plate and MRI, right- or Shift-drag pans, double-click fits. The pathway geometry (`paths.json`) is currently embedded in `index.html` as `const PW=...`; regenerate and paste if you change it.
 
 ## Data and licences
 
-See `data/SOURCES.md`. Short version: ICBM152 (copyright notice required), CerebrA, THOMAS (CC0), ATAG, SUIT (CC BY-NC 3.0), HCP-1065 tractography atlas (CC BY-SA 4.0 + HCP acknowledgment), population vessel atlases of Mouches & Forkert 2019 (cite the paper). Check these before making the repository or a hosted copy public.
+See `data/SOURCES.md`. Short version: ICBM152 (copyright notice required), CerebrA, THOMAS (CC0), ATAG, SUIT (CC BY-NC 3.0), HCP-1065 tractography atlas (CC BY-SA 4.0 + HCP acknowledgment), population vessel atlases of Mouches & Forkert 2019 (cite the paper), BodyParts3D (CC BY-SA 2.1 JP, attribution required; the spine meshes derived from it are share-alike), PAM50 (no licence file in its repository; cite De Leener et al. 2018). Check these before making the repository or a hosted copy public.
 
 ## Trajectory risk score
 
