@@ -19,7 +19,7 @@ jobs:
           mkdir -p raw out/ws
           (cat .github/fetch/files.txt; printf 'participants.tsv\nREADME\ndataset_description.json\n') > all.txt
           start=$(date +%s)
-          xargs -P 8 -I{} sh -c 'mkdir -p "raw/$(dirname {})"; curl -sSfL --retry 3 --connect-timeout 20 --max-time 600 -o "raw/{}" "https://s3.amazonaws.com/openneuro.org/ds005616/{}" || echo "FAIL {}"' < all.txt 2>&1 | tee fetch.log
+          xargs -P 6 -I{} sh -c 'mkdir -p "raw/$(dirname {})"; f={}; c=$(echo "$f" | tr / :); curl -sSfL --retry 3 --connect-timeout 20 --max-time 600 -o "raw/$f" "https://s3.amazonaws.com/openneuro.org/ds005616/$f" 2>/dev/null || curl -sSfL --retry 3 --connect-timeout 20 --max-time 900 -o "raw/$f" "https://openneuro.org/crn/datasets/ds005616/snapshots/1.1.6/files/$c" || echo "FAIL $f"' < all.txt 2>&1 | tee fetch.log
           echo "download seconds $(( $(date +%s) - start ))" | tee -a fetch.log
           du -sh raw | tee -a fetch.log
       - name: Crop and pack
