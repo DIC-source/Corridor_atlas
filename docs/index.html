@@ -2617,12 +2617,14 @@ function pamEdge(x,y,z){const k=Math.round(pamK(z));if(k==null||!(k>=0)||k>=SPM.
 function spSynth(V,W,H,pl,bones,soft,lung,hits,ow,oh){if(!soft.length)return null;const f=Math.max(1.5,0.9*V.k),w=Math.max(8,Math.round(W/f)),h=Math.max(8,Math.round(H/f));
   const c=spSynth.c||(spSynth.c=document.createElement('canvas'));c.width=w;c.height=h;const n=c.getContext('2d');n.setTransform(w/W,0,0,h/H,0,0);
   const P=sh=>{n.beginPath();for(const L of sh.loops){L.forEach((p,i)=>{const X=V.sx(p[0]),Y=V.sy(p[1]);i?n.lineTo(X,Y):n.moveTo(X,Y)});n.closePath()}};
-  const F=(sh,v,g)=>{P(sh);n.fillStyle='rgb('+v+','+(g||0)+',0)';n.fill('evenodd')};
+  const c3=spSynth.c3||(spSynth.c3=document.createElement('canvas'));c3.width=w;c3.height=h;const n3=c3.getContext('2d');n3.setTransform(w/W,0,0,h/H,0,0);n3.fillStyle='#000';n3.fillRect(0,0,W,H);
+  const CLS={mus:'#f00',bone2:'#0f0',marrow:'#0f0',skin:'#00f'};
+  const F=(sh,v,g,cl)=>{P(sh);n.fillStyle='rgb('+v+','+(g||0)+',0)';n.fill('evenodd');n3.beginPath();for(const L of sh.loops){L.forEach((p,i)=>{const X=V.sx(p[0]),Y=V.sy(p[1]);i?n3.lineTo(X,Y):n3.moveTo(X,Y)});n3.closePath()}n3.fillStyle=CLS[cl]||'#000';n3.fill('evenodd')};
   n.fillStyle='#000';n.fillRect(0,0,W,H);
-  soft.filter(s=>s.kind==='skin').forEach(s=>F(s,SPT2.skin));if(lung)F(lung,6);
+  soft.filter(s=>s.kind==='skin').forEach(s=>F(s,SPT2.skin,0,'skin'));if(lung)F(lung,6);
   soft.filter(s=>s.kind==='visc'||s.kind==='gut'||s.kind==='air').forEach(s=>F(s,SPT2N[s.name]??SPT2[s.kind]));
-  soft.filter(s=>s.kind==='mus').forEach(s=>F(s,SPT2.mus));
-  soft.filter(s=>s.kind==='bone2').forEach(s=>{F(s,SPT2.bone2);n.lineWidth=1.3*V.k;n.strokeStyle='rgb(12,0,0)';n.stroke()});
+  soft.filter(s=>s.kind==='mus').forEach(s=>F(s,SPT2.mus,0,'mus'));
+  soft.filter(s=>s.kind==='bone2').forEach(s=>{F(s,SPT2.bone2,0,'bone2');n.lineWidth=1.3*V.k;n.strokeStyle='rgb(12,0,0)';n.stroke()});
   soft.filter(s=>s.kind==='art'||s.kind==='vein').forEach(s=>F(s,SPT2[s.kind]));
   for(const h of hits){const t=h.t;if(t.grp==='art'&&h.r>0.9){n.beginPath();n.arc(V.sx(h.u),V.sy(h.v),h.r*V.k,0,7);n.fillStyle='rgb(10,0,0)';n.fill()}}
   // cauda equina roots: dark inside the (bright) dural sac; the green channel marks them
@@ -2631,9 +2633,25 @@ function spSynth(V,W,H,pl,bones,soft,lung,hits,ow,oh){if(!soft.length)return nul
   bones.filter(b=>b.kind==='disc').forEach(b=>{F(b,48);let L=b.loops[0];b.loops.forEach(q=>{if(spArea(q)>spArea(L))L=q});let cu=0,cvv=0;L.forEach(p=>{cu+=p[0];cvv+=p[1]});cu/=L.length;cvv/=L.length;
     n.beginPath();L.forEach((p,i)=>{const X=V.sx(cu+(p[0]-cu)*0.55),Y=V.sy(cvv+(p[1]-cvv)*0.55);i?n.lineTo(X,Y):n.moveTo(X,Y)});n.closePath();n.fillStyle='rgb(205,0,0)';n.fill()});
   // vertebrae and ribs: fatty marrow (intermediate-bright) inside a black cortex
-  bones.filter(b=>b.kind!=='disc').forEach(b=>{F(b,150);n.lineWidth=1.3*V.k;n.strokeStyle='rgb(10,0,0)';n.stroke()});
+  bones.filter(b=>b.kind!=='disc').forEach(b=>{F(b,150,0,'marrow');n.lineWidth=1.3*V.k;n.strokeStyle='rgb(10,0,0)';n.stroke()});
   const c2=spSynth.c2||(spSynth.c2=document.createElement('canvas'));c2.width=ow;c2.height=oh;const m=c2.getContext('2d',{willReadFrequently:true});m.imageSmoothingEnabled=true;m.imageSmoothingQuality='high';m.drawImage(c,0,0,ow,oh);
-  const d=m.getImageData(0,0,ow,oh).data,N=ow*oh,v=new Float32Array(N),cm=new Uint8Array(N);for(let o=0;o<N;o++){v[o]=d[o*4];cm[o]=d[o*4+1]>60?1:0}return {v,c:cm}}
+  const d=m.getImageData(0,0,ow,oh).data,N=ow*oh,v=new Float32Array(N),cm=new Uint8Array(N);for(let o=0;o<N;o++){v[o]=d[o*4];cm[o]=d[o*4+1]>60?1:0}
+  m.clearRect(0,0,ow,oh);m.drawImage(c3,0,0,ow,oh);const e=m.getImageData(0,0,ow,oh).data,tx=new Uint8Array(N*3);for(let o=0;o<N;o++){tx[o*3]=e[o*4];tx[o*3+1]=e[o*4+1];tx[o*3+2]=e[o*4+2]}
+  return {v,c:cm,tx}}
+// tissue texture for the synthetic T2, as a fixed field in body coordinates (so it stays put when the slice moves):
+// smooth lattice ("value") noise. Muscle: fine grain stretched along the fibres (head-foot) and thin bright fat septa;
+// marrow: mottled; subcutaneous fat: faint darker fibrous septa. Real T2 shows all three; flat fills read as plastic.
+function spHsh(i,j,k){let h=(i*374761393+j*668265263+k*1274126177)|0;h=Math.imul(h^(h>>>13),1274126177);return ((h^(h>>>16))&1023)/511.5-1}
+// lattice rotated off the body axes, so the noise has no visible grid in axial, sagittal or coronal slices
+function spVN(p0,q0,r0){const x=0.62*p0-0.55*q0+0.56*r0,y=0.78*p0+0.45*q0-0.43*r0,z=-0.02*p0+0.70*q0+0.71*r0,i=Math.floor(x),j=Math.floor(y),k=Math.floor(z),a=x-i,b=y-j,c=z-k,u=a*a*(3-2*a),v=b*b*(3-2*b),w=c*c*(3-2*c),
+  l=(p,q,t)=>p+(q-p)*t,
+  x0=l(l(spHsh(i,j,k),spHsh(i+1,j,k),u),l(spHsh(i,j+1,k),spHsh(i+1,j+1,k),u),v),x1=l(l(spHsh(i,j,k+1),spHsh(i+1,j,k+1),u),l(spHsh(i,j+1,k+1),spHsh(i+1,j+1,k+1),u),v);return l(x0,x1,w)}
+function spTex(X,Y,Z,mu,ma,fa,tv){let f=1,add=0;const gate=(x,y,z)=>{const v=spVN(x,y,z)*3;return v<0?0:v>1?1:v};
+  // septa: thin ridges where a warped noise crosses zero, kept only in patches (gate) so they read as scattered strands, not a maze
+  if(mu>0.02){const g=spVN(X/1.1,Y/1.1,Z/4.5)*0.55+spVN(X/2.6,Y/2.6,Z/9)*0.45,wx=spVN(X/3,Y/3,Z/6)*1.2,s=spVN(X/8+wx+3.1,Y/8+wx,Z/24),sep=Math.exp(-(s/0.035)*(s/0.035))*gate(X/12+9,Y/12,Z/30);f+=mu*g*0.2;add+=mu*sep*55}
+  if(ma>0.02){const g=spVN(X/1.6+7,Y/1.6,Z/1.6)*0.6+spVN(X/5,Y/5,Z/5+2)*0.4;f+=ma*g*0.2}
+  if(fa>0.02){const wx=spVN(X/4+1,Y/4,Z/4)*1.5,s=spVN(X/10+wx+11,Y/10+wx,Z/14),sep=Math.exp(-(s/0.03)*(s/0.03))*gate(X/16+4,Y/16,Z/16);f-=fa*sep*0.28;f+=fa*spVN(X/1.4,Y/1.4,Z/1.4+5)*0.05}
+  return tv*f+add}
 // ---- draw one slice. style: 'mri' | 'ct' | 'plate'
 let spD=1;   // device pixels per CSS pixel of the canvas being drawn: text and line widths scale with it (sharp and readable on retina screens)
 function drawSpine(cv,style){const W=cv.width,H=cv.height,x=cv.getContext('2d');spD=Math.max(1,W/Math.max(1,cv.getBoundingClientRect().width||W));let V=spView(W,H,style==='plate');const pl=V.pl;x.setTransform(1,0,0,1,0,0);
@@ -2669,7 +2687,9 @@ function drawSpine(cv,style){const W=cv.width,H=cv.height,x=cv.getContext('2d');
     // grey levels of the model matched to the template where both exist (a gain only, so air stays black; outside the dural sac)
     let a=1;if(T&&SPM){let n=0,sxx=0,sxy=0;for(let o=0;o<N;o+=2)if(pw[o]>0.6&&!T.c[o]&&sw[o]===0){const sv=T.v[o]*gy[o];n++;sxx+=sv*sv;sxy+=sv*pg[o]}if(n>150&&sxx>0)a=sxy/sxx;a=Math.max(0.45,Math.min(1.4,a))}
     const img=new ImageData(w,h),D=img.data,k2=Math.max(0,(185-200*a)/40);
-    for(let o=0;o<N;o++){const tv=T?(T.c[o]?T.v[o]:(T.v[o]*(1-sw[o])+226*sw[o])*(1-cw[o])+92*cw[o]):0,sv=T?(a*tv+Math.max(0,tv-160)*k2)*gy[o]:0,wt=pw[o];
+    for(let o=0;o<N;o++){let tv=T?(T.c[o]?T.v[o]:(T.v[o]*(1-sw[o])+226*sw[o])*(1-cw[o])+92*cw[o]):0;
+      if(T&&T.tx&&pw[o]<0.97){const t3=o*3,mu=T.tx[t3]/255,ma=T.tx[t3+1]/255,fa=T.tx[t3+2]/255;if(mu+ma+fa>0.02){const q=o%w,r=(o-q)/w,X=P0[0]+q*du[0]+r*dv[0],Y=P0[1]+q*du[1]+r*dv[1],Z=P0[2]+q*du[2]+r*dv[2];tv=spTex(X,Y,Z,mu,ma,fa*(1-sw[o]),tv)}}
+      const sv=T?(a*tv+Math.max(0,tv-160)*k2)*gy[o]:0,wt=pw[o];
       let v=wt*pg[o]+(1-wt)*sv;v=Math.sqrt(v*v+36)+SPNZ[(o*2654435761>>>0)&65535]*(1-wt*0.6);v=v<0?0:v>255?255:v;D[o*4]=D[o*4+1]=D[o*4+2]=v;D[o*4+3]=255}
     const oc=spSynth.o||(spSynth.o=document.createElement('canvas'));oc.width=w;oc.height=h;oc.getContext('2d').putImageData(img,0,0);
     x.fillStyle='#000';x.fillRect(0,0,W,H);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(oc,0,0,W,H);
@@ -3738,5 +3758,4 @@ window.__ready=true;
 })();
 </script>
 
-</body>
-</html>
+</body></html>
