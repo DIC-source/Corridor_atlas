@@ -31,5 +31,5 @@ H=dict(dims=[T2.shape[0],T2.shape[1],len(range(K)[sl])],kstep=2,res=0.5,x0=35.0,
   t2=put(T2[:,:,sl].transpose(2,1,0)),lab=put(lab[:,:,sl].transpose(2,1,0)),cen=[cen[k] for k in range(K)][::2],levels=levels,
   src='PAM50 template, De Leener B et al. NeuroImage 2018;165:170-179 (Spinal Cord Toolbox)')
 hj=json.dumps(H,separators=(',',':')).encode();hj+=b' '*((-len(hj))%4)
-blob=np.uint32(len(hj)).tobytes()+hj+b''.join(secs);g=gzip.compress(blob,9);open('../docs/spine-mri.wasm','wb').write(g)
+blob=np.uint32(len(hj)).tobytes()+hj+b''.join(secs);g=gzip.compress(blob,9,mtime=0);open('../docs/spine-mri.wasm','wb').write(g)
 print('levels',levels);print('raw %.1f MB gz %.1f MB'%(len(blob)/1e6,len(g)/1e6))

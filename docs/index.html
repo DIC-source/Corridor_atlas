@@ -520,7 +520,9 @@ window.__fetchGz=function(u,k){const p=window.__dl[k]={got:0,tot:0};return fetch
   const s=new ReadableStream({async pull(c){const {done,value}=await rd.read();if(done){p.done=true;c.close();return}p.got+=value.length;c.enqueue(value)}});
   return new Response(s.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()})};
 window.__coreP=window.__fetchGz('atlas-data.wasm','core');
-window.__extraP=window.__coreP.then(()=>window.__fetchGz('atlas-extra.wasm','extra'));
+// the extra file waits for the workspace choice: at once for the brain; for the spine, after the spine's own files, so they do not share the bandwidth
+window.__gate={};window.__gate.p=new Promise(r=>{window.__gate.go=r;setTimeout(r,30000)});
+window.__extraP=window.__coreP.then(()=>window.__gate.p).then(()=>window.__fetchGz('atlas-extra.wasm','extra'));
 window.__extraP.catch(()=>{});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -646,7 +648,9 @@ function selectTab(t){const sp=t==='pw'||t==='cord'||t==='splan'||(t==='about'&&
   if(sp&&typeof cdEnterLeave==='function')cdEnterLeave(wasCord);
   if(t==='splan'&&typeof sxUpdate==='function')sxUpdate(true);
   if(typeof sxDraw3D==='function')sxDraw3D();if(sp&&typeof pwVis==='function')pwVis();if(typeof spDraw==='function')spDraw()}
-function setWorkspace(ws){st.ws=ws;document.querySelectorAll('#wsMode button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===ws)));
+function setWorkspace(ws){st.ws=ws;
+  // download what this workspace needs first (see __gate): the spine's skeleton, MRI template and soft tissue in parallel
+  if(ws==='spine')Promise.allSettled([loadSpine(),loadSpMRI(),loadSoft()]).then(()=>window.__gate.go());else{window.__gate.go();if(window.__extraReady)setTimeout(()=>loadPlan().catch(()=>{}),1500)}document.querySelectorAll('#wsMode button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===ws)));
   document.querySelectorAll('.tabs button[data-ws]').forEach(b=>b.hidden=b.dataset.ws!==ws);document.body.classList.toggle('ws-spine',ws==='spine');
   $('topSub').textContent=ws==='spine'?'Spinal pathways · BodyParts3D skeleton, PAM50 cord template, textbook tracts':'Brain atlas · MNI ICBM152 anatomy & HCP-1065 tracts';
   try{localStorage.setItem('ca.ws',ws)}catch(e){}
@@ -2610,7 +2614,7 @@ const SPNZ=(()=>{const a=new Float32Array(65536);for(let i=0;i<a.length;i++){a[i
 // mm from z to the ends of the template's coverage (C1 top to L1 bottom, as pamK maps it)
 function pamZEdge(z){const V=SPX.V;return Math.min(V[0].top+6-z,z-V[19].bot)}
 function pamEdge(x,y,z){const k=Math.round(pamK(z));if(k==null||!(k>=0)||k>=SPM.dims[2])return -1;const c=SPM.cen[k];const i=c[0]-2*x,j=c[1]+2*(y-SPX.cy(z));return Math.min(i,SPM.dims[0]-1-i,j,SPM.dims[1]-1-j)*0.5}
-function spSynth(V,W,H,pl,bones,soft,lung,hits){if(!soft.length)return null;const f=Math.max(1.5,0.9*V.k),w=Math.max(8,Math.round(W/f)),h=Math.max(8,Math.round(H/f));
+function spSynth(V,W,H,pl,bones,soft,lung,hits,ow,oh){if(!soft.length)return null;const f=Math.max(1.5,0.9*V.k),w=Math.max(8,Math.round(W/f)),h=Math.max(8,Math.round(H/f));
   const c=spSynth.c||(spSynth.c=document.createElement('canvas'));c.width=w;c.height=h;const n=c.getContext('2d');n.setTransform(w/W,0,0,h/H,0,0);
   const P=sh=>{n.beginPath();for(const L of sh.loops){L.forEach((p,i)=>{const X=V.sx(p[0]),Y=V.sy(p[1]);i?n.lineTo(X,Y):n.moveTo(X,Y)});n.closePath()}};
   const F=(sh,v,g)=>{P(sh);n.fillStyle='rgb('+v+','+(g||0)+',0)';n.fill('evenodd')};
@@ -2628,8 +2632,8 @@ function spSynth(V,W,H,pl,bones,soft,lung,hits){if(!soft.length)return null;cons
     n.beginPath();L.forEach((p,i)=>{const X=V.sx(cu+(p[0]-cu)*0.55),Y=V.sy(cvv+(p[1]-cvv)*0.55);i?n.lineTo(X,Y):n.moveTo(X,Y)});n.closePath();n.fillStyle='rgb(205,0,0)';n.fill()});
   // vertebrae and ribs: fatty marrow (intermediate-bright) inside a black cortex
   bones.filter(b=>b.kind!=='disc').forEach(b=>{F(b,150);n.lineWidth=1.3*V.k;n.strokeStyle='rgb(10,0,0)';n.stroke()});
-  const c2=spSynth.c2||(spSynth.c2=document.createElement('canvas'));c2.width=W;c2.height=H;const m=c2.getContext('2d',{willReadFrequently:true});m.imageSmoothingEnabled=true;m.imageSmoothingQuality='high';m.drawImage(c,0,0,W,H);
-  const d=m.getImageData(0,0,W,H).data,N=W*H,v=new Float32Array(N),cm=new Uint8Array(N);for(let o=0;o<N;o++){v[o]=d[o*4];cm[o]=d[o*4+1]>60?1:0}return {v,c:cm}}
+  const c2=spSynth.c2||(spSynth.c2=document.createElement('canvas'));c2.width=ow;c2.height=oh;const m=c2.getContext('2d',{willReadFrequently:true});m.imageSmoothingEnabled=true;m.imageSmoothingQuality='high';m.drawImage(c,0,0,ow,oh);
+  const d=m.getImageData(0,0,ow,oh).data,N=ow*oh,v=new Float32Array(N),cm=new Uint8Array(N);for(let o=0;o<N;o++){v[o]=d[o*4];cm[o]=d[o*4+1]>60?1:0}return {v,c:cm}}
 // ---- draw one slice. style: 'mri' | 'ct' | 'plate'
 let spD=1;   // device pixels per CSS pixel of the canvas being drawn: text and line widths scale with it (sharp and readable on retina screens)
 function drawSpine(cv,style){const W=cv.width,H=cv.height,x=cv.getContext('2d');spD=Math.max(1,W/Math.max(1,cv.getBoundingClientRect().width||W));let V=spView(W,H,style==='plate');const pl=V.pl;x.setTransform(1,0,0,1,0,0);
@@ -2647,19 +2651,28 @@ function drawSpine(cv,style){const W=cv.width,H=cv.height,x=cv.getContext('2d');
   const path=sh=>{x.beginPath();for(const L of sh.loops){L.forEach((p,i)=>i?x.lineTo(V.sx(p[0]),V.sy(p[1])):x.moveTo(V.sx(p[0]),V.sy(p[1])));x.closePath()}};
   const canal=[];   // dural sac / cord outline on this plane
   if(style==='mri'){
-    const T=spSynth(V,W,H,pl,bones,soft,lung,hits),N=W*H,img=x.createImageData(W,H),D=img.data,pg=new Float32Array(N),pw=new Float32Array(N),gy=new Float32Array(N),sw=new Float32Array(N),cw=new Float32Array(N);
-    for(let r=0;r<H;r++)for(let q=0;q<W;q++){const o=r*W+q,p=to3(pl,V.ux(q+0.5),V.vy(r+0.5));
+    // computed at about 0.45 mm per pixel (the template's voxels are 0.5 mm, the model is blurred to ~0.9 mm), then scaled up smoothly:
+    // many fewer pixels than the screen, and the plane is walked incrementally instead of mapping every pixel
+    const sc=Math.min(1,2.2/k),w=Math.max(16,Math.round(W*sc)),h=Math.max(16,Math.round(H*sc)),fx=W/w,fy=H/h,N=w*h;
+    const T=spSynth(V,W,H,pl,bones,soft,lung,hits,w,h),pg=new Float32Array(N),pw=new Float32Array(N),gy=new Float32Array(N),sw=new Float32Array(N),cw=new Float32Array(N);
+    const P0=to3(pl,V.ux(fx*0.5),V.vy(fy*0.5)),P1=to3(pl,V.ux(fx*1.5),V.vy(fy*0.5)),P2=to3(pl,V.ux(fx*0.5),V.vy(fy*1.5)),du=[P1[0]-P0[0],P1[1]-P0[1],P1[2]-P0[2]],dv=[P2[0]-P0[0],P2[1]-P0[1],P2[2]-P0[2]];
+    const ZC=new Map(),zi=z=>{const key=Math.round(z*20);let o=ZC.get(key);if(o)return o;const kk=SPM?pamK(z):null,kr=kk==null?-1:Math.round(kk);
+      o={cy:SPX.cy(z),k:kr>=0&&kr<(SPM?SPM.dims[2]:0)?kr:-1,ze:SPM?pamZEdge(z):-1,R:z>SPX.sacBot&&z<-68?Math.min(8.2,Math.max(1.5,(z-SPX.sacBot)*0.5+1.5)):0,cr:z>SPX.conus-2?SPX.cr(z):0};if(o.k>=0)o.c=SPM.cen[o.k];ZC.set(key,o);return o};
+    const d0=SPM?SPM.dims[0]:0,d1=SPM?SPM.dims[1]:0,TV=SPM?SPM.T2:null,cl=v=>v<0?0:v>1?1:v;
+    for(let r=0;r<h;r++)for(let q=0;q<w;q++){const o=r*w+q,X=P0[0]+q*du[0]+r*dv[0],Y=P0[1]+q*du[1]+r*dv[1],Z=P0[2]+q*du[2]+r*dv[2],Zi=zi(Z),dy=Y-Zi.cy;
       // receive-coil shading: the spine coil lies behind the patient, so signal falls off towards the front
-      gy[o]=Math.max(0.5,Math.min(1.18,1.1-0.005*(p[1]-SPX.cy(p[2]))));
-      // dural sac with CSF (same shape as the 3D sac): a circle round the canal axis tapering to its end at S2
-      if(p[2]>SPX.sacBot&&p[2]<-68){const d=Math.hypot(p[0],(p[1]-SPX.cy(p[2]))*1.12),R=Math.min(8.2,Math.max(1.5,(p[2]-SPX.sacBot)*0.5+1.5));sw[o]=Math.min(1,Math.max(0,(R-d)/1.2+0.5));if(p[2]>SPX.conus-2){const cr=SPX.cr(p[2]);cw[o]=Math.min(1,Math.max(0,(cr-Math.hypot(p[0]*0.85,(p[1]-SPX.cy(p[2]))*1.25))/0.8+0.5))}}
-      if(SPM){const g=pamSample(SPM.T2,p[0],p[1],p[2]);if(g>=0){pg[o]=g;const e=Math.min(pamEdge(p[0],p[1],p[2]),pamZEdge(p[2]));const dc=Math.hypot(p[0],p[1]-SPX.cy(p[2]));pw[o]=Math.min(1,Math.max(0,(e-1)/9))*Math.min(1,Math.max(0,(g-2)/14))*Math.min(1,Math.max(0,(27-dc)/13))}}}
-    // grey levels of the model matched to the template where both exist (least squares, outside the dural sac)
-    // (a gain only, so air stays black; fitted where the template is fully weighted)
-    let a=1,b=0;if(T&&SPM){let n=0,sxx=0,sxy=0;for(let o=0;o<N;o+=2)if(pw[o]>0.6&&!T.c[o]&&sw[o]===0){const s=T.v[o]*gy[o];n++;sxx+=s*s;sxy+=s*pg[o]}
-      if(n>300&&sxx>0)a=sxy/sxx;a=Math.max(0.45,Math.min(1.4,a));spSynth.ab=[a,n]}
-    const k2=Math.max(0,(185-200*a)/40);for(let o=0;o<N;o++){const tv=T?(T.c[o]?T.v[o]:(T.v[o]*(1-sw[o])+226*sw[o])*(1-cw[o])+92*cw[o]):0,s=T?(a*tv+Math.max(0,tv-160)*k2)*gy[o]+b:0,w=pw[o];let v=w*pg[o]+(1-w)*s;v=Math.hypot(v,6)+SPNZ[(o*2654435761>>>0)&65535]*(1-w*0.6);v=v<0?0:v>255?255:v;D[o*4]=D[o*4+1]=D[o*4+2]=v;D[o*4+3]=255}
-    x.putImageData(img,0,0);
+      gy[o]=Math.max(0.5,Math.min(1.18,1.1-0.005*dy));
+      // dural sac with CSF (same shape as the 3D sac) and the cord inside it
+      if(Zi.R){const e=dy*1.12;sw[o]=cl((Zi.R-Math.sqrt(X*X+e*e))/1.2+0.5);if(Zi.cr){const a=X*0.85,b=dy*1.25;cw[o]=cl((Zi.cr-Math.sqrt(a*a+b*b))/0.8+0.5)}}
+      if(Zi.k>=0){const ii=Math.round(Zi.c[0]-2*X),jj=Math.round(Zi.c[1]+2*dy);if(ii>=0&&jj>=0&&ii<d0&&jj<d1){const g=TV[(Zi.k*d1+jj)*d0+ii];pg[o]=g;
+        const ed=Math.min(Math.min(ii,d0-1-ii,jj,d1-1-jj)*0.5,Zi.ze);pw[o]=cl((ed-1)/9)*cl((g-2)/14)*cl((27-Math.sqrt(X*X+dy*dy))/13)}}}
+    // grey levels of the model matched to the template where both exist (a gain only, so air stays black; outside the dural sac)
+    let a=1;if(T&&SPM){let n=0,sxx=0,sxy=0;for(let o=0;o<N;o+=2)if(pw[o]>0.6&&!T.c[o]&&sw[o]===0){const sv=T.v[o]*gy[o];n++;sxx+=sv*sv;sxy+=sv*pg[o]}if(n>150&&sxx>0)a=sxy/sxx;a=Math.max(0.45,Math.min(1.4,a))}
+    const img=new ImageData(w,h),D=img.data,k2=Math.max(0,(185-200*a)/40);
+    for(let o=0;o<N;o++){const tv=T?(T.c[o]?T.v[o]:(T.v[o]*(1-sw[o])+226*sw[o])*(1-cw[o])+92*cw[o]):0,sv=T?(a*tv+Math.max(0,tv-160)*k2)*gy[o]:0,wt=pw[o];
+      let v=wt*pg[o]+(1-wt)*sv;v=Math.sqrt(v*v+36)+SPNZ[(o*2654435761>>>0)&65535]*(1-wt*0.6);v=v<0?0:v>255?255:v;D[o*4]=D[o*4+1]=D[o*4+2]=v;D[o*4+3]=255}
+    const oc=spSynth.o||(spSynth.o=document.createElement('canvas'));oc.width=w;oc.height=h;oc.getContext('2d').putImageData(img,0,0);
+    x.fillStyle='#000';x.fillRect(0,0,W,H);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(oc,0,0,W,H);
     if(!SPM||!T){x.fillStyle='#9aa5b1';x.font=(12*spD)+'px '+getComputedStyle(document.body).fontFamily;x.textAlign='center';x.fillText(!SPM&&SPMp||!T&&SPSOFTp&&!SPSOFT.length?'Loading…':'',W/2,22*spD)}
     if(st.spi.ovl){x.strokeStyle='rgba(255,255,255,.16)';x.lineWidth=spD;bones.forEach(b=>{path(b);x.stroke()})}}
   else if(style==='ct'){
@@ -2764,7 +2777,7 @@ const mriSec=document.querySelector('section[aria-label="MRI view"]');mriSec.app
 const spPlateCv=document.createElement('canvas');spPlateCv.id='spPlate';spPlateCv.hidden=true;$('v3').append(spPlateCv);
 const spKey=document.createElement('div');spKey.id='spKey';spKey.hidden=true;$('v3').append(spKey);
 function spSize(cv,host){const r=host.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);const W=Math.max(50,Math.round(r.width*d)),H=Math.max(50,Math.round(r.height*d));if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H}cv.style.width=r.width+'px';cv.style.height=r.height+'px';return d}
-let spPending=0;function spDraw(){if(spPending)return;spPending=requestAnimationFrame(()=>{spPending=0;spDrawNow()})}
+let spPending=0;function spDraw(){if(spPending)return;spPending=requestAnimationFrame(()=>{spPending=0;const t0=performance.now();spDrawNow();window.__spMs=performance.now()-t0})}
 function spDrawNow(){const on=spActive();mriSec.classList.toggle('spmode',on);mriSec.querySelector('.ttl').textContent=on?'Spine imaging':'MRI';spPane.hidden=!on;const plOn=on&&st.spi.left==='plate'&&st.view==='path';spPlateCv.hidden=!plOn;spKey.hidden=true;$('pwlabels').hidden=!(st.view==='path'&&!plOn&&!st.cordMode);
   if(st.view==='path'&&on)$('lview').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===st.spi.left)));
   spPlane3D();if(!on)return;if(!st.spc)spCenter();{const Wn=regWindow(st.pwSeg);if(Wn&&(st.spc[2]>Wn.zt+1||st.spc[2]<Wn.zb-1))spCenter()}   // a crosshair left over from another region
@@ -3716,7 +3729,7 @@ const xTick=setInterval(()=>{const p=window.__dl.extra;if(!p)return;const pc=p.t
 window.__extraP.then(b=>{buf2=b;T2=sec(H.t2,Uint8Array);MRA=sec(H.mra,Uint8Array);MRAH=sec(H.mrah,Uint8Array);
   buildMeshes();clearInterval(xTick);$('xload').remove();$('loading').remove();
   if(pScene){pScene=null;pObjs.cst.length=pObjs.dcml.length=pObjs.stt.length=0;pPick.length=0;if(st.view==='path')buildPathScene()}
-  updateClip();syncers.forEach(f=>f());refresh();window.__extraReady=true;setTimeout(()=>loadPlan().catch(()=>{}),1500)})   // then fetch the planning layers quietly, so Lesion & corridor opens at once
+  updateClip();syncers.forEach(f=>f());refresh();window.__extraReady=true;if(st.ws!=='spine')setTimeout(()=>loadPlan().catch(()=>{}),1500)})   // then fetch the planning layers quietly, so Lesion & corridor opens at once
  .catch(e=>{clearInterval(xTick);$('xload').hidden=false;$('xloadT').textContent='3D models, T2 and MRA could not load ('+e.message+'). Reload to try again.';$('loadT').textContent='3D models could not load. Reload the page to try again.'});
 resize();setSliderFromCross();lesionChanged();corrChanged();refresh();setView('plate');updateClip();
 let frame=0;

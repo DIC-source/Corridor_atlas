@@ -85,6 +85,6 @@ for fid,name,cl,zh in P:
     parts.append(dict(id='s%d'%fid,name=name,cl=cl,zh=zh,v=put(np.round(v*10).astype(np.int16)),f=put(np.asarray(f).astype(np.uint16))))
 H=dict(parts=parts,src='BodyParts3D, (c) The Database Center for Life Science, licensed under CC Attribution-Share Alike 2.1 Japan')
 hj=json.dumps(H,ensure_ascii=False,separators=(',',':')).encode();hj+=b' '*((-len(hj))%4)
-blob=np.uint32(len(hj)).tobytes()+hj+b''.join(secs);g=gzip.compress(blob,9);open('../docs/spine-soft.wasm','wb').write(g)
+blob=np.uint32(len(hj)).tobytes()+hj+b''.join(secs);g=gzip.compress(blob,9,mtime=0);open('../docs/spine-soft.wasm','wb').write(g)
 for r in zr[:8]+[q for q in zr if q[0] in('Skin','Descending aorta','Inferior vena cava','Esophagus')]:print(r)
 print('parts',len(parts),'raw %.2f MB gz %.2f MB'%(len(blob)/1e6,len(g)/1e6))

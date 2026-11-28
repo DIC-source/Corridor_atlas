@@ -127,5 +127,5 @@ for k,(v,f) in M.items():
     parts.append(dict(id=k,kind=kind,v=put(np.round(v2*10).astype(np.int16)),f=put(f2.astype(np.uint16))))
 H=dict(parts=parts,L=L,src='BodyParts3D, (c) The Database Center for Life Science, licensed under CC Attribution-Share Alike 2.1 Japan')
 hj=json.dumps(H,separators=(',',':')).encode();hj+=b' '*((-len(hj))%4)
-blob=np.uint32(len(hj)).tobytes()+hj+b''.join(secs);g=gzip.compress(blob,9);open('../docs/spine-data.wasm','wb').write(g)
+blob=np.uint32(len(hj)).tobytes()+hj+b''.join(secs);g=gzip.compress(blob,9,mtime=0);open('../docs/spine-data.wasm','wb').write(g)
 print('parts',len(parts),'raw %.2f MB gz %.2f MB'%(len(blob)/1e6,len(g)/1e6))
