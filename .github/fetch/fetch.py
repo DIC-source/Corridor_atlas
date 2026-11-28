@@ -14,8 +14,8 @@ def get(p):
         except Exception as e:
             print('retry', p, e); time.sleep(5)
     return None
-for p in files: get(p)
-for p in ['participants.tsv', 'README', 'dataset_description.json']: get(p)
+import subprocess
+print('files present', sum(os.path.exists('raw/' + f) for f in files), 'of', len(files), flush=True)
 summ = {}
 for t in [f for f in files if f.endswith('_T2w.nii.gz') and not f.startswith('derivatives')]:
     s = t.split('/')[0]

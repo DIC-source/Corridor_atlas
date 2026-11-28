@@ -7,17 +7,30 @@ permissions:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
       - run: pip install nibabel numpy
-      - run: python .github/fetch/fetch.py
+      - name: Download (parallel, with timeouts)
+        timeout-minutes: 60
+        run: |
+          mkdir -p raw out/ws
+          (cat .github/fetch/files.txt; printf 'participants.tsv\nREADME\ndataset_description.json\n') > all.txt
+          start=$(date +%s)
+          xargs -P 8 -I{} sh -c 'mkdir -p "raw/$(dirname {})"; curl -sSfL --retry 3 --connect-timeout 20 --max-time 600 -o "raw/{}" "https://s3.amazonaws.com/openneuro.org/ds005616/{}" || echo "FAIL {}"' < all.txt 2>&1 | tee fetch.log
+          echo "download seconds $(( $(date +%s) - start ))" | tee -a fetch.log
+          du -sh raw | tee -a fetch.log
+      - name: Crop and pack
+        timeout-minutes: 40
+        run: python .github/fetch/fetch.py 2>&1 | tee -a fetch.log
       - name: Publish release
+        if: always()
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
           gh release delete wholespine_v1 -y --cleanup-tag || true
-          gh release create wholespine_v1 out/wholespine_t2_cropped.tar out/ws/summary.json \
+          A="fetch.log"; [ -f out/ws/summary.json ] && A="$A out/ws/summary.json"; [ -f out/wholespine_t2_cropped.tar ] && A="$A out/wholespine_t2_cropped.tar"
+          gh release create wholespine_v1 $A \
             --target spine-data-fetch --prerelease --title "Whole-spine T2 (OpenNeuro ds005616, CC0), cropped below the skull" \
             --notes "Mirror for building a population spine template. Source: OpenNeuro ds005616 v1.1.6 (Molinier, Bédard, ... Cohen-Adad), licence CC0. T2w images and spinal labels, cropped 12 mm above the highest vertebra (no head). Temporary; can be deleted."
