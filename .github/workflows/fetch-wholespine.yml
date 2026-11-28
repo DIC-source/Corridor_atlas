@@ -1,0 +1,23 @@
+name: fetch-wholespine
+on:
+  push:
+    branches: [spine-data-fetch]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install nibabel numpy
+      - run: python .github/fetch/fetch.py
+      - name: Publish release
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          gh release delete wholespine_v1 -y --cleanup-tag || true
+          gh release create wholespine_v1 out/wholespine_t2_cropped.tar out/ws/summary.json \
+            --target spine-data-fetch --prerelease --title "Whole-spine T2 (OpenNeuro ds005616, CC0), cropped below the skull" \
+            --notes "Mirror for building a population spine template. Source: OpenNeuro ds005616 v1.1.6 (Molinier, Bédard, ... Cohen-Adad), licence CC0. T2w images and spinal labels, cropped 12 mm above the highest vertebra (no head). Temporary; can be deleted."
