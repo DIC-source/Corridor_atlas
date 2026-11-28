@@ -504,7 +504,7 @@ details.mini[open]>summary::before,.rank details[open]>summary::before{backgroun
       GPi, red nucleus, substantia nigra: ATAG (Keuken et al., 2014).<br>
       Cerebellar lobules: SUIT (Diedrichsen et al., 2009), CC BY-NC 3.0, non-commercial.<br>
       Optic radiation loops: the Meyer and Baum loop layers are schematic bundles placed on template landmarks (LGN, temporal horn, atrium, calcarine banks), with the Meyer loop tip at the level of the temporal-horn tip (Yogarajah M et al. Brain 2009;132:1656–68), because the group-average optic radiation truncates the loop. Both count as optic radiation in the risk score.<br>
-      Spine imaging (Pathways tab): MRI = PAM50 T2 template and its white- and grey-matter atlas (De Leener B et al. NeuroImage 2018;165:170–179; Spinal Cord Toolbox), C1–L1 only, the straightened template mapped level by level onto this spine. CT = a bone-window style rendering of the reference bone model cut by the slice plane, not a scan; no population-average CT of the whole spine is used.<br>
+      Spine imaging (Pathways tab): MRI = PAM50 T2 template and its white- and grey-matter atlas (De Leener B et al. NeuroImage 2018;165:170–179; Spinal Cord Toolbox), C1–L1 only, the straightened template mapped level by level onto this spine. Around it, a whole-spine population T2 built for this tool from the OpenNeuro "Whole-Spine" dataset ds005616 (Molinier N, Bédard S, … Cohen-Adad J; 3D T2, 1 mm, CC0): 56 adults, each straightened along the canal, matched vertebra by vertebra and disc by disc (TotalSpineSeg labels), scaled to the CSF signal, registered with ANTs SyN and averaged; levels marked stenotic in the dataset left out for that person. It covers the centre ±25 mm from C1 to L2 in nearly everyone (L4 22, L5 11 people; no sacrum), so the sides and the sacrum stay synthetic. CT = a bone-window style rendering of the reference bone model cut by the slice plane, not a scan; no population-average CT of the whole spine is used.<br>
       Spine (Pathways): vertebrae C1–L5, sacrum, discs and ribs are decimated meshes of BodyParts3D, © The Database Center for Life Science, licensed under CC Attribution-Share Alike 2.1 Japan (a generic adult reference model, placed so its canal continues the atlas cord). Cord segments, roots, DRG, cauda equina, the long tracts of the cord and the sympathetic / parasympathetic outflow are schematic, drawn on the measured canal and pedicles; positions follow textbook cross-sections, not tractography.<br>
       Tracts: HCP-1065 population tractography atlas (Yeh, 2022, Nat Commun), CC BY-SA 4.0. Data were provided in part by the Human Connectome Project, WU-Minn Consortium (Principal Investigators: David Van Essen and Kamil Ugurbil; 1U54MH091657).<br>
       Atlas files via the DSI Studio atlas repository (github.com/frankyeh/DSI-Studio-atlas).<br>
@@ -650,7 +650,7 @@ function selectTab(t){const sp=t==='pw'||t==='cord'||t==='splan'||(t==='about'&&
   if(typeof sxDraw3D==='function')sxDraw3D();if(sp&&typeof pwVis==='function')pwVis();if(typeof spDraw==='function')spDraw()}
 function setWorkspace(ws){st.ws=ws;
   // download what this workspace needs first (see __gate): the spine's skeleton, MRI template and soft tissue in parallel
-  if(ws==='spine')Promise.allSettled([loadSpine(),loadSpMRI(),loadSoft()]).then(()=>window.__gate.go());else{window.__gate.go();if(window.__extraReady)setTimeout(()=>loadPlan().catch(()=>{}),1500)}document.querySelectorAll('#wsMode button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===ws)));
+  if(ws==='spine')Promise.allSettled([loadSpine(),loadSpMRI(),loadSoft(),loadSpWS()]).then(()=>window.__gate.go());else{window.__gate.go();if(window.__extraReady)setTimeout(()=>loadPlan().catch(()=>{}),1500)}document.querySelectorAll('#wsMode button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===ws)));
   document.querySelectorAll('.tabs button[data-ws]').forEach(b=>b.hidden=b.dataset.ws!==ws);document.body.classList.toggle('ws-spine',ws==='spine');
   $('topSub').textContent=ws==='spine'?'Spinal pathways · BodyParts3D skeleton, PAM50 cord template, textbook tracts':'Brain atlas · MNI ICBM152 anatomy & HCP-1065 tracts';
   try{localStorage.setItem('ca.ws',ws)}catch(e){}
@@ -2160,7 +2160,7 @@ const lvOf=v=>typeof v==='string'?[v]:v||null;
 function tubeD(G,pts,r,mk,name,grp,lv,extra){if(pts.length<2)return null;const cu=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p)),false,'centripetal');
   const m=new THREE.Mesh(new THREE.TubeGeometry(cu,Math.max(24,pts.length*14),r,8,false),pmat(mk));Object.assign(m.userData,{name,grp},extra||{});const L=lvOf(lv);if(L)m.userData.lv=L;G.add(m);SPT_TUBES.push({cu,r,mk,name,grp,lv:L});return m}
 function ballD(G,p,r,mk,name,grp,lv,sc){const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),pmat(mk));m.position.set(...p);if(sc)m.scale.set(...sc);Object.assign(m.userData,{name,grp});const L=lvOf(lv);if(L)m.userData.lv=L;G.add(m);SPT_BALLS.push({p,r:(sc?Math.max(...sc):1)*r,mk,name,grp,lv:L});return m}
-const SPT_TUBES=[],SPT_BALLS=[];window.__sp=()=>({spHitAt,spinePaths,cdPz,cdZ,cdP,cdPt:typeof cdPt!=='undefined'?cdPt:null,SPXr:SPX,spPlateCv,spBoneShapes,spPlane,spPane,spPrj,DZ,SPX,SPT_TUBES,SPT_BALLS,pSpine,st});
+const SPT_TUBES=[],SPT_BALLS=[];window.__sp=()=>({spHitAt,spinePaths,cdPz,cdZ,cdP,cdPt:typeof cdPt!=='undefined'?cdPt:null,SPXr:SPX,spPlateCv,spBoneShapes,spPlane,spPane,spPrj,DZ,SPX,SPT_TUBES,SPT_BALLS,pSpine,st,SPSOFT,SPM:()=>SPM});
 const LB=(key,at,t,f,grp,obj)=>{if(at&&at.every(Number.isFinite))PWREGL.push({key,at,t,f,grp,obj})};
 function drawRoot(G,lv,n,s,P,role){const side=s>0?'right':'left';
   const lets=(arr,mk,lab)=>arr&&arr.forEach(q=>tubeD(G,q,0.22,mk,lab+' '+n+' ('+side+')','roots',lv));
@@ -2489,6 +2489,22 @@ let SPM=null,SPMp=null;
 function loadSpMRI(){if(SPM)return Promise.resolve(SPM);if(SPMp)return SPMp;
   SPMp=window.__fetchGz('spine-mri.wasm','smri').then(b=>{const hl=new Uint32Array(b,0,1)[0];const h=JSON.parse(new TextDecoder().decode(new Uint8Array(b,4,hl)));const base=4+hl;
     h.T2=new Uint8Array(b,base+h.t2[0],h.t2[1]);h.LAB=new Uint8Array(b,base+h.lab[0],h.lab[1]);SPM=h;return h});return SPMp}
+// population whole-spine T2 (OpenNeuro ds005616, 56 adults, CC0): straightened, level-normalised mean, 1 mm, centre +/-26 mm
+let SPW=null,SPWp=null;
+function loadSpWS(){if(SPW)return Promise.resolve(SPW);if(SPWp)return SPWp;
+  SPWp=window.__fetchGz('spine-ws.wasm','sws').then(b=>{const hl=new Uint32Array(b,0,1)[0];const h=JSON.parse(new TextDecoder().decode(new Uint8Array(b,4,hl)));const base=4+hl;
+    h.T2=new Uint8Array(b,base+h.t2[0],h.t2[1]);h.W=new Uint8Array(b,base+h.w[0],h.w[1]);h.map=null;SPW=h;if(typeof spDraw==='function')spDraw();return h}).catch(e=>{console.warn('whole-spine template did not load',e);return null});return SPWp}
+// our z -> template slice: vertebra centres and disc mid-planes matched one by one (piecewise linear), a little beyond the ends
+function wsK(z,raw){const h=SPW;if(!h)return null;if(!h.map){const V=SPX.V,P=[];for(let i=0;i<V.length;i++){const n=V[i].n;if(h.lm[n]!=null)P.push([V[i].c,h.lm[n]]);
+    if(i<V.length-1){const d=h.lm[n+'-'+V[i+1].n];if(d!=null)P.push([(V[i].bot+V[i+1].top)/2,d])}}P.sort((a,b)=>b[0]-a[0]);h.map=P}
+  const P=h.map,n=P.length;if(n<2)return null;let s;
+  if(z>=P[0][0])s=P[0][1]+(z-P[0][0])*(P[0][1]-P[1][1])/(P[0][0]-P[1][0]);else if(z<=P[n-1][0])s=P[n-1][1]+(z-P[n-1][0])*(P[n-2][1]-P[n-1][1])/(P[n-2][0]-P[n-1][0]);
+  else for(let i=0;i<n-1;i++)if(z<=P[i][0]&&z>=P[i+1][0]){s=P[i+1][1]+(z-P[i+1][0])*(P[i][1]-P[i+1][1])/(P[i][0]-P[i+1][0]);break}
+  const k=s/h.step;if(raw)return k;return k>=0&&k<=h.dims[2]-1?k:null}
+// in-plane scale of the template at z: reference skeleton's vertebral body front over the template's (both from the canal centre),
+// level by level and interpolated between vertebra centres, so the population's mean vertebra is drawn at this skeleton's size
+function wsScale(z){const h=SPW;if(!h||!h.front)return 1;if(!h.sc){const P=[];for(const v of SPX.V){const f=h.front[v.n],d=v.d;if(f&&d&&d.body){const m=d.body[0]+d.body[2]-d.cy;if(m>5)P.push([v.c,Math.max(0.8,Math.min(1.45,m/f))])}}h.sc=P}
+  const P=h.sc;if(!P.length)return 1;if(z>=P[0][0])return P[0][1];if(z<=P[P.length-1][0])return P[P.length-1][1];for(let i=0;i<P.length-1;i++)if(z<=P[i][0]&&z>=P[i+1][0]){const t=(P[i][0]-z)/(P[i][0]-P[i+1][0]);return P[i][1]+(P[i+1][1]-P[i][1])*t}return 1}
 // our z -> PAM50 slice index (vertebral levels C1..L1 matched one by one)
 function pamK(z){if(!SPM)return null;const V=SPX.V;for(let i=0;i<20;i++){const r=SPM.levels[i+1];if(!r)continue;const top=i?(V[i-1].bot+V[i].top)/2:V[0].top+6,bot=i<19?(V[i].bot+V[i+1].top)/2:V[19].bot;if(z<=top&&z>=bot){const f=(top-z)/(top-bot);return (r[1]-f*(r[1]-r[0]))/SPM.kstep}}   // level boundaries at the disc midpoints, as the template's levels are contiguous
   const r1=SPM.levels[1];if(z>V[0].top&&z<V[0].top+(984-r1[1])*0.5)return (r1[1]+(z-V[0].top)/0.5)/SPM.kstep;return null}
@@ -2609,7 +2625,10 @@ const spPat={};function spPattern(x,k){if(spPat[k])return x.createPattern(spPat[
 // ---- synthetic T2 outside the PAM50 template: the same reference model rendered with typical T2 (fast spin echo, no fat suppression) signal per tissue,
 // blurred to MRI resolution, matched to the template's grey levels and blended into it, so the template and the model meet without a seam. Not a scan.
 let SPSAC=null;function spSacMesh(){if(SPSAC===null&&typeof pSpine!=='undefined'&&pSpine){SPSAC=0;pSpine.traverse(o=>{if(o.isMesh&&o.userData&&o.userData.name==='Dural (thecal) sac with CSF')SPSAC=o})}return SPSAC||null}
-const SPT2={mus:52,art:8,vein:22,visc:95,gut:118,air:4,bone2:150,skin:200};const SPT2N={Liver:70,Spleen:118,'Right kidney':125,'Left kidney':125,'Urinary bladder':240,Stomach:110};
+const SPT2={mus:52,art:8,vein:22,visc:95,gut:118,air:4,bone2:150,skin:200};
+// synthetic tissue signal (CSF = 226): with the population template loaded, muscle, fat, marrow and disc take the template's own values
+// (its signal in those tissues over its CSF signal, header 'tis'), so the model's sides continue the real image instead of a guess
+const SPT2D={mus:52,fat:200,marrow:150,annulus:48,nucleus:205};function spT2(k){const t=SPW&&SPW.tis;return t&&t[k]!=null?t[k]*226:SPT2D[k]}const SPT2N={Liver:70,Spleen:118,'Right kidney':125,'Left kidney':125,'Urinary bladder':240,Stomach:110};
 const SPNZ=(()=>{const a=new Float32Array(65536);for(let i=0;i<a.length;i++){a[i]=(Math.random()+Math.random()+Math.random()+Math.random()-2)*1.7}return a})();
 // mm from z to the ends of the template's coverage (C1 top to L1 bottom, as pamK maps it)
 function pamZEdge(z){const V=SPX.V;return Math.min(V[0].top+6-z,z-V[19].bot)}
@@ -2619,21 +2638,23 @@ function spSynth(V,W,H,pl,bones,soft,lung,hits,ow,oh){if(!soft.length)return nul
   const P=sh=>{n.beginPath();for(const L of sh.loops){L.forEach((p,i)=>{const X=V.sx(p[0]),Y=V.sy(p[1]);i?n.lineTo(X,Y):n.moveTo(X,Y)});n.closePath()}};
   const c3=spSynth.c3||(spSynth.c3=document.createElement('canvas'));c3.width=w;c3.height=h;const n3=c3.getContext('2d');n3.setTransform(w/W,0,0,h/H,0,0);n3.fillStyle='#000';n3.fillRect(0,0,W,H);
   const CLS={mus:'#f00',bone2:'#0f0',marrow:'#0f0',skin:'#00f'};
-  const F=(sh,v,g,cl)=>{P(sh);n.fillStyle='rgb('+v+','+(g||0)+',0)';n.fill('evenodd');n3.beginPath();for(const L of sh.loops){L.forEach((p,i)=>{const X=V.sx(p[0]),Y=V.sy(p[1]);i?n3.lineTo(X,Y):n3.moveTo(X,Y)});n3.closePath()}n3.fillStyle=CLS[cl]||'#000';n3.fill('evenodd')};
+  // class canvas; the skin is filled loop by loop with no holes, so everything inside the body outline counts as body
+  const F=(sh,v,g,cl)=>{P(sh);n.fillStyle='rgb('+v+','+(g||0)+',0)';n.fill('evenodd');n3.fillStyle=CLS[cl]||'#010000';const lp=L=>L.forEach((p,i)=>{const X=V.sx(p[0]),Y=V.sy(p[1]);i?n3.lineTo(X,Y):n3.moveTo(X,Y)});
+    if(cl==='skin')for(const L of sh.loops){n3.beginPath();lp(L);n3.closePath();n3.fill()}else{n3.beginPath();for(const L of sh.loops){lp(L);n3.closePath()}n3.fill('evenodd')}};
   n.fillStyle='#000';n.fillRect(0,0,W,H);
-  soft.filter(s=>s.kind==='skin').forEach(s=>F(s,SPT2.skin,0,'skin'));if(lung)F(lung,6);
+  soft.filter(s=>s.kind==='skin').forEach(s=>F(s,spT2('fat'),0,'skin'));if(lung)F(lung,6);
   soft.filter(s=>s.kind==='visc'||s.kind==='gut'||s.kind==='air').forEach(s=>F(s,SPT2N[s.name]??SPT2[s.kind]));
-  soft.filter(s=>s.kind==='mus').forEach(s=>F(s,SPT2.mus,0,'mus'));
-  soft.filter(s=>s.kind==='bone2').forEach(s=>{F(s,SPT2.bone2,0,'bone2');n.lineWidth=1.3*V.k;n.strokeStyle='rgb(12,0,0)';n.stroke()});
+  soft.filter(s=>s.kind==='mus').forEach(s=>F(s,spT2('mus'),0,'mus'));
+  soft.filter(s=>s.kind==='bone2').forEach(s=>{F(s,spT2('marrow'),0,'bone2');n.lineWidth=1.3*V.k;n.strokeStyle='rgb(12,0,0)';n.stroke()});
   soft.filter(s=>s.kind==='art'||s.kind==='vein').forEach(s=>F(s,SPT2[s.kind]));
   for(const h of hits){const t=h.t;if(t.grp==='art'&&h.r>0.9){n.beginPath();n.arc(V.sx(h.u),V.sy(h.v),h.r*V.k,0,7);n.fillStyle='rgb(10,0,0)';n.fill()}}
   // cauda equina roots: dark inside the (bright) dural sac; the green channel marks them
   for(const h of hits){const t=h.t;if(t.grp==='roots'&&/root|rootlet|cauda/i.test(t.name||'')){n.beginPath();n.arc(V.sx(h.u),V.sy(h.v),Math.max(0.6,h.r)*V.k,0,7);n.fillStyle='rgb(70,255,0)';n.fill()}}
   // disc: dark annulus fibrosus, bright nucleus pulposus
-  bones.filter(b=>b.kind==='disc').forEach(b=>{F(b,48);let L=b.loops[0];b.loops.forEach(q=>{if(spArea(q)>spArea(L))L=q});let cu=0,cvv=0;L.forEach(p=>{cu+=p[0];cvv+=p[1]});cu/=L.length;cvv/=L.length;
-    n.beginPath();L.forEach((p,i)=>{const X=V.sx(cu+(p[0]-cu)*0.55),Y=V.sy(cvv+(p[1]-cvv)*0.55);i?n.lineTo(X,Y):n.moveTo(X,Y)});n.closePath();n.fillStyle='rgb(205,0,0)';n.fill()});
+  bones.filter(b=>b.kind==='disc').forEach(b=>{F(b,spT2('annulus'));let L=b.loops[0];b.loops.forEach(q=>{if(spArea(q)>spArea(L))L=q});let cu=0,cvv=0;L.forEach(p=>{cu+=p[0];cvv+=p[1]});cu/=L.length;cvv/=L.length;
+    n.beginPath();L.forEach((p,i)=>{const X=V.sx(cu+(p[0]-cu)*0.55),Y=V.sy(cvv+(p[1]-cvv)*0.55);i?n.lineTo(X,Y):n.moveTo(X,Y)});n.closePath();n.fillStyle='rgb('+Math.round(spT2('nucleus'))+',0,0)';n.fill()});
   // vertebrae and ribs: fatty marrow (intermediate-bright) inside a black cortex
-  bones.filter(b=>b.kind!=='disc').forEach(b=>{F(b,150,0,'marrow');n.lineWidth=1.3*V.k;n.strokeStyle='rgb(10,0,0)';n.stroke()});
+  bones.filter(b=>b.kind!=='disc').forEach(b=>{F(b,spT2('marrow'),0,'marrow');n.lineWidth=1.3*V.k;n.strokeStyle='rgb(10,0,0)';n.stroke()});
   const c2=spSynth.c2||(spSynth.c2=document.createElement('canvas'));c2.width=ow;c2.height=oh;const m=c2.getContext('2d',{willReadFrequently:true});m.imageSmoothingEnabled=true;m.imageSmoothingQuality='high';m.drawImage(c,0,0,ow,oh);
   const d=m.getImageData(0,0,ow,oh).data,N=ow*oh,v=new Float32Array(N),cm=new Uint8Array(N);for(let o=0;o<N;o++){v[o]=d[o*4];cm[o]=d[o*4+1]>60?1:0}
   m.clearRect(0,0,ow,oh);m.drawImage(c3,0,0,ow,oh);const e=m.getImageData(0,0,ow,oh).data,tx=new Uint8Array(N*3);for(let o=0;o<N;o++){tx[o*3]=e[o*4];tx[o*3+1]=e[o*4+1];tx[o*3+2]=e[o*4+2]}
@@ -2675,22 +2696,39 @@ function drawSpine(cv,style){const W=cv.width,H=cv.height,x=cv.getContext('2d');
     const T=spSynth(V,W,H,pl,bones,soft,lung,hits,w,h),pg=new Float32Array(N),pw=new Float32Array(N),gy=new Float32Array(N),sw=new Float32Array(N),cw=new Float32Array(N);
     const P0=to3(pl,V.ux(fx*0.5),V.vy(fy*0.5)),P1=to3(pl,V.ux(fx*1.5),V.vy(fy*0.5)),P2=to3(pl,V.ux(fx*0.5),V.vy(fy*1.5)),du=[P1[0]-P0[0],P1[1]-P0[1],P1[2]-P0[2]],dv=[P2[0]-P0[0],P2[1]-P0[1],P2[2]-P0[2]];
     const ZC=new Map(),zi=z=>{const key=Math.round(z*20);let o=ZC.get(key);if(o)return o;const kk=SPM?pamK(z):null,kr=kk==null?-1:Math.round(kk);
-      o={cy:SPX.cy(z),k:kr>=0&&kr<(SPM?SPM.dims[2]:0)?kr:-1,ze:SPM?pamZEdge(z):-1,R:z>SPX.sacBot&&z<-68?Math.min(8.2,Math.max(1.5,(z-SPX.sacBot)*0.5+1.5)):0,cr:z>SPX.conus-2?SPX.cr(z):0};if(o.k>=0)o.c=SPM.cen[o.k];ZC.set(key,o);return o};
+      o={cy:SPX.cy(z),k:kr>=0&&kr<(SPM?SPM.dims[2]:0)?kr:-1,ze:SPM?pamZEdge(z):-1,R:z>SPX.sacBot&&z<-68?Math.min(8.2,Math.max(1.5,(z-SPX.sacBot)*0.5+1.5)):0,cr:z>SPX.conus-2?SPX.cr(z):0};if(o.k>=0)o.c=SPM.cen[o.k];
+      const wk=SPW?wsK(z):null;if(wk!=null){o.w0=Math.floor(wk);o.w1=Math.min(SPW.dims[2]-1,o.w0+1);o.wf=wk-o.w0;o.ws=1/wsScale(z);o.wz=cl(wk/8)*cl((SPW.dims[2]-1-wk)/8)}else o.w0=-1;
+      if(SPW&&SPW.lev){const kr=wsK(z,true),L=SPW.lev,j=kr==null?0:Math.max(0,Math.min(L.length-1,Math.round(kr)));o.lv=L[j]}else o.lv=1;ZC.set(key,o);return o};
     const d0=SPM?SPM.dims[0]:0,d1=SPM?SPM.dims[1]:0,TV=SPM?SPM.T2:null,cl=v=>v<0?0:v>1?1:v;
+    const qg=new Float32Array(N),qw=new Float32Array(N),e0=SPW?SPW.dims[0]:0,e1=SPW?SPW.dims[1]:0,EV=SPW?SPW.T2:null,EW=SPW?SPW.W:null,u0=SPW?SPW.u0:0,v0=SPW?SPW.v0:0,
+      ws2=(k,fu,fv)=>{const i=Math.floor(fu),j=Math.floor(fv),a=fu-i,b=fv-j,B=k*e1*e0,o00=B+j*e0+i;return [(EV[o00]*(1-a)+EV[o00+1]*a)*(1-b)+(EV[o00+e0]*(1-a)+EV[o00+e0+1]*a)*b,(EW[o00]*(1-a)+EW[o00+1]*a)*(1-b)+(EW[o00+e0]*(1-a)+EW[o00+e0+1]*a)*b]};
     for(let r=0;r<h;r++)for(let q=0;q<w;q++){const o=r*w+q,X=P0[0]+q*du[0]+r*dv[0],Y=P0[1]+q*du[1]+r*dv[1],Z=P0[2]+q*du[2]+r*dv[2],Zi=zi(Z),dy=Y-Zi.cy;
       // receive-coil shading: the spine coil lies behind the patient, so signal falls off towards the front
-      gy[o]=Math.max(0.5,Math.min(1.18,1.1-0.005*dy));
+      gy[o]=Math.max(0.5,Math.min(1.18,1.1-0.005*dy))*Zi.lv;
       // dural sac with CSF (same shape as the 3D sac) and the cord inside it
       if(Zi.R){const e=dy*1.12;sw[o]=cl((Zi.R-Math.sqrt(X*X+e*e))/1.2+0.5);if(Zi.cr){const a=X*0.85,b=dy*1.25;cw[o]=cl((Zi.cr-Math.sqrt(a*a+b*b))/0.8+0.5)}}
       if(Zi.k>=0){const ii=Math.round(Zi.c[0]-2*X),jj=Math.round(Zi.c[1]+2*dy);if(ii>=0&&jj>=0&&ii<d0&&jj<d1){const g=TV[(Zi.k*d1+jj)*d0+ii];pg[o]=g;
-        const ed=Math.min(Math.min(ii,d0-1-ii,jj,d1-1-jj)*0.5,Zi.ze);pw[o]=cl((ed-1)/9)*cl((g-2)/14)*cl((27-Math.sqrt(X*X+dy*dy))/13)}}}
+        const ed=Math.min(Math.min(ii,d0-1-ii,jj,d1-1-jj)*0.5,Zi.ze),dc=Math.sqrt(X*X+dy*dy);pw[o]=cl((ed-1)/9)*cl((g-2)/14)*(Zi.w0>=0?cl((11-dc)/4):cl((27-dc)/13))}}
+      if(Zi.w0>=0){const tu=X*Zi.ws,fu=tu-u0,fv=dy*Zi.ws-v0;if(fu>=0&&fv>=0&&fu<e0-1&&fv<e1-1){const A=ws2(Zi.w0,fu,fv),B=ws2(Zi.w1,fu,fv),f=Zi.wf;qg[o]=A[0]+(B[0]-A[0])*f;
+        qw[o]=(A[1]+(B[1]-A[1])*f)/255*Zi.wz*cl((-u0-Math.abs(tu))/9)*cl(fv/6)*cl((e1-1-fv)/14)}}}
     // grey levels of the model matched to the template where both exist (a gain only, so air stays black; outside the dural sac)
-    let a=1;if(T&&SPM){let n=0,sxx=0,sxy=0;for(let o=0;o<N;o+=2)if(pw[o]>0.6&&!T.c[o]&&sw[o]===0){const sv=T.v[o]*gy[o];n++;sxx+=sv*sv;sxy+=sv*pg[o]}if(n>150&&sxx>0)a=sxy/sxx;a=Math.max(0.45,Math.min(1.4,a))}
-    const img=new ImageData(w,h),D=img.data,k2=Math.max(0,(185-200*a)/40);
+    let aw=spDraw.aw||1;if(SPW&&SPM){let n=0,sxx=0,sxy=0;for(let o=0;o<N;o+=2)if(pw[o]>0.6&&qw[o]>0.6){n++;sxx+=qg[o]*qg[o];sxy+=qg[o]*pg[o]}if(n>150&&sxx>0)aw=spDraw.aw=Math.max(0.5,Math.min(2,sxy/sxx))}
+    // the template only where the reference body is (no template over the model's air)
+    // body = between the first and last model pixel of each row (the model's skin section can leave gaps inside the body)
+    if(T&&T.tx)for(let r=0;r<h;r++){let lo=-1,hi=-1;for(let q=0;q<w;q++){const t3=(r*w+q)*3;if(T.tx[t3]+T.tx[t3+1]+T.tx[t3+2]>0){if(lo<0)lo=q;hi=q}}
+      for(let q=0;q<w;q++){const o=r*w+q;if(qw[o]>0)qw[o]*=lo<0?0:cl(Math.min(q-lo,hi-q)/3+1)}}
+    const rf=new Float32Array(N),rw=new Float32Array(N);for(let o=0;o<N;o++){const p=pw[o],q=qw[o]*(1-p);rw[o]=p+q;rf[o]=rw[o]>0?(p*pg[o]+q*aw*qg[o])/rw[o]:0}
+    // grey levels of the model: with the population template, each tissue takes its signal measured in that template (relative to CSF,
+    // spT2), so only the template's own gain applies; without it, a gain fitted to PAM50 where both exist (outside the dural sac)
+    let a=1;if(T&&SPW)a=aw*200/226;else if(T&&SPM){let n=0,sxx=0,sxy=0;for(let o=0;o<N;o+=2)if(rw[o]>0.6&&!T.c[o]&&sw[o]===0){const sv=T.v[o]*gy[o];n++;sxx+=sv*sv;sxy+=sv*rf[o]}if(n>150&&sxx>0)a=sxy/sxx;a=Math.max(0.45,Math.min(1.4,a))}
+    // display window: as on a clinical T2, CSF is allowed to saturate (white at ~0.7 of the CSF signal) so fat, marrow and muscle spread over the grey scale
+    const dg=SPW?255/(0.7*200*aw):1;
+    const img=new ImageData(w,h),D=img.data,k2=SPW?0:Math.max(0,(185-200*a)/40);
     for(let o=0;o<N;o++){let tv=T?(T.c[o]?T.v[o]:(T.v[o]*(1-sw[o])+226*sw[o])*(1-cw[o])+92*cw[o]):0;
-      if(T&&T.tx&&pw[o]<0.97){const t3=o*3,mu=T.tx[t3]/255,ma=T.tx[t3+1]/255,fa=T.tx[t3+2]/255;if(mu+ma+fa>0.02){const q=o%w,r=(o-q)/w,X=P0[0]+q*du[0]+r*dv[0],Y=P0[1]+q*du[1]+r*dv[1],Z=P0[2]+q*du[2]+r*dv[2];tv=spTex(X,Y,Z,mu,ma,fa*(1-sw[o]),tv)}}
-      const sv=T?(a*tv+Math.max(0,tv-160)*k2)*gy[o]:0,wt=pw[o];
-      let v=wt*pg[o]+(1-wt)*sv;v=Math.sqrt(v*v+36)+SPNZ[(o*2654435761>>>0)&65535]*(1-wt*0.6);v=v<0?0:v>255?255:v;D[o*4]=D[o*4+1]=D[o*4+2]=v;D[o*4+3]=255}
+      if(T&&T.tx&&rw[o]<0.97){const t3=o*3,mu=T.tx[t3]/255,ma=T.tx[t3+1]/255,fa=T.tx[t3+2]/255;if(mu+ma+fa>0.02){const q=o%w,r=(o-q)/w,X=P0[0]+q*du[0]+r*dv[0],Y=P0[1]+q*du[1]+r*dv[1],Z=P0[2]+q*du[2]+r*dv[2];tv=spTex(X,Y,Z,mu,ma,fa*(1-sw[o]),tv)}}
+      const sv=T?(a*tv+Math.max(0,tv-160)*k2)*gy[o]:0,wt=rw[o];
+      let v=(wt*rf[o]+(1-wt)*sv)*dg;v=Math.sqrt(v*v+36)+SPNZ[(o*2654435761>>>0)&65535]*(1-wt*0.6);v=v<0?0:v>255?255:v;D[o*4]=D[o*4+1]=D[o*4+2]=v;D[o*4+3]=255}
+    if(window.__mriDbgOn)window.__mriDbg={T,qw,qg,pw,pg,rw,rf,w,h,D:img.data,sw,cw};
     const oc=spSynth.o||(spSynth.o=document.createElement('canvas'));oc.width=w;oc.height=h;oc.getContext('2d').putImageData(img,0,0);
     x.fillStyle='#000';x.fillRect(0,0,W,H);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(oc,0,0,W,H);
     if(!SPM||!T){x.fillStyle='#9aa5b1';x.font=(12*spD)+'px '+getComputedStyle(document.body).fontFamily;x.textAlign='center';x.fillText(!SPM&&SPMp||!T&&SPSOFTp&&!SPSOFT.length?'Loading…':'',W/2,22*spD)}
@@ -2804,7 +2842,7 @@ function spDrawNow(){const on=spActive();mriSec.classList.toggle('spmode',on);mr
   const pl0=spPlane(),pz=pl0.obl?pl0.o[2]:st.spc[2];const src=st.spi.src==='mri'&&st.spc&&pamK(pz)==null&&(st.spi.plane==='ax'||pl0.obl)&&!SPSOFT.length?'ct':st.spi.src;const inPam=pamK(pz)!=null;
   if(st.spi.src==='mri'&&!SPM&&!SPMp)loadSpMRI().then(spDraw).catch(e=>{$('spRo').textContent='Spine MRI could not load ('+e.message+')'});
   const host=spPane.querySelector('.spcv'),cv=$('spCv');const d=spSize(cv,host);const V=drawSpine(cv,src);spPane._V=V;spPane._d=d;
-  const c=st.spc,pl=spPlane();$('spRo').textContent=(st.cordMode&&src==='mri'?'Tracts: PAM50 white-matter atlas, textbook colours · ':'')+(src==='mri'?(inPam||st.spi.plane!=='ax'?'PAM50 T2 template (centre, C1–L1) blended into a synthetic T2 of the reference model — not a scan':'Synthetic T2 of the reference model (below the PAM50 template) — not a scan'):'CT-style rendering (soft-tissue window) of the reference model — not a scan')+(st.spi.src==='mri'&&src==='ct'?' · outside the MRI template (C1–L1), CT shown':'')+' · '+pwLevelAt(c[2]);
+  const c=st.spc,pl=spPlane();$('spRo').textContent=(st.cordMode&&src==='mri'?'Tracts: PAM50 white-matter atlas, textbook colours · ':'')+(src==='mri'?(SPW&&wsK(pz)!=null?'Population T2 (56 adults, centre ±25 mm; PAM50 in the canal C1–L1); the sides are a synthetic T2 of the reference model — not a scan':inPam||st.spi.plane!=='ax'?'PAM50 T2 template (centre, C1–L1) blended into a synthetic T2 of the reference model — not a scan':'Synthetic T2 of the reference model (below the population templates) — not a scan'):'CT-style rendering (soft-tissue window) of the reference model — not a scan')+(st.spi.src==='mri'&&src==='ct'?' · outside the MRI template (C1–L1), CT shown':'')+' · '+pwLevelAt(c[2]);
   const sl=$('spSl'),W=regWindow(st.pwSeg);if(pl.obl){sl.min=-25;sl.max=25;sl.value=st.spi.oOff||0}else if(pl.ax===2){sl.min=W.zb;sl.max=W.zt;sl.value=c[2]}else if(pl.ax===0){sl.min=-40;sl.max=40;sl.value=c[0]}else{sl.min=SPX.cy(c[2])-60;sl.max=SPX.cy(c[2])+60;sl.value=c[1]}
   $('spPos').textContent=(pl.obl?'offset ':pl.ax===2?'z ':pl.ax===0?'x ':'y ')+(+sl.value).toFixed(1)+' mm';
   spPane.querySelectorAll('#spPl button[data-v^="tr"]').forEach(b=>b.hidden=!(st.tab==='splan'&&st.sx.cur));
