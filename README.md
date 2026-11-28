@@ -21,6 +21,7 @@ It is a static site: `docs/index.html` plus gzip-compressed data files decompres
 - `spine-data.wasm`: spine skeleton, cord, roots and vessels.
 - `spine-mri.wasm`: PAM50.
 - `spine-soft.wasm`: spine soft tissue.
+- `spine-ws.wasm`: whole-spine population T2 template.
 
 ```bash
 cd docs
@@ -40,6 +41,7 @@ Opening `index.html` straight from disk will not work, because browsers block `f
 | `docs/spine-data.wasm` | Spine: BodyParts3D vertebrae, sacrum, ribs and discs placed on the atlas cord, with measured canal and body sizes per level |
 | `docs/spine-mri.wasm` | Spine: PAM50 T2 template, cord/CSF/grey-matter masks, white-matter tract labels and level labels |
 | `docs/spine-soft.wasm` | Spine: BodyParts3D muscles, great vessels, viscera and skin, with the same placement as the bones |
+| `docs/spine-ws.wasm` | Spine: population T2 template of the whole column (56 adults, OpenNeuro ds005616), built by `spinewst2.py` |
 | `pipeline/` | Python scripts that build the data files from the source atlases |
 | `data/SOURCES.md` | Where each input comes from and its licence |
 | `data/raw/` | Downloaded inputs (git-ignored; see SOURCES.md) |
@@ -71,7 +73,15 @@ python3 plandata.py   # planning layers (vessel/sulcus distance, critical-tract 
 python3 spinebp.py    # vertebrae, sacrum, ribs, discs placed on the atlas cord (C1 canal centre), canal and body sizes per level -> spine-data.wasm
 python3 spinemri.py   # PAM50 T2 template, cord/CSF/GM masks, tract atlas, levels -> spine-mri.wasm
 python3 spinesoft.py  # muscles, great vessels, viscera, skin with the same transform as the bones -> spine-soft.wasm
+
+# whole-spine population T2 (input: data/raw/wholespine/ws/ = release wholespine_v1, unpacked)
+STAGE=straighten python3 spinewst2.py   # straighten along the canal, match vertebrae and discs, scale to CSF, mean -> out/wst2/tmpl0
+STAGE=syn python3 spinewst2.py ../data/raw/wholespine/ws out/wst2 1   # ANTs SyN of each person to the mean (about 1.5 h on 2 cores)
+python3 spinewst2geom.py               # per-level vertebral body front, for scaling to the reference skeleton
+python3 spinewst2pack.py out/wst2 1    # -> spine-ws.wasm (template, coverage x body weight, tissue/CSF ratios, level brightness)
 ```
+
+The spine MRI is three layers: PAM50 in the canal (C1–L1), the whole-spine population T2 in the centre ±25 mm (C1 to about L4–L5; the scans are a sagittal slab), and around them a synthetic T2 of the reference body whose tissue brightness is measured on that template. Only the synthetic part is not a scan.
 
 The spine's roots, sympathetic trunk, small vessels, carotid sheath above C7, pharynx, larynx and tract blocks are schematic and are built in `index.html` from the measured vertebral levels. The Sources tab says which parts are schematic.
 
@@ -79,7 +89,7 @@ Intermediate files go to `pipeline/out/` (git-ignored). Viewer controls: mouse w
 
 ## Data and licences
 
-See `data/SOURCES.md`. Short version: ICBM152 (copyright notice required), CerebrA, THOMAS (CC0), ATAG, SUIT (CC BY-NC 3.0), HCP-1065 tractography atlas (CC BY-SA 4.0 + HCP acknowledgment), population vessel atlases of Mouches & Forkert 2019 (cite the paper), BodyParts3D (CC BY-SA 2.1 JP, attribution required; the spine meshes derived from it are share-alike), PAM50 (no licence file in its repository; cite De Leener et al. 2018). Check these before making the repository or a hosted copy public.
+See `data/SOURCES.md`. Short version: ICBM152 (copyright notice required), CerebrA, THOMAS (CC0), ATAG, SUIT (CC BY-NC 3.0), HCP-1065 tractography atlas (CC BY-SA 4.0 + HCP acknowledgment), population vessel atlases of Mouches & Forkert 2019 (cite the paper), BodyParts3D (CC BY-SA 2.1 JP, attribution required; the spine meshes derived from it are share-alike), PAM50 (no licence file in its repository; cite De Leener et al. 2018), OpenNeuro ds005616 Whole-Spine (CC0; cite Molinier et al.). Check these before making the repository or a hosted copy public.
 
 ## Trajectory risk score
 
